@@ -1,0 +1,67 @@
+---
+import Layout from '../layouts/Layout.astro';
+const updated = '5 de junio de 2026';
+---
+
+<Layout
+  title="Política de privacidad — QuéFalta"
+  description="Cómo QuéFalta trata tus datos."
+>
+  <article class="legal container">
+    <h1>Política de privacidad</h1>
+    <p class="updated">Última actualización: {updated}</p>
+
+    <p>
+      En QuéFalta nos tomamos en serio tu privacidad. Esta página explica qué
+      datos tratamos, con qué fin y qué derechos tienes. Es un borrador inicial;
+      revísalo con un profesional antes de publicar la app.
+    </p>
+
+    <h2>Qué datos guardamos</h2>
+    <ul>
+      <li><strong>Cuenta:</strong> tu nombre y correo electrónico, obtenidos al iniciar sesión con Google.</li>
+      <li><strong>Perfil:</strong> foto de perfil (opcional), nombre de usuario (@) e iniciales.</li>
+      <li><strong>Uso de la app:</strong> los grupos a los que perteneces y las listas y productos que añades.</li>
+    </ul>
+
+    <h2>Para qué los usamos</h2>
+    <ul>
+      <li>Para que puedas iniciar sesión y mantener tu perfil.</li>
+      <li>Para sincronizar las listas y los grupos entre los miembros.</li>
+      <li>Para mostrar productos del catálogo de Mercadona dentro de la app.</li>
+    </ul>
+
+    <h2>Con quién los compartimos</h2>
+    <p>
+      No vendemos ni cedemos tus datos a terceros. Los datos se almacenan en
+      nuestro proveedor de backend (Supabase) y la autenticación se realiza con
+      Google. El catálogo de productos se obtiene de la API pública de Mercadona;
+      QuéFalta no está afiliada ni asociada a Mercadona.
+    </p>
+
+    <h2>Tus derechos</h2>
+    <p>
+      Puedes acceder, rectificar o eliminar tus datos en cualquier momento. Desde
+      la app, en <em>Perfil → Privacidad y seguridad → Eliminar cuenta</em>, puedes
+      borrar tu cuenta y tus datos de forma permanente. También puedes escribirnos
+      a <a href="mailto:hola@quefalta.es">hola@quefalta.es</a>.
+    </p>
+
+    <h2>Contacto</h2>
+    <p>
+      Para cualquier duda sobre privacidad, escríbenos a
+      <a href="mailto:hola@quefalta.es">hola@quefalta.es</a>.
+    </p>
+  </article>
+
+  <style>
+    .legal { max-width: 720px; padding-top: 48px; }
+    .legal h1 { font-size: clamp(30px, 5vw, 42px); letter-spacing: -1px; }
+    .updated { color: var(--ink-soft); font-size: 13px; margin: 8px 0 28px; }
+    .legal h2 { font-size: 20px; margin: 32px 0 10px; letter-spacing: -0.4px; }
+    .legal p { color: var(--ink); margin-bottom: 12px; }
+    .legal ul { margin: 0 0 12px 20px; color: var(--ink); }
+    .legal li { margin-bottom: 6px; }
+    .legal a { color: var(--accent); }
+  </style>
+</Layout>

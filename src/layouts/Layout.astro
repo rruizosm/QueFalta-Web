@@ -1,0 +1,135 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'QuéFalta — La compra compartida, sin líos',
+  description = 'Organiza la compra en grupo: lista compartida en tiempo real, carrito por grupos y catálogo de Mercadona. ¿Qué falta?',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">
+        <span class="brand-mark">QF</span>
+        <span class="brand-name">QuéFalta</span>
+      </a>
+      <a class="header-cta" href="#descargar">Descargar</a>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-brand">
+        <span class="brand-mark small">QF</span>
+        <span>QuéFalta</span>
+      </div>
+      <nav class="footer-links">
+        <a href="/privacidad">Privacidad</a>
+        <a href="mailto:hola@quefalta.es">Contacto</a>
+      </nav>
+      <p class="footer-copy">© {new Date().getFullYear()} QuéFalta · Hecho en España</p>
+    </footer>
+
+    <style is:global>
+      :root {
+        --accent: #df4b2e;
+        --accent-light: rgba(223, 75, 46, 0.12);
+        --ink: #2b2521;
+        --ink-soft: #8a7f73;
+        --paper: #fbf6ee;
+        --white: #ffffff;
+        --border: #ece2d3;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        font-family: 'Space Grotesk', system-ui, sans-serif;
+        background: var(--paper);
+        color: var(--ink);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a { color: inherit; text-decoration: none; }
+
+      .site-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 24px;
+        max-width: 1080px;
+        margin: 0 auto;
+      }
+
+      .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+      .brand-mark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        background: var(--accent);
+        color: var(--white);
+        border-radius: 9px;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+      .brand-mark.small { width: 26px; height: 26px; font-size: 11px; border-radius: 7px; }
+      .brand-name { font-size: 18px; letter-spacing: -0.3px; }
+
+      .header-cta {
+        background: var(--ink);
+        color: var(--white);
+        padding: 9px 16px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .site-footer {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 40px 24px 56px;
+        border-top: 1px solid var(--border);
+        margin-top: 64px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        color: var(--ink-soft);
+        font-size: 14px;
+      }
+      .footer-brand { display: flex; align-items: center; gap: 9px; color: var(--ink); font-weight: 600; }
+      .footer-links { display: flex; gap: 18px; }
+      .footer-links a:hover { color: var(--accent); }
+      .footer-copy { font-size: 12.5px; }
+
+      .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+    </style>
+  </body>
+</html>

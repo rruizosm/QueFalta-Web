@@ -1,0 +1,108 @@
+---
+import Layout from '../../layouts/Layout.astro';
+// Página puente de invitación. Se sirve para cualquier /join/:id mediante el
+// rewrite de vercel.json. El id se lee en cliente desde la URL.
+// Si el usuario tiene la app instalada (iOS), el Universal Link abre la app
+// directamente y esta página ni se carga.
+---
+
+<Layout
+  title="Únete a un grupo en QuéFalta"
+  description="Te han invitado a un grupo en QuéFalta. Abre la app o descárgala para unirte."
+>
+  <section class="join container">
+    <span class="join-mark">QF</span>
+    <span class="eyebrow">Invitación a un grupo</span>
+    <h1>Te han invitado a QuéFalta</h1>
+    <p class="lead">
+      Únete al grupo para compartir la lista de la compra. Si ya tienes la app,
+      ábrela; si no, descárgala y entrarás automáticamente.
+    </p>
+
+    <div class="join-actions">
+      <a id="open-app" class="btn-primary" href="#">Abrir en la app</a>
+      <a id="download" class="btn-secondary" href="#">Descargar en App Store</a>
+    </div>
+
+    <p class="join-hint">¿No se abre? Instala QuéFalta y vuelve a tocar el enlace.</p>
+  </section>
+
+  <script is:inline>
+    (function () {
+      // /join/<id>  →  extrae el id (la URL del navegador se mantiene pese al rewrite)
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      const idx = parts.indexOf('join');
+      const groupId = idx >= 0 && parts[idx + 1] ? parts[idx + 1] : null;
+
+      const openBtn = document.getElementById('open-app');
+      if (groupId && openBtn) {
+        // Esquema propio como intento de apertura para quien ya tiene la app.
+        openBtn.setAttribute('href', 'quefalta://join/' + groupId);
+      } else if (openBtn) {
+        openBtn.style.display = 'none';
+      }
+
+      // TODO: sustituir por la URL real de la ficha en la App Store cuando exista.
+      const APP_STORE_URL = '#';
+      const dl = document.getElementById('download');
+      if (dl) dl.setAttribute('href', APP_STORE_URL);
+    })();
+  </script>
+
+  <style>
+    .join {
+      max-width: 560px;
+      padding-top: 64px;
+      padding-bottom: 24px;
+      text-align: center;
+    }
+    .join-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      background: var(--accent);
+      color: var(--white);
+      border-radius: 16px;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin: 0 auto 20px;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    h1 { font-size: clamp(30px, 6vw, 44px); letter-spacing: -1.2px; line-height: 1.05; }
+    .lead { color: var(--ink-soft); margin-top: 16px; font-size: 16px; }
+
+    .join-actions {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+    .btn-primary, .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      width: 100%;
+      max-width: 320px;
+    }
+    .btn-primary { background: var(--accent); color: var(--white); }
+    .btn-secondary { background: var(--white); color: var(--ink); border: 1px solid var(--border); }
+
+    .join-hint { margin-top: 20px; font-size: 13px; color: var(--ink-soft); }
+  </style>
+</Layout>

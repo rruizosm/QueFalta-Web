@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["LX4BLQDZS4.com.quefalta.app"],
+        "components": [
+          {
+            "/": "/join/*",
+            "comment": "Enlaces de invitación a grupos de QuéFalta"
+          }
+        ]
+      }
+    ]
+  }
+}
