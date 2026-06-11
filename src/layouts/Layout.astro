@@ -2,10 +2,13 @@
 interface Props {
   title?: string;
   description?: string;
+  /** Oculta la cabecera y el pie genéricos (la landing trae su propio chrome). */
+  bare?: boolean;
 }
 const {
   title = 'QuéFalta — La compra compartida, sin líos',
   description = 'Organiza la compra en grupo: lista compartida en tiempo real, carrito por grupos y catálogo de Mercadona. ¿Qué falta?',
+  bare = false,
 } = Astro.props;
 ---
 
@@ -22,45 +25,57 @@ const {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <title>{title}</title>
   </head>
   <body>
-    <header class="site-header">
-      <a class="brand" href="/">
-        <span class="brand-mark">QF</span>
-        <span class="brand-name">QuéFalta</span>
-      </a>
-      <a class="header-cta" href="#descargar">Descargar</a>
-    </header>
+    {!bare && (
+      <header class="site-header">
+        <a class="brand" href="/">
+          <span class="brand-mark">QF</span>
+          <span class="brand-name">QuéFalta</span>
+        </a>
+        <a class="header-cta" href="#descargar">Descargar</a>
+      </header>
+    )}
 
     <main>
       <slot />
     </main>
 
-    <footer class="site-footer">
-      <div class="footer-brand">
-        <span class="brand-mark small">QF</span>
-        <span>QuéFalta</span>
-      </div>
-      <nav class="footer-links">
-        <a href="/privacidad">Privacidad</a>
-        <a href="mailto:hola@quefalta.es">Contacto</a>
-      </nav>
-      <p class="footer-copy">© {new Date().getFullYear()} QuéFalta · Hecho en España</p>
-    </footer>
+    {!bare && (
+      <footer class="site-footer">
+        <div class="footer-brand">
+          <span class="brand-mark small">QF</span>
+          <span>QuéFalta</span>
+        </div>
+        <nav class="footer-links">
+          <a href="/condiciones">Condiciones</a>
+          <a href="/privacidad">Privacidad</a>
+          <a href="mailto:hola@quefalta.es">Contacto</a>
+        </nav>
+        <p class="footer-copy">© {new Date().getFullYear()} QuéFalta · Hecho en España</p>
+      </footer>
+    )}
 
     <style is:global>
       :root {
         --accent: #df4b2e;
         --accent-light: rgba(223, 75, 46, 0.12);
+        --accent-soft: #fbe7df;
         --ink: #2b2521;
         --ink-soft: #8a7f73;
+        --ink-faint: #c2b8a9;
         --paper: #fbf6ee;
+        --paper-2: #f6efe3;
+        --surface: #ffffff;
         --white: #ffffff;
         --border: #ece2d3;
+        --ok: #3f8f4f;
+        --geo: 'Space Grotesk', system-ui, sans-serif;
+        --serif: 'Newsreader', Georgia, serif;
       }
 
       * { box-sizing: border-box; margin: 0; padding: 0; }
