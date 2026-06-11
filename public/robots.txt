@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://quefalta.es/sitemap-index.xml

@@ -4,12 +4,17 @@ interface Props {
   description?: string;
   /** Oculta la cabecera y el pie genéricos (la landing trae su propio chrome). */
   bare?: boolean;
+  /** Imagen para previews al compartir (ruta absoluta dentro del sitio). */
+  image?: string;
 }
 const {
   title = 'QuéFalta — La compra compartida, sin líos',
   description = 'Organiza la compra en grupo: lista compartida en tiempo real, carrito por grupos y catálogo de Mercadona. ¿Qué falta?',
   bare = false,
+  image = '/og.png',
 } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
 ---
 
 <!doctype html>
@@ -18,9 +23,16 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:site_name" content="QuéFalta" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#fbf6ee" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -37,7 +49,7 @@ const {
           <span class="brand-mark">QF</span>
           <span class="brand-name">QuéFalta</span>
         </a>
-        <a class="header-cta" href="#descargar">Descargar</a>
+        <a class="header-cta" href="/#descargar">Descargar</a>
       </header>
     )}
 

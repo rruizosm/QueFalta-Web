@@ -22,7 +22,7 @@ const FEATURES = [
     num: '01', tab: 'home', Screen: HomeScreen,
     eyebrow: 'Inicio',
     title: 'Toda tu compra, de un vistazo',
-    desc: 'Al abrir QueFalta ves lo que importa: el carrito activo de tu hogar, cuánto lleváis recogido y lo que aún falta por coger.',
+    desc: 'Al abrir QuéFalta ves lo que importa: el carrito activo de tu hogar, cuánto lleváis recogido y lo que aún falta por coger.',
     bullets: [
       'Progreso del carrito compartido en tiempo real',
       'Accesos rápidos al catálogo por categorías',
@@ -88,7 +88,7 @@ const FEATURES = [
     num: '07', tab: null, Screen: ProfileScreen, noNav: true,
     eyebrow: 'Tu perfil',
     title: 'Tuyo, con tu @usuario',
-    desc: 'Tu identidad en QueFalta: elige tu @, tu foto y gestiona notificaciones y preferencias de tus grupos.',
+    desc: 'Tu identidad en QuéFalta: elige tu @, tu foto y gestiona notificaciones y preferencias de tus grupos.',
     bullets: [
       '@usuario único para que te encuentren',
       'Foto de perfil personalizable',
@@ -99,7 +99,7 @@ const FEATURES = [
 
 function AppleBadge({ large }) {
   return (
-    <a href={APP_STORE_URL} aria-label="Descárgalo en el App Store" className="qf-badge" style={large ? { transform: 'scale(1.0)' } : {}}>
+    <a href={APP_STORE_URL} aria-label="Descárgalo en el App Store" className="qf-badge">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
         <path d="M17.05 12.04c-.03-2.6 2.12-3.85 2.22-3.91-1.21-1.77-3.09-2.01-3.76-2.04-1.6-.16-3.12.94-3.93.94-.81 0-2.06-.92-3.39-.89-1.74.03-3.35 1.01-4.25 2.57-1.81 3.14-.46 7.78 1.3 10.33.86 1.25 1.88 2.65 3.22 2.6 1.29-.05 1.78-.83 3.34-.83 1.56 0 2 .83 3.37.81 1.39-.03 2.27-1.27 3.12-2.53.98-1.45 1.39-2.85 1.41-2.93-.03-.01-2.7-1.04-2.73-4.09z M14.7 4.7c.71-.86 1.19-2.06 1.06-3.25-1.02.04-2.26.68-2.99 1.54-.66.76-1.23 1.98-1.08 3.15 1.14.09 2.3-.58 3.01-1.44z" />
       </svg>
@@ -116,7 +116,7 @@ function SiteNav() {
   return (
     <nav className="qf-nav">
       <div className="qf-nav-inner">
-        <div className="qf-word">Que<span>Falta</span></div>
+        <div className="qf-word">Qué<span>Falta</span></div>
         <div className="qf-nav-right">
           <a href="#features" className="qf-nav-link">Funciones</a>
           <a href="#descargar" className="qf-nav-cta">Descargar</a>
@@ -134,7 +134,7 @@ function Hero() {
           <div className="qf-pill"><span className="qf-dot" />Disponible para iPhone</div>
           <h1 className="qf-hero-title">Sabes siempre<br /><em>qué falta</em> en casa.</h1>
           <p className="qf-hero-desc">
-            QueFalta es la lista de la compra compartida para tu hogar, tu grupo de amigos o la oficina.
+            QuéFalta es la lista de la compra compartida para tu hogar, tu grupo de amigos o la oficina.
             Añade, reparte y marca lo que ya tienes — todos a la vez, en tiempo real.
           </p>
           <div className="qf-hero-actions">
@@ -219,13 +219,13 @@ function CTA() {
   return (
     <section className="qf-cta" id="descargar">
       <div className="qf-cta-inner">
-        <div className="qf-word qf-word-lg">Que<span>Falta</span></div>
+        <div className="qf-word qf-word-lg">Qué<span>Falta</span></div>
         <h2 className="qf-cta-title">Que no se te olvide nada.</h2>
-        <p className="qf-cta-desc">Descarga QueFalta y empieza a compartir la compra con tu gente hoy mismo.</p>
+        <p className="qf-cta-desc">Descarga QuéFalta y empieza a compartir la compra con tu gente hoy mismo.</p>
         <div className="qf-cta-actions"><AppleBadge large /></div>
         <div className="qf-foot">
-          <span>© 2026 QueFalta</span>
-          <span className="qf-foot-links"><a href="/privacidad">Privacidad</a><a href="/privacidad">Términos</a><a href="mailto:hola@quefalta.es">Contacto</a></span>
+          <span>© {new Date().getFullYear()} QuéFalta</span>
+          <span className="qf-foot-links"><a href="/privacidad">Privacidad</a><a href="/condiciones">Términos</a><a href="mailto:hola@quefalta.es">Contacto</a></span>
         </div>
       </div>
     </section>
