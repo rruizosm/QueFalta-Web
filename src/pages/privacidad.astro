@@ -1,9 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-// TODO antes de publicar: sustituir "[NOMBRE LEGAL]" por el nombre y apellidos
-// del responsable (RGPD art. 13.1.a) y, si se quiere, una dirección postal.
+// TODO antes de publicar: si se quiere, añadir una dirección postal del responsable.
 // Recomendable una revisión por un profesional antes del lanzamiento.
-const updated = '10 de junio de 2026';
+const updated = '23 de junio de 2026';
 ---
 
 <Layout
@@ -23,15 +22,15 @@ const updated = '10 de junio de 2026';
 
     <h2>1. Responsable del tratamiento</h2>
     <p>
-      [NOMBRE LEGAL], desarrollador de QuéFalta.<br />
-      Contacto: <a href="mailto:hola@quefalta.es">hola@quefalta.es</a>
+      Rubén Ruiz Osma, desarrollador de QuéFalta.<br />
+      Contacto: <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a>
     </p>
 
     <h2>2. Qué datos tratamos</h2>
     <ul>
       <li>
         <strong>Datos de cuenta:</strong> nombre y correo electrónico, obtenidos
-        del proveedor de identidad con el que inicias sesión (Google). No
+        del proveedor de identidad con el que inicias sesión (Google o Apple). No
         guardamos tu contraseña: la autenticación la gestiona el proveedor.
       </li>
       <li>
@@ -46,23 +45,26 @@ const updated = '10 de junio de 2026';
         la app.
       </li>
       <li>
-        <strong>Datos de suscripción (QuéFalta Plus):</strong> si te suscribes,
-        guardamos únicamente el estado de tu suscripción (plan y fecha de
-        expiración). El pago se realiza a través de App Store o Google Play:
-        <strong>nunca vemos ni almacenamos los datos de tu tarjeta</strong>.
+        <strong>Datos de navegación en la web (quefalta.es):</strong> si
+        <strong>aceptas las cookies de análisis</strong>, usamos Google Analytics
+        para conocer de forma agregada cómo se usa el sitio (páginas visitadas,
+        tipo de dispositivo, etc.). No se cargan ni recogen estos datos si no las
+        aceptas. Consulta el detalle en nuestra
+        <a href="/cookies">política de cookies</a>.
       </li>
     </ul>
     <p>
       No tratamos categorías especiales de datos ni usamos tus datos para
-      publicidad. QuéFalta no tiene anuncios.
+      publicidad. QuéFalta no tiene anuncios. La analítica de la web es opcional y
+      solo se activa con tu consentimiento.
     </p>
 
     <h2>3. Para qué y con qué base legal</h2>
     <ul>
       <li>
         <strong>Prestarte el servicio</strong> (cuenta, perfil, sincronización
-        en tiempo real de listas y grupos entre miembros, historial,
-        suscripción): ejecución del contrato (art. 6.1.b RGPD).
+        en tiempo real de listas y grupos entre miembros, historial): ejecución
+        del contrato (art. 6.1.b RGPD).
       </li>
       <li>
         <strong>Funciones opcionales</strong> (foto de perfil, ser localizable
@@ -72,6 +74,11 @@ const updated = '10 de junio de 2026';
       <li>
         <strong>Seguridad y prevención de abuso</strong>: interés legítimo
         (art. 6.1.f RGPD).
+      </li>
+      <li>
+        <strong>Analítica de la web</strong> (Google Analytics en quefalta.es):
+        tu consentimiento (art. 6.1.a RGPD), que puedes retirar cuando quieras
+        desde la <a href="/cookies">política de cookies</a>.
       </li>
     </ul>
 
@@ -88,13 +95,13 @@ const updated = '10 de junio de 2026';
     <p>No vendemos ni cedemos tus datos a terceros. Para funcionar, QuéFalta se apoya en estos encargados de tratamiento:</p>
     <ul>
       <li><strong>Supabase</strong> (backend y base de datos): almacena los datos descritos arriba.</li>
-      <li><strong>Google</strong> (inicio de sesión): gestiona la autenticación de tu cuenta.</li>
-      <li><strong>Apple App Store / Google Play</strong>: procesan el pago de la suscripción según sus propias políticas de privacidad.</li>
-      <li><strong>RevenueCat</strong> (gestión de suscripciones): valida los recibos de compra para activar QuéFalta Plus; recibe un identificador de usuario y datos de la transacción, nunca tu tarjeta.</li>
+      <li><strong>Google / Apple</strong> (inicio de sesión): gestionan la autenticación de tu cuenta.</li>
+      <li><strong>Google Analytics</strong> (analítica web): solo si aceptas las cookies de análisis en quefalta.es. Puede implicar transferencias internacionales con las garantías de su política. Detalle en la <a href="/cookies">política de cookies</a>.</li>
     </ul>
     <p>
       Los catálogos y precios que se muestran en la app proceden de las webs y
-      APIs públicas de Mercadona, Bonpreu/Esclat, Carrefour y bonÀrea. QuéFalta
+      APIs públicas de Mercadona, Bonpreu/Esclat, Carrefour, bonÀrea, Dia y
+      Consum. QuéFalta
       <strong>no está afiliada ni asociada</strong> a ninguno de esos
       supermercados, y ellos no reciben ningún dato tuyo por usar la app.
     </p>
@@ -122,7 +129,7 @@ const updated = '10 de junio de 2026';
       </li>
       <li>
         <strong>Por correo:</strong> escríbenos a
-        <a href="mailto:hola@quefalta.es">hola@quefalta.es</a>.
+        <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a>.
       </li>
     </ul>
     <p>
@@ -143,7 +150,7 @@ const updated = '10 de junio de 2026';
     <h2>9. Contacto</h2>
     <p>
       Para cualquier duda sobre privacidad:
-      <a href="mailto:hola@quefalta.es">hola@quefalta.es</a>.
+      <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a>.
     </p>
   </article>
 

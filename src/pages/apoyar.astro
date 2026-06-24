@@ -1,0 +1,354 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Stripe Payment Links. Crea los enlaces en tu panel de Stripe
+// (https://dashboard.stripe.com/payment-links) y pega aquí las URLs reales
+// (tienen la forma https://buy.stripe.com/...). En cada enlace, habilita los
+// métodos de pago Tarjeta y Bizum.
+//
+// - SUPPORT_URL: enlace con "El cliente elige el importe" (precio personalizado).
+//   Lo usan "Aportar otra cantidad" y el botón final.
+// - AMOUNTS[].url: un enlace de importe FIJO por cada cantidad sugerida. Si dejas
+//   alguno en '#', esa tarjeta usará SUPPORT_URL como respaldo.
+//
+// Mientras SUPPORT_URL siga en '#', los botones quedan inertes (enlazan a '#').
+const SUPPORT_URL = 'https://buy.stripe.com/dRm6oJfEO8mM2cVauhcEw03';
+
+// Cantidades sugeridas. Son orientativas: cualquier aportación vale.
+const AMOUNTS = [
+  { eur: 3, label: 'Un café', desc: 'Un gracias rápido por la app.', url: 'https://buy.stripe.com/aFaaEZ1NY32sg3L0THcEw00' },
+  { eur: 5, label: 'Una mano', desc: 'Ayudas a pagar los servidores.', url: 'https://buy.stripe.com/cNidRbeAKdH62cVgSFcEw01' },
+  { eur: 10, label: 'Un empujón', desc: 'Impulsas la próxima función.', url: 'https://buy.stripe.com/bJebJ3eAK7iIeZH8m9cEw02' },
+];
+
+// ── Transparencia ──────────────────────────────────────────────
+// Objetivo de financiación del año (p. ej. coste anual de servidores).
+const GOAL = 240;
+
+// Libro de movimientos, lo más reciente arriba. `tipo`: 'ingreso' (aportación
+// de la comunidad) o 'inversion' (gasto destinado a mejorar la app). Datos de
+// ejemplo: sustituir por los reales y actualizar cada mes.
+const MOVIMIENTOS = [
+  { fecha: '2026-06-18', tipo: 'inversion', concepto: 'Servidor y base de datos · junio', importe: 20 },
+  { fecha: '2026-06-10', tipo: 'ingreso', concepto: 'Aportaciones de la comunidad', importe: 48 },
+  { fecha: '2026-05-12', tipo: 'ingreso', concepto: 'Aportaciones de la comunidad', importe: 35 },
+];
+
+const recaudado = MOVIMIENTOS.filter((m) => m.tipo === 'ingreso').reduce((s, m) => s + m.importe, 0);
+const invertido = MOVIMIENTOS.filter((m) => m.tipo === 'inversion').reduce((s, m) => s + m.importe, 0);
+const saldo = recaudado - invertido;
+const pct = GOAL > 0 ? Math.min(100, Math.round((recaudado / GOAL) * 100)) : 0;
+
+// En qué se invierte cada euro.
+const DESTINOS = [
+  { icon: 'server', title: 'Servidores y datos', desc: 'Mantener la app rápida y los catálogos siempre actualizados.' },
+  { icon: 'cart', title: 'Más supermercados', desc: 'Sumar nuevas cadenas y ampliar los productos disponibles.' },
+  { icon: 'spark', title: 'Nuevas funciones', desc: 'Construir las herramientas que más nos pedís.' },
+  { icon: 'shield', title: 'Mantenimiento', desc: 'Arreglar errores y cuidar tu privacidad a largo plazo.' },
+];
+
+// Euros sin decimales (los importes de ejemplo son redondos).
+const eur = (n) => new Intl.NumberFormat('es-ES', {
+  style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0,
+}).format(n);
+
+const fmtFecha = (iso) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+};
+
+// Iconos en línea (trazo), al estilo del resto del sitio.
+const ICONS = {
+  server: 'M4 5.5h16v5H4zM4 13.5h16v5H4zM7.5 8h0M7.5 16h0',
+  cart: 'M3 4h2l2.2 11.2a1.5 1.5 0 0 0 1.5 1.2h8.1a1.5 1.5 0 0 0 1.47-1.2L20 8H6M9 20h0M17 20h0',
+  spark: 'M12 3v4M12 17v4M3 12h4M17 12h4M6.5 6.5l2.5 2.5M15 15l2.5 2.5M17.5 6.5L15 9M9 15l-2.5 2.5',
+  shield: 'M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z',
+};
+---
+
+<Layout
+  title="Apoya QuéFalta — Ayuda a mejorar la app"
+  description="Descargar QuéFalta es gratis y lo que hoy ofrece seguirá siéndolo. Si quieres, puedes apoyar su desarrollo de forma voluntaria. Cada aportación se invierte por completo en mejorar la app, con total transparencia."
+>
+  <section class="sup container">
+    <!-- Cabecera -->
+    <header class="sup-head">
+      <span class="sup-eyebrow">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.2C.6 9 1.7 5.7 4.7 5c2-.5 3.7.6 4.5 1.8.8 1.2 1 1.6 2.8 1.6s2-.4 2.8-1.6c.8-1.2 2.5-2.3 4.5-1.8 3 .7 4.1 4 2.7 6.8C19.5 16.4 12 21 12 21z"/></svg>
+        Apoya el proyecto
+      </span>
+      <h1 class="sup-title">Descárgala gratis. <span class="sup-em">Ayúdanos a mejorarla.</span></h1>
+      <p class="sup-lead">
+        Descargar QuéFalta es gratis y todo lo que hoy ofrece seguirá siéndolo. Si
+        te resulta útil y te apetece, puedes apoyar su desarrollo de forma
+        completamente voluntaria. Cada euro se reinvierte íntegramente en mejorar la app.
+      </p>
+    </header>
+
+    <!-- Gratis de verdad -->
+    <div class="sup-free">
+      <span class="sup-free-badge">Gratis</span>
+      <ul class="sup-free-list">
+        <li><span class="sup-tick" aria-hidden="true"></span>Descargar la app es y será gratis</li>
+        <li><span class="sup-tick" aria-hidden="true"></span>Las funciones actuales seguirán siendo gratuitas</li>
+        <li><span class="sup-tick" aria-hidden="true"></span>Apoyar es completamente voluntario</li>
+      </ul>
+      <p class="sup-free-note">Tu aportación es un apoyo voluntario y puntual, no una suscripción. Aportes o no, puedes usar la app igual.</p>
+    </div>
+
+    <!-- Apoyar -->
+    <section class="sup-block" id="apoyar">
+      <div class="sup-block-head">
+        <h2 class="sup-h2">Apoya el desarrollo</h2>
+        <p class="sup-p">
+          Elige la cantidad con la que te sientas cómodo. Es un gesto puntual y
+          voluntario; cualquier aportación, por pequeña que sea, ayuda muchísimo.
+        </p>
+      </div>
+
+      <div class="sup-amounts">
+        {AMOUNTS.map((a) => (
+          <a class="sup-amount" href={a.url !== '#' ? a.url : SUPPORT_URL} aria-label={`Aportar ${eur(a.eur)}`}>
+            <span class="sup-amount-eur">{eur(a.eur)}</span>
+            <span class="sup-amount-label">{a.label}</span>
+            <span class="sup-amount-desc">{a.desc}</span>
+            <span class="sup-amount-cta">
+              Aportar
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </span>
+          </a>
+        ))}
+      </div>
+
+      <div class="sup-cta-row">
+        <a class="sup-btn" href={SUPPORT_URL}>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.2C.6 9 1.7 5.7 4.7 5c2-.5 3.7.6 4.5 1.8.8 1.2 1 1.6 2.8 1.6s2-.4 2.8-1.6c.8-1.2 2.5-2.3 4.5-1.8 3 .7 4.1 4 2.7 6.8C19.5 16.4 12 21 12 21z"/></svg>
+          Aportar otra cantidad
+        </a>
+        <p class="sup-methods">Pago seguro con tarjeta o Bizum, gestionado por Stripe. La aportación es puntual, sin cobros recurrentes.</p>
+      </div>
+    </section>
+
+    <!-- Transparencia -->
+    <section class="sup-block sup-transp" id="transparencia">
+      <div class="sup-block-head">
+        <h2 class="sup-h2">Transparencia total</h2>
+        <p class="sup-p">
+          Aquí ves lo que se ha recaudado y en qué se ha invertido. Sin letra
+          pequeña: lo que entra se destina por completo a mejorar la app.
+        </p>
+      </div>
+
+      <div class="sup-stats">
+        <div class="sup-stat">
+          <div class="sup-stat-k">{eur(recaudado)}</div>
+          <div class="sup-stat-l">Recaudado</div>
+        </div>
+        <div class="sup-stat">
+          <div class="sup-stat-k">{eur(invertido)}</div>
+          <div class="sup-stat-l">Invertido en mejoras</div>
+        </div>
+        <div class="sup-stat">
+          <div class="sup-stat-k">{eur(saldo)}</div>
+          <div class="sup-stat-l">Saldo por invertir</div>
+        </div>
+      </div>
+
+      <div class="sup-goal">
+        <div class="sup-goal-top">
+          <span>Objetivo {new Date().getFullYear()}: cubrir los servidores</span>
+          <span class="sup-goal-num">{eur(recaudado)} / {eur(GOAL)}</span>
+        </div>
+        <div class="sup-bar" role="progressbar" aria-valuenow={recaudado} aria-valuemin="0" aria-valuemax={GOAL} aria-label="Progreso del objetivo de financiación">
+          <span class="sup-bar-fill" style={`width:${pct}%`}></span>
+        </div>
+      </div>
+
+      <ul class="sup-ledger">
+        {MOVIMIENTOS.map((m) => (
+          <li class={`sup-mov sup-mov--${m.tipo}`}>
+            <span class="sup-mov-ic" aria-hidden="true">
+              {m.tipo === 'ingreso' ? '↑' : '↓'}
+            </span>
+            <div class="sup-mov-main">
+              <span class="sup-mov-concept">{m.concepto}</span>
+              <time class="sup-mov-date" datetime={m.fecha}>{fmtFecha(m.fecha)}</time>
+            </div>
+            <span class="sup-mov-amount">{m.tipo === 'ingreso' ? '+' : '−'}{eur(m.importe)}</span>
+          </li>
+        ))}
+      </ul>
+      <p class="sup-transp-note">Cifras actualizadas periódicamente. ¿Dudas sobre las cuentas? Escríbenos a <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a>.</p>
+    </section>
+
+    <!-- En qué se invierte -->
+    <section class="sup-block">
+      <div class="sup-block-head">
+        <h2 class="sup-h2">En qué se invierte</h2>
+        <p class="sup-p">El 100% de lo recaudado va a parar a la app. Nada se queda por el camino.</p>
+      </div>
+      <div class="sup-destinos">
+        {DESTINOS.map((d) => (
+          <div class="sup-destino">
+            <span class="sup-destino-ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d={ICONS[d.icon]} /></svg>
+            </span>
+            <h3 class="sup-destino-title">{d.title}</h3>
+            <p class="sup-destino-desc">{d.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- CTA final -->
+    <div class="sup-final">
+      <h2 class="sup-final-title">Gracias por estar ahí.</h2>
+      <p class="sup-final-p">Uses la app y apoyes o no, formas parte de QuéFalta. Y eso ya es un montón.</p>
+      <a class="sup-btn" href={SUPPORT_URL}>
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.2C.6 9 1.7 5.7 4.7 5c2-.5 3.7.6 4.5 1.8.8 1.2 1 1.6 2.8 1.6s2-.4 2.8-1.6c.8-1.2 2.5-2.3 4.5-1.8 3 .7 4.1 4 2.7 6.8C19.5 16.4 12 21 12 21z"/></svg>
+        Apoyar QuéFalta
+      </a>
+    </div>
+  </section>
+
+  <style>
+    .sup { max-width: 880px; padding-top: 48px; padding-bottom: 8px; }
+
+    /* Cabecera */
+    .sup-head { text-align: center; max-width: 660px; margin: 0 auto; }
+    .sup-eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 12.5px; font-weight: 700; letter-spacing: 0.02em; color: var(--accent);
+    }
+    .sup-title {
+      font-family: var(--geo); font-weight: 800; letter-spacing: -0.035em;
+      line-height: 1.04; font-size: clamp(30px, 5vw, 50px); margin-top: 12px; color: var(--ink);
+    }
+    .sup-em { font-family: var(--serif); font-style: italic; font-weight: 500; letter-spacing: -0.01em; color: var(--accent); }
+    .sup-lead {
+      color: var(--ink-soft); font-size: clamp(16px, 1.6vw, 18.5px);
+      line-height: 1.55; margin: 18px auto 0; max-width: 580px;
+    }
+
+    /* Gratis de verdad */
+    .sup-free {
+      margin: 44px auto 0; max-width: 620px;
+      background: var(--accent-soft); border: 1px solid #c8daee;
+      border-radius: 24px; padding: 28px 30px; text-align: center;
+    }
+    .sup-free-badge {
+      display: inline-block; font-family: var(--geo); font-weight: 800; font-size: 13px;
+      letter-spacing: 0.01em; color: var(--accent);
+      background: #fff; border: 1px solid #c8daee; padding: 5px 14px; border-radius: 980px;
+    }
+    .sup-free-list {
+      list-style: none; padding: 0; margin: 20px 0 0;
+      display: inline-flex; flex-direction: column; gap: 11px; text-align: left;
+    }
+    .sup-free-list li { display: flex; align-items: flex-start; gap: 11px; font-size: 15.5px; font-weight: 500; color: var(--ink); line-height: 1.4; }
+    .sup-tick {
+      flex: 0 0 auto; width: 21px; height: 21px; border-radius: 7px; background: var(--accent);
+      margin-top: 1px; position: relative;
+    }
+    .sup-tick::after {
+      content: ''; position: absolute; left: 7px; top: 4px; width: 5px; height: 9px;
+      border: solid #fff; border-width: 0 2.4px 2.4px 0; transform: rotate(45deg);
+    }
+    .sup-free-note { color: var(--ink-soft); font-size: 13.5px; line-height: 1.5; margin: 18px auto 0; max-width: 440px; }
+
+    /* Bloques */
+    .sup-block { margin-top: 80px; }
+    .sup-block-head { text-align: center; max-width: 600px; margin: 0 auto; }
+    .sup-h2 { font-family: var(--geo); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; font-size: clamp(26px, 4vw, 40px); color: var(--ink); }
+    .sup-p { color: var(--ink-soft); font-size: clamp(15px, 1.5vw, 17px); line-height: 1.55; margin: 14px auto 0; }
+
+    /* Cantidades */
+    .sup-amounts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; }
+    .sup-amount {
+      display: flex; flex-direction: column; align-items: flex-start;
+      background: var(--white); border: 1px solid var(--border); border-radius: 20px;
+      padding: 22px 22px 20px;
+      box-shadow: 0 1px 2px rgba(17,17,20,.04), 0 4px 16px rgba(17,17,20,.05);
+      transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease);
+    }
+    .sup-amount:hover { transform: translateY(-2px); border-color: #c8daee; box-shadow: 0 10px 28px rgba(17,17,20,.07), 0 2px 8px rgba(17,17,20,.04); }
+    .sup-amount-eur { font-family: var(--geo); font-weight: 800; font-size: 28px; letter-spacing: -0.02em; color: var(--accent); }
+    .sup-amount-label { font-family: var(--geo); font-weight: 700; font-size: 16px; letter-spacing: -0.01em; color: var(--ink); margin-top: 6px; }
+    .sup-amount-desc { font-size: 13.5px; color: var(--ink-soft); line-height: 1.45; margin: 5px 0 20px; }
+    .sup-amount-cta {
+      margin-top: auto; align-self: stretch;
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      font-family: var(--geo); font-weight: 700; font-size: 14px; letter-spacing: -0.01em;
+      color: var(--accent);
+      background-image: linear-gradient(to right, var(--accent) 50%, var(--accent-soft) 50%);
+      background-size: 200% 100%; background-position: right center; background-repeat: no-repeat;
+      padding: 11px 16px; border-radius: 12px;
+      transition: background-position .45s var(--ease), color .3s var(--ease) .08s;
+    }
+    .sup-amount-cta svg { transition: transform .3s var(--ease); }
+    .sup-amount:hover .sup-amount-cta { background-position: left center; color: #fff; }
+    .sup-amount:hover .sup-amount-cta svg { transform: translateX(3px); }
+
+    .sup-cta-row { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 28px; }
+    .sup-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--ink); color: #fff; font-weight: 600; font-size: 15px;
+      padding: 13px 24px; border-radius: 14px;
+      box-shadow: 0 1px 2px rgba(17,17,20,.04), 0 4px 16px rgba(17,17,20,.05);
+      transition: transform .18s var(--ease), background .18s var(--ease), box-shadow .18s var(--ease);
+    }
+    .sup-btn:hover { transform: translateY(-2px); background: var(--accent); box-shadow: 0 8px 30px rgba(17,17,20,.08); }
+    .sup-btn svg { color: #6ea3d6; }
+    .sup-btn:hover svg { color: #fff; }
+    .sup-methods { font-size: 13px; color: var(--ink-faint); text-align: center; }
+
+    /* Transparencia */
+    .sup-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; }
+    .sup-stat { background: var(--paper-2); border: 1px solid var(--border); border-radius: 18px; padding: 22px 18px; text-align: center; }
+    .sup-stat-k { font-family: var(--geo); font-weight: 800; font-size: clamp(24px, 4vw, 32px); letter-spacing: -0.02em; color: var(--ink); }
+    .sup-stat-l { font-size: 13px; color: var(--ink-soft); margin-top: 5px; }
+
+    .sup-goal { margin-top: 22px; }
+    .sup-goal-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13.5px; color: var(--ink-soft); margin-bottom: 9px; }
+    .sup-goal-num { font-family: var(--geo); font-weight: 700; color: var(--ink); white-space: nowrap; }
+    .sup-bar { height: 12px; background: var(--paper-2); border: 1px solid var(--border); border-radius: 980px; overflow: hidden; }
+    .sup-bar-fill { display: block; height: 100%; border-radius: 980px; background: linear-gradient(90deg, var(--accent), #6ea3d6); transition: width .6s var(--ease); }
+
+    .sup-ledger { list-style: none; padding: 0; margin: 30px 0 0; border: 1px solid var(--border); border-radius: 18px; overflow: hidden; background: var(--white); }
+    .sup-mov { display: flex; align-items: center; gap: 14px; padding: 15px 18px; border-top: 1px solid var(--border); }
+    .sup-mov:first-child { border-top: none; }
+    .sup-mov-ic {
+      flex: 0 0 auto; width: 30px; height: 30px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800;
+    }
+    .sup-mov--ingreso .sup-mov-ic { background: rgba(63,160,120,.14); color: #2f8f68; }
+    .sup-mov--inversion .sup-mov-ic { background: var(--accent-soft); color: var(--accent); }
+    .sup-mov-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .sup-mov-concept { font-size: 14.5px; font-weight: 600; color: var(--ink); }
+    .sup-mov-date { font-size: 12.5px; color: var(--ink-faint); }
+    .sup-mov-amount { font-family: var(--geo); font-weight: 700; font-size: 15px; letter-spacing: -0.01em; white-space: nowrap; }
+    .sup-mov--ingreso .sup-mov-amount { color: #2f8f68; }
+    .sup-mov--inversion .sup-mov-amount { color: var(--ink-soft); }
+    .sup-transp-note { font-size: 13px; color: var(--ink-faint); text-align: center; margin-top: 18px; }
+    .sup-transp-note a { color: var(--accent); }
+
+    /* En qué se invierte */
+    .sup-destinos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 36px; }
+    .sup-destino { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: 0 1px 2px rgba(17,17,20,.04), 0 4px 16px rgba(17,17,20,.05); }
+    .sup-destino-ic { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 13px; background: var(--accent-soft); color: var(--accent); }
+    .sup-destino-title { font-family: var(--geo); font-weight: 700; font-size: 17px; letter-spacing: -0.01em; margin-top: 16px; color: var(--ink); }
+    .sup-destino-desc { color: var(--ink-soft); font-size: 14.5px; line-height: 1.5; margin-top: 7px; }
+
+    /* CTA final */
+    .sup-final { margin: 80px auto 0; text-align: center; max-width: 560px; }
+    .sup-final-title { font-family: var(--geo); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(26px, 4vw, 38px); color: var(--ink); }
+    .sup-final-p { color: var(--ink-soft); font-size: 16px; line-height: 1.55; margin: 14px auto 26px; }
+
+    @media (max-width: 640px) {
+      .sup-amounts { grid-template-columns: 1fr; }
+      .sup-stats { grid-template-columns: 1fr; }
+      .sup-destinos { grid-template-columns: 1fr; }
+      .sup-block { margin-top: 60px; }
+    }
+  </style>
+</Layout>

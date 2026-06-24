@@ -1,8 +1,7 @@
-// frame.jsx — marco del teléfono, status bar, bottom nav y primitivas compartidas.
-import React from 'react';
-import { useTk, Icon } from './theme.jsx';
+// frame.jsx — Android phone frame, status bar, bottom nav, shared primitives.
+// Exports: SCREEN_W, SCREEN_H, Phone, BottomNav, Avatar, Avatars, Progress, Check, Ring
 
-export const SCREEN_W = 320, SCREEN_H = 644;
+const SCREEN_W = 320, SCREEN_H = 644;
 
 function StatusBar() {
   const t = useTk();
@@ -14,15 +13,15 @@ function StatusBar() {
     }}>
       <span>9:41</span>
       <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-        <svg width="15" height="11" viewBox="0 0 18 12" fill={t.ink}><rect x="0" y="7" width="3" height="5" rx="1" /><rect x="5" y="4" width="3" height="8" rx="1" /><rect x="10" y="1.5" width="3" height="10.5" rx="1" fillOpacity="0.4" /></svg>
-        <svg width="15" height="11" viewBox="0 0 18 14" fill="none" stroke={t.ink} strokeWidth="1.6"><path d="M2 6.5C5.5 3 12.5 3 16 6.5M4.5 9C7 6.6 11 6.6 13.5 9M9 11.4l.01-.01" /></svg>
-        <svg width="22" height="11" viewBox="0 0 26 13" fill="none" stroke={t.ink} strokeWidth="1.3"><rect x="1" y="1" width="21" height="11" rx="3" /><rect x="3" y="3" width="13" height="7" rx="1.5" fill={t.ink} /><rect x="23" y="4.5" width="2" height="4" rx="1" fill={t.ink} /></svg>
+        <svg width="15" height="11" viewBox="0 0 18 12" fill={t.ink}><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="1.5" width="3" height="10.5" rx="1" fillOpacity="0.4"/></svg>
+        <svg width="15" height="11" viewBox="0 0 18 14" fill="none" stroke={t.ink} strokeWidth="1.6"><path d="M2 6.5C5.5 3 12.5 3 16 6.5M4.5 9C7 6.6 11 6.6 13.5 9M9 11.4l.01-.01"/></svg>
+        <svg width="22" height="11" viewBox="0 0 26 13" fill="none" stroke={t.ink} strokeWidth="1.3"><rect x="1" y="1" width="21" height="11" rx="3"/><rect x="3" y="3" width="13" height="7" rx="1.5" fill={t.ink}/><rect x="23" y="4.5" width="2" height="4" rx="1" fill={t.ink}/></svg>
       </div>
     </div>
   );
 }
 
-export function Phone({ children, tab, noNav, image, alt = '', eager }) {
+function Phone({ children, tab, noNav }) {
   const t = useTk();
   return (
     <div style={{
@@ -37,21 +36,9 @@ export function Phone({ children, tab, noNav, image, alt = '', eager }) {
       }}>
         {/* camera punch-hole */}
         <div style={{ position: 'absolute', top: 11, left: '50%', transform: 'translateX(-50%)', width: 9, height: 9, borderRadius: '50%', background: '#0c0b09', zIndex: 30 }} />
-        {image ? (
-          // Captura real a pantalla completa (ya trae status bar y nav propias).
-          <img
-            src={image}
-            alt={alt}
-            loading={eager ? 'eager' : 'lazy'}
-            style={{ width: '100%', height: '100%', display: 'block' }}
-          />
-        ) : (
-          <>
-            <StatusBar />
-            <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>{children}</div>
-            {!noNav && <BottomNav active={tab} />}
-          </>
-        )}
+        <StatusBar />
+        <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>{children}</div>
+        {!noNav && <BottomNav active={tab} />}
       </div>
     </div>
   );
@@ -64,7 +51,7 @@ const NAV = [
   { id: 'groups', label: 'Grupos', icon: 'users' },
 ];
 
-export function BottomNav({ active = 'home' }) {
+function BottomNav({ active = 'home' }) {
   const t = useTk();
   return (
     <div style={{
@@ -95,7 +82,7 @@ export function BottomNav({ active = 'home' }) {
   );
 }
 
-export function Avatar({ m, size = 30, ring }) {
+function Avatar({ m, size = 30, ring }) {
   const t = useTk();
   const bg = t.id === 'mono' ? '#2b2925' : m.color;
   return (
@@ -108,7 +95,7 @@ export function Avatar({ m, size = 30, ring }) {
   );
 }
 
-export function Avatars({ members, max = 4, size = 30 }) {
+function Avatars({ members, max = 4, size = 30 }) {
   const t = useTk();
   const shown = members.slice(0, max);
   const extra = members.length - shown.length;
@@ -131,7 +118,7 @@ export function Avatars({ members, max = 4, size = 30 }) {
   );
 }
 
-export function Progress({ value, height = 8 }) {
+function Progress({ value, height = 8 }) {
   const t = useTk();
   return (
     <div style={{ width: '100%', height, background: t.id === 'bold' ? t.surfaceAlt : t.accentSoft, borderRadius: height, overflow: 'hidden', border: t.id === 'bold' ? `1.5px solid ${t.ink}` : 'none' }}>
@@ -140,7 +127,7 @@ export function Progress({ value, height = 8 }) {
   );
 }
 
-export function Ring({ value, size = 54, stroke = 6, children }) {
+function Ring({ value, size = 54, stroke = 6, children }) {
   const t = useTk();
   const r = (size - stroke) / 2, c = 2 * Math.PI * r;
   return (
@@ -155,7 +142,7 @@ export function Ring({ value, size = 54, stroke = 6, children }) {
   );
 }
 
-export function Check({ on, size = 22 }) {
+function Check({ on, size = 22 }) {
   const t = useTk();
   return (
     <div style={{
@@ -167,3 +154,5 @@ export function Check({ on, size = 22 }) {
     }}>{on && <Icon name="check" size={size * 0.62} color={t.onAccent} stroke={2.6} />}</div>
   );
 }
+
+Object.assign(window, { SCREEN_W, SCREEN_H, Phone, BottomNav, Avatar, Avatars, Progress, Ring, Check });

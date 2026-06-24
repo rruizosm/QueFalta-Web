@@ -1,0 +1,66 @@
+---
+// Navbar global de QuéFalta. Se muestra en todas las páginas (landing y
+// subpáginas). Los enlaces son absolutos (/#ancla) para que funcionen también
+// desde páginas distintas a la home.
+---
+
+<nav class="qf-nav" id="qf-nav">
+  <div class="qf-nav-inner">
+    <a href="/#top" class="qf-word">
+      <img src="/quefalta-logo-blue.png" alt="" class="qf-logo" width="28" height="28" />
+      <span class="qf-word-txt">Qué<span>Falta</span></span>
+    </a>
+    <div class="qf-nav-right">
+      <a href="/#como-funciona" class="qf-nav-link">Cómo funciona</a>
+      <a href="/#funciones" class="qf-nav-link">Funciones</a>
+      <a href="/novedades" class="qf-nav-link">Novedades</a>
+      <a href="/apoyar" class="qf-nav-link">Apoyar</a>
+      <a href="/#descargar" class="qf-nav-cta">Descargar</a>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Añade un borde inferior al hacer scroll, igual que en la landing.
+  const nav = document.getElementById('qf-nav');
+  if (nav) {
+    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+</script>
+
+<style>
+  .qf-nav {
+    position: sticky; top: 0; z-index: 60;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: saturate(180%) blur(18px);
+    -webkit-backdrop-filter: saturate(180%) blur(18px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+                background 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .qf-nav.scrolled { border-bottom-color: var(--border); }
+  .qf-nav-inner {
+    max-width: 1120px; margin: 0 auto; padding: 13px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .qf-word { display: inline-flex; align-items: center; gap: 9px; font-family: var(--geo); font-weight: 800; font-size: 21px; letter-spacing: -0.04em; color: var(--ink); }
+  .qf-logo { width: 28px; height: 28px; object-fit: contain; display: block; }
+  .qf-word-txt span { color: var(--accent); }
+  .qf-nav-right { display: flex; align-items: center; gap: 28px; }
+  .qf-nav-link { font-size: 14.5px; font-weight: 500; color: var(--ink-soft); transition: color 0.15s; }
+  .qf-nav-link:hover { color: var(--ink); }
+  .qf-nav-cta {
+    font-size: 14px; font-weight: 600; color: #fff; background: var(--ink);
+    padding: 9px 18px; border-radius: 980px;
+    transition: background 0.18s cubic-bezier(0.22, 0.61, 0.36, 1),
+                transform 0.18s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .qf-nav-cta:hover { background: var(--accent); transform: translateY(-1px); }
+
+  @media (max-width: 980px) {
+    .qf-nav-inner { padding-left: 24px; padding-right: 24px; }
+    .qf-nav-link { display: none; }
+  }
+</style>

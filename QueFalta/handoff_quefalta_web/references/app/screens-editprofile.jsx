@@ -1,7 +1,5 @@
-// EditProfile.jsx — Editar perfil: foto + nombre + @usuario. Token-driven.
-import React from 'react';
-import { useTk, Icon } from '../theme.jsx';
-import { screenPad } from '../ui.jsx';
+// screens-editprofile.jsx — Editar perfil: foto + nombre + @usuario. Token-driven.
+// Exports: EditProfileBody, EditProfileSheet, EditProfileScreen
 
 function FieldLabel({ children, style = {} }) {
   const t = useTk();
@@ -35,7 +33,7 @@ function Helper({ children, ok }) {
   );
 }
 
-export function EditProfileBody() {
+function EditProfileBody() {
   const t = useTk();
   return (
     <div style={{ padding: `${t.sp(8)}px ${screenPad(t)}px ${t.sp(18)}px` }}>
@@ -100,7 +98,7 @@ export function EditProfileBody() {
           <Icon name="lock" size={15} color={t.inkFaint} />
         </InputBox>
         <Helper>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Icon name="lock" size={12} />Vinculado a tu cuenta · no editable</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Icon name="google" size={12} />Conectado con Google · no editable</span>
         </Helper>
       </div>
 
@@ -120,19 +118,8 @@ export function EditProfileBody() {
   );
 }
 
-function EditHeader({ onClose }) {
-  const t = useTk();
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `${t.sp(14)}px ${screenPad(t)}px ${t.sp(6)}px` }}>
-      <span onClick={onClose} style={{ fontFamily: t.fontBody, fontSize: 13.5, fontWeight: 600, color: t.inkSoft, cursor: 'pointer', textTransform: t.upper ? 'uppercase' : 'none' }}>Cancelar</span>
-      <span style={{ fontFamily: t.fontDisplay, fontSize: 17, fontWeight: t.dispWeight, textTransform: t.id === 'bold' ? 'uppercase' : 'none' }}>Editar perfil</span>
-      <span onClick={onClose} style={{ fontFamily: t.fontBody, fontSize: 13.5, fontWeight: 700, color: t.accent, cursor: 'pointer', textTransform: t.upper ? 'uppercase' : 'none' }}>Guardar</span>
-    </div>
-  );
-}
-
 // Slide-up sheet over the profile (used inside the phone)
-export function EditProfileSheet({ open, onClose }) {
+function EditProfileSheet({ open, onClose }) {
   const t = useTk();
   const rad = t.id === 'bold' ? 0 : Math.max(t.radiusLg, 16);
   return (
@@ -156,7 +143,19 @@ export function EditProfileSheet({ open, onClose }) {
   );
 }
 
-export function EditProfileScreen() {
+function EditHeader({ onClose }) {
+  const t = useTk();
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `${t.sp(14)}px ${screenPad(t)}px ${t.sp(6)}px` }}>
+      <span onClick={onClose} style={{ fontFamily: t.fontBody, fontSize: 13.5, fontWeight: 600, color: t.inkSoft, cursor: 'pointer', textTransform: t.upper ? 'uppercase' : 'none' }}>Cancelar</span>
+      <span style={{ fontFamily: t.fontDisplay, fontSize: 17, fontWeight: t.dispWeight, textTransform: t.id === 'bold' ? 'uppercase' : 'none' }}>Editar perfil</span>
+      <span onClick={onClose} style={{ fontFamily: t.fontBody, fontSize: 13.5, fontWeight: 700, color: t.accent, cursor: 'pointer', textTransform: t.upper ? 'uppercase' : 'none' }}>Guardar</span>
+    </div>
+  );
+}
+
+// Standalone board
+function EditProfileScreen() {
   const t = useTk();
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -167,3 +166,5 @@ export function EditProfileScreen() {
     </div>
   );
 }
+
+Object.assign(window, { EditProfileBody, EditProfileSheet, EditProfileScreen, EditHeader });

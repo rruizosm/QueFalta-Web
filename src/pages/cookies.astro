@@ -1,0 +1,177 @@
+---
+import Layout from '../layouts/Layout.astro';
+// TODO antes de publicar: revisar con el resto de textos legales. La fecha debe
+// coincidir con el lanzamiento real de la analítica.
+const updated = '19 de junio de 2026';
+---
+
+<Layout
+  title="Política de cookies — QuéFalta"
+  description="Qué cookies usa quefalta.es, para qué y cómo gestionarlas."
+>
+  <article class="legal container">
+    <h1>Política de cookies</h1>
+    <p class="updated">Última actualización: {updated}</p>
+
+    <p>
+      Esta política explica qué cookies y tecnologías similares utiliza el sitio
+      web quefalta.es, con qué finalidad y cómo puedes gestionarlas, conforme al
+      artículo 22.2 de la Ley 34/2002 (LSSI), el Reglamento (UE) 2016/679 (RGPD)
+      y la Guía sobre el uso de las cookies de la Agencia Española de Protección
+      de Datos (AEPD).
+    </p>
+
+    <h2>1. Qué es una cookie</h2>
+    <p>
+      Una cookie es un pequeño archivo de texto que un sitio web guarda en tu
+      navegador para recordar información entre páginas o entre visitas. Algunas
+      son imprescindibles para que la web funcione y otras nos ayudan a entender
+      cómo se usa.
+    </p>
+
+    <h2>2. Cookies que utilizamos</h2>
+
+    <h3>Cookies técnicas (necesarias)</h3>
+    <p>
+      Son imprescindibles y no requieren tu consentimiento. Sin ellas la web no
+      puede funcionar correctamente.
+    </p>
+    <table class="cookie-table">
+      <thead>
+        <tr><th>Cookie</th><th>Finalidad</th><th>Duración</th><th>Titular</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>qf_consent</code></td>
+          <td>Recuerda si has aceptado o rechazado las cookies de análisis, para no volver a preguntártelo.</td>
+          <td>180 días</td>
+          <td>Propia</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Cookies de análisis (requieren consentimiento)</h3>
+    <p>
+      Solo se instalan <strong>si pulsas «Aceptar»</strong> en el aviso de
+      cookies. Usamos Google Analytics 4 para conocer de forma agregada cómo se
+      usa la web (páginas más visitadas, dispositivos, etc.) y mejorarla. Mientras
+      no las aceptes, no se cargan ni envían datos a Google.
+    </p>
+    <table class="cookie-table">
+      <thead>
+        <tr><th>Cookie</th><th>Finalidad</th><th>Duración</th><th>Titular</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>_ga</code></td>
+          <td>Distingue a los visitantes (Google Analytics).</td>
+          <td>2 años</td>
+          <td>Google (tercero)</td>
+        </tr>
+        <tr>
+          <td><code>_ga_*</code></td>
+          <td>Mantiene el estado de la sesión (Google Analytics 4).</td>
+          <td>2 años</td>
+          <td>Google (tercero)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Google actúa como encargado del tratamiento y puede transferir datos fuera
+      del Espacio Económico Europeo, con las garantías previstas en su política.
+      Más información en
+      <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">la política de privacidad de Google</a>
+      y en
+      <a href="https://business.safety.google/adscookies/" target="_blank" rel="noopener">cómo usa Google las cookies</a>.
+    </p>
+
+    <h2>3. Base legal</h2>
+    <p>
+      Las cookies técnicas se amparan en nuestro interés legítimo en prestar el
+      servicio que solicitas. Las cookies de análisis se basan únicamente en
+      <strong>tu consentimiento</strong> (art. 6.1.a RGPD), que es libre y que
+      puedes retirar en cualquier momento sin que ello afecte al uso de la web.
+    </p>
+
+    <h2>4. Cómo gestionar o retirar tu consentimiento</h2>
+    <p>
+      Puedes cambiar tu elección cuando quieras desde aquí:
+    </p>
+    <p>
+      <button type="button" id="qf-cookie-settings" class="cookie-config-btn">
+        Configurar cookies
+      </button>
+    </p>
+    <p>
+      También puedes bloquear o eliminar las cookies desde la configuración de tu
+      navegador. Consulta cómo hacerlo en
+      <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener">Chrome</a>,
+      <a href="https://support.mozilla.org/es/kb/Borrar%20cookies" target="_blank" rel="noopener">Firefox</a>,
+      <a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener">Safari</a>
+      o
+      <a href="https://support.microsoft.com/es-es/microsoft-edge/eliminar-las-cookies-en-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener">Edge</a>.
+      Ten en cuenta que si bloqueas todas las cookies algunas funciones podrían
+      no comportarse correctamente.
+    </p>
+
+    <h2>5. Más información</h2>
+    <p>
+      El tratamiento de los datos personales que podamos obtener a través de
+      estas cookies se describe en nuestra
+      <a href="/privacidad">política de privacidad</a>. Si tienes dudas, escríbenos
+      a <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a>.
+    </p>
+
+    <h2>6. Cambios en esta política</h2>
+    <p>
+      Podemos actualizar esta política si cambian las cookies que usamos. La fecha
+      de la última actualización aparece al inicio de la página.
+    </p>
+  </article>
+
+  <script>
+    // Reabre el banner de cookies desde el botón "Configurar cookies".
+    document.getElementById('qf-cookie-settings')?.addEventListener('click', () => {
+      if (typeof window.qfShowCookieBanner === 'function') window.qfShowCookieBanner();
+    });
+  </script>
+
+  <style>
+    .legal { max-width: 720px; padding-top: 48px; }
+    .legal h1 { font-size: clamp(30px, 5vw, 42px); letter-spacing: -1px; }
+    .updated { color: var(--ink-soft); font-size: 13px; margin: 8px 0 28px; }
+    .legal h2 { font-size: 20px; margin: 32px 0 10px; letter-spacing: -0.4px; }
+    .legal h3 { font-size: 16px; margin: 22px 0 8px; }
+    .legal p { color: var(--ink); margin-bottom: 12px; }
+    .legal a { color: var(--accent); }
+
+    .cookie-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 4px 0 16px;
+      font-size: 13.5px;
+    }
+    .cookie-table th,
+    .cookie-table td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .cookie-table th { background: var(--paper-2); font-weight: 600; }
+    .cookie-table code { font-size: 12.5px; }
+
+    .cookie-config-btn {
+      font: inherit;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--white);
+      background: var(--ink);
+      border: none;
+      border-radius: 11px;
+      padding: 10px 18px;
+      cursor: pointer;
+    }
+    .cookie-config-btn:hover { background: var(--accent); }
+  </style>
+</Layout>

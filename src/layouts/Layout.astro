@@ -1,4 +1,7 @@
 ---
+import CookieConsent from '../components/CookieConsent.astro';
+import SiteNav from '../components/SiteNav.astro';
+
 interface Props {
   title?: string;
   description?: string;
@@ -9,7 +12,7 @@ interface Props {
 }
 const {
   title = 'QuéFalta — La compra compartida, sin líos',
-  description = 'Organiza la compra en grupo: lista compartida en tiempo real, carrito por grupos y catálogo de Mercadona. ¿Qué falta?',
+  description = 'Organiza la compra en grupo: lista compartida en tiempo real, carrito por grupos y catálogo de seis supermercados. ¿Qué falta?',
   bare = false,
   image = '/og.png',
 } = Astro.props;
@@ -31,27 +34,19 @@ const ogImage = new URL(image, Astro.site).href;
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="theme-color" content="#fbf6ee" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500;1,6..72,600&family=Mulish:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <title>{title}</title>
   </head>
   <body>
-    {!bare && (
-      <header class="site-header">
-        <a class="brand" href="/">
-          <span class="brand-mark">QF</span>
-          <span class="brand-name">QuéFalta</span>
-        </a>
-        <a class="header-cta" href="/#descargar">Descargar</a>
-      </header>
-    )}
+    {!bare && <SiteNav />}
 
     <main>
       <slot />
@@ -60,32 +55,37 @@ const ogImage = new URL(image, Astro.site).href;
     {!bare && (
       <footer class="site-footer">
         <div class="footer-brand">
-          <span class="brand-mark small">QF</span>
+          <img src="/quefalta-logo-blue.png" alt="" class="footer-logo" width="24" height="24" />
           <span>QuéFalta</span>
         </div>
         <nav class="footer-links">
+          <a href="/novedades">Novedades</a>
+          <a href="/apoyar">Apoyar</a>
           <a href="/condiciones">Condiciones</a>
           <a href="/privacidad">Privacidad</a>
-          <a href="mailto:hola@quefalta.es">Contacto</a>
+          <a href="/cookies">Cookies</a>
+          <a href="mailto:contacto@quefalta.es">Contacto</a>
         </nav>
         <p class="footer-copy">© {new Date().getFullYear()} QuéFalta · Hecho en España</p>
       </footer>
     )}
 
+    <CookieConsent />
+
     <style is:global>
       :root {
-        --accent: #df4b2e;
-        --accent-light: rgba(223, 75, 46, 0.12);
-        --accent-soft: #fbe7df;
-        --ink: #2b2521;
-        --ink-soft: #8a7f73;
-        --ink-faint: #c2b8a9;
-        --paper: #fbf6ee;
-        --paper-2: #f6efe3;
+        --accent: #2f6cb5;
+        --accent-light: rgba(47, 108, 181, 0.10);
+        --accent-soft: #e9f1fa;
+        --ink: #111114;
+        --ink-soft: #5d5d66;
+        --ink-faint: #9a9aa3;
+        --paper: #ffffff;
+        --paper-2: #f5f5f7;
         --surface: #ffffff;
         --white: #ffffff;
-        --border: #ece2d3;
-        --ok: #3f8f4f;
+        --border: #e7e7ec;
+        --ok: #2faa4f;
         --geo: 'Space Grotesk', system-ui, sans-serif;
         --serif: 'Newsreader', Georgia, serif;
       }
@@ -95,11 +95,12 @@ const ogImage = new URL(image, Astro.site).href;
       html { scroll-behavior: smooth; }
 
       body {
-        font-family: 'Space Grotesk', system-ui, sans-serif;
+        font-family: var(--geo);
         background: var(--paper);
         color: var(--ink);
         line-height: 1.5;
         -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
       }
 
       a { color: inherit; text-decoration: none; }
@@ -152,6 +153,7 @@ const ogImage = new URL(image, Astro.site).href;
         font-size: 14px;
       }
       .footer-brand { display: flex; align-items: center; gap: 9px; color: var(--ink); font-weight: 600; }
+      .footer-logo { width: 24px; height: 24px; object-fit: contain; display: block; }
       .footer-links { display: flex; gap: 18px; }
       .footer-links a:hover { color: var(--accent); }
       .footer-copy { font-size: 12.5px; }

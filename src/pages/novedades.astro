@@ -1,0 +1,164 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Novedades de QuéFalta, en orden de publicación: la más antigua arriba y la
+// más reciente al final. Para añadir una actualización, suma un objeto al
+// FINAL de la lista. `tag` es opcional (Nuevo / Mejora / Corrección).
+const UPDATES = [
+  {
+    date: '2026-04-30', version: 'v1.0', tag: 'Nuevo',
+    title: 'QuéFalta llega a la App Store',
+    desc: 'Primera versión pública: listas compartidas en tiempo real, catálogo real de seis supermercados y grupos ilimitados.',
+  },
+  {
+    date: '2026-05-15', version: 'v1.1', tag: 'Mejora',
+    title: 'Buscador instantáneo',
+    desc: 'El catálogo filtra mientras escribes y prioriza los productos que más añade tu grupo.',
+  },
+  {
+    date: '2026-06-20', version: 'v1.2', tag: 'Nuevo',
+    title: 'Notificaciones por grupo',
+    desc: 'Ahora puedes ajustar qué avisos recibes en cada grupo por separado: añadidos, productos recogidos o solo lo importante.',
+  },
+  {
+    date: '2026-06-23', version: 'v1.3', tag: 'Nuevo',
+    title: 'Inicio de sesión con Apple',
+    desc: 'Ahora puedes crear tu cuenta y entrar también con tu ID de Apple, además de con Google.',
+  },
+];
+
+// Fecha legible en español (ej. "20 jun 2026") a partir de un ISO YYYY-MM-DD.
+const fmt = (iso) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('es-ES', {
+    day: 'numeric', month: 'short', year: 'numeric',
+  });
+};
+---
+
+<Layout
+  title="Novedades — QuéFalta"
+  description="Todas las actualizaciones de QuéFalta, paso a paso: nuevas funciones, mejoras y correcciones de cada versión."
+>
+  <section class="news container">
+    <header class="news-head">
+      <span class="news-eyebrow">Novedades</span>
+      <h1 class="news-title">El recorrido de QuéFalta</h1>
+      <p class="news-lead">
+        Todo lo que hemos ido añadiendo a la app, de los inicios a lo más
+        reciente. Seguimos mejorando.
+      </p>
+    </header>
+
+    <ol class="timeline">
+      {UPDATES.map((u) => (
+        <li class="tl-item">
+          <span class="tl-node" aria-hidden="true"></span>
+          <div class="tl-card">
+            <div class="tl-meta">
+              <time class="tl-date" datetime={u.date}>{fmt(u.date)}</time>
+              {u.version && <span class="tl-version">{u.version}</span>}
+              {u.tag && <span class={`tl-tag tl-tag--${u.tag.toLowerCase()}`}>{u.tag}</span>}
+            </div>
+            <h2 class="tl-card-title">{u.title}</h2>
+            <p class="tl-desc">{u.desc}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <style>
+  .news { max-width: 880px; padding-top: 48px; }
+
+  .news-head { text-align: center; max-width: 640px; margin: 0 auto; }
+  .news-eyebrow {
+    display: inline-block; font-size: 12.5px; font-weight: 700;
+    letter-spacing: 0.02em; color: var(--accent);
+  }
+  .news-title {
+    font-family: var(--geo); font-weight: 800; letter-spacing: -0.035em;
+    line-height: 1.04; font-size: clamp(30px, 5vw, 48px);
+    margin-top: 12px; color: var(--ink);
+  }
+  .news-lead {
+    color: var(--ink-soft); font-size: clamp(16px, 1.6vw, 18px);
+    line-height: 1.55; margin: 16px auto 0; max-width: 560px;
+  }
+
+  /* ── Timeline vertical ─────────────────────────────────────── */
+  .timeline { list-style: none; margin: 60px auto 0; padding: 0; position: relative; }
+  /* Línea vertical central que simboliza el tiempo. */
+  .timeline::before {
+    content: ''; position: absolute; top: 6px; bottom: 6px; left: 50%;
+    width: 2px; transform: translateX(-50%); background: var(--border);
+  }
+
+  .tl-item {
+    position: relative; width: 50%; box-sizing: border-box;
+    padding: 0 44px; margin-bottom: 40px;
+  }
+  .tl-item:last-child { margin-bottom: 0; }
+  /* Impares a la izquierda, pares a la derecha. */
+  .tl-item:nth-child(odd)  { left: 0;  text-align: right; }
+  .tl-item:nth-child(even) { left: 50%; text-align: left; }
+
+  /* Nodo sobre la línea central. */
+  .tl-node {
+    position: absolute; top: 26px; width: 15px; height: 15px;
+    border-radius: 50%; background: var(--accent);
+    border: 3px solid var(--paper); box-shadow: 0 0 0 4px var(--accent-soft);
+    z-index: 1;
+  }
+  .tl-item:nth-child(odd)  .tl-node { right: -7.5px; }
+  .tl-item:nth-child(even) .tl-node { left: -7.5px; }
+
+  .tl-card {
+    display: inline-block; text-align: left;
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 20px; padding: 22px 24px;
+    box-shadow: 0 1px 2px rgba(17, 17, 20, 0.04), 0 4px 16px rgba(17, 17, 20, 0.05);
+    transition: transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1),
+                box-shadow 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .tl-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(17, 17, 20, 0.08), 0 2px 8px rgba(17, 17, 20, 0.04);
+  }
+
+  .tl-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+  .tl-date { font-size: 13px; font-weight: 600; color: var(--ink-faint); }
+  .tl-version {
+    font-family: var(--geo); font-weight: 800; font-size: 12px; letter-spacing: -0.01em;
+    color: var(--ink-soft); background: var(--paper-2); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 980px;
+  }
+  .tl-tag {
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.01em;
+    padding: 2px 9px; border-radius: 980px;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .tl-tag--mejora { background: rgba(63, 160, 120, 0.14); color: #2f8f68; }
+  .tl-tag--corrección { background: rgba(120, 120, 130, 0.14); color: var(--ink-soft); }
+
+  .tl-card-title {
+    font-family: var(--geo); font-weight: 700; font-size: 19px;
+    letter-spacing: -0.02em; margin-top: 14px; color: var(--ink);
+  }
+  .tl-desc { color: var(--ink-soft); font-size: 15px; line-height: 1.55; margin-top: 9px; }
+
+  /* ── Móvil: una columna con la línea a la izquierda ────────── */
+  @media (max-width: 720px) {
+    .timeline::before { left: 8px; }
+    .tl-item,
+    .tl-item:nth-child(odd),
+    .tl-item:nth-child(even) {
+      width: 100%; left: 0; text-align: left;
+      padding: 0 0 0 40px;
+    }
+    .tl-item:nth-child(odd) .tl-node,
+    .tl-item:nth-child(even) .tl-node { left: 1px; right: auto; }
+    .tl-card { display: block; }
+  }
+  </style>
+</Layout>

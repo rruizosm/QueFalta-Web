@@ -1,0 +1,174 @@
+---
+// Banner de consentimiento de cookies (modelo de BLOQUEO PREVIO):
+// Google Analytics NO se carga hasta que el usuario pulsa "Aceptar".
+//
+// 👉 ÚNICO sitio que hay que cambiar: pega aquí tu ID de medición GA4
+//    (lo creas en analytics.google.com → Administrar → Flujos de datos).
+//    Mientras siga el placeholder "G-XXXXXXX", GA no se carga aunque se acepte.
+const GA_ID = 'G-GE1347XYRH';
+---
+
+<div
+  id="qf-cookie-banner"
+  class="qf-cookie-banner"
+  role="dialog"
+  aria-live="polite"
+  aria-label="Aviso de cookies"
+  hidden
+>
+  <div class="qf-cookie-inner">
+    <p class="qf-cookie-text">
+      Usamos cookies propias de <strong>análisis</strong> (Google Analytics) para
+      entender cómo se usa la web y mejorarla. Las cookies técnicas necesarias
+      están siempre activas. Puedes aceptarlas, rechazarlas o leer más en la
+      <a href="/cookies">política de cookies</a>.
+    </p>
+    <div class="qf-cookie-actions">
+      <button type="button" id="qf-cookie-reject" class="qf-cookie-btn qf-cookie-ghost">
+        Rechazar
+      </button>
+      <button type="button" id="qf-cookie-accept" class="qf-cookie-btn qf-cookie-solid">
+        Aceptar
+      </button>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ GA_ID }}>
+  (function () {
+    var COOKIE = 'qf_consent';
+    var MAX_AGE = 60 * 60 * 24 * 180; // 180 días: pasado ese tiempo se vuelve a preguntar
+
+    function readConsent() {
+      var m = document.cookie.match(/(?:^|;\s*)qf_consent=(granted|denied)/);
+      return m ? m[1] : null;
+    }
+
+    function writeConsent(value) {
+      var secure = location.protocol === 'https:' ? '; Secure' : '';
+      document.cookie =
+        COOKIE + '=' + value + '; Max-Age=' + MAX_AGE + '; Path=/; SameSite=Lax' + secure;
+    }
+
+    // Borra las cookies de GA si el usuario revoca un consentimiento anterior.
+    function deleteGaCookies() {
+      var host = location.hostname;
+      document.cookie.split(';').forEach(function (c) {
+        var name = c.split('=')[0].trim();
+        if (name === '_ga' || name.indexOf('_ga_') === 0) {
+          var tail = '=; Max-Age=0; Path=/';
+          document.cookie = name + tail;
+          document.cookie = name + tail + '; Domain=' + host;
+          document.cookie = name + tail + '; Domain=.' + host;
+        }
+      });
+    }
+
+    var gaLoaded = false;
+    function loadGA() {
+      // No cargar con el placeholder ni dos veces.
+      if (gaLoaded || !GA_ID || GA_ID.indexOf('G-XXX') === 0) return;
+      gaLoaded = true;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', GA_ID);
+    }
+
+    var banner = document.getElementById('qf-cookie-banner');
+    function show() { banner.hidden = false; }
+    function hide() { banner.hidden = true; }
+
+    document.getElementById('qf-cookie-accept').addEventListener('click', function () {
+      writeConsent('granted');
+      hide();
+      loadGA();
+    });
+    document.getElementById('qf-cookie-reject').addEventListener('click', function () {
+      writeConsent('denied');
+      deleteGaCookies();
+      hide();
+    });
+
+    // Permite reabrir el banner desde "Configurar cookies" (footer / página /cookies).
+    window.qfShowCookieBanner = show;
+
+    var consent = readConsent();
+    if (consent === 'granted') loadGA();
+    else if (consent !== 'denied') show();
+  })();
+</script>
+
+<style>
+  .qf-cookie-banner {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 1000;
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+  }
+  .qf-cookie-banner[hidden] { display: none; }
+
+  .qf-cookie-inner {
+    width: 100%;
+    max-width: 760px;
+    background: var(--paper, #fff);
+    border: 1px solid var(--border, #e7e7ec);
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(17, 17, 20, 0.16);
+    padding: 18px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 20px;
+  }
+
+  .qf-cookie-text {
+    flex: 1 1 300px;
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink-soft, #5d5d66);
+  }
+  .qf-cookie-text strong { color: var(--ink, #111114); }
+  .qf-cookie-text a { color: var(--accent, #2f6cb5); text-decoration: underline; }
+
+  .qf-cookie-actions {
+    display: flex;
+    gap: 10px;
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+
+  .qf-cookie-btn {
+    font: inherit;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 18px;
+    border-radius: 11px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .qf-cookie-ghost {
+    background: transparent;
+    color: var(--ink, #111114);
+    border-color: var(--border, #e7e7ec);
+  }
+  .qf-cookie-ghost:hover { background: var(--paper-2, #f5f5f7); }
+  .qf-cookie-solid {
+    background: var(--ink, #111114);
+    color: var(--white, #fff);
+  }
+  .qf-cookie-solid:hover { background: var(--accent, #2f6cb5); }
+
+  @media (max-width: 520px) {
+    .qf-cookie-actions { width: 100%; }
+    .qf-cookie-btn { flex: 1; }
+  }
+</style>
