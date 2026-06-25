@@ -51,12 +51,14 @@ const ROWS = [
   },
   {
     eyebrow: 'Tu lista', tab: 'list', Screen: ListScreen,
+    img: '/mock/cesta.PNG', alt: 'Lista de la compra del grupo con artículos por recoger y en la cesta en QuéFalta',
     title: 'Marca lo que ya tienes',
     desc: 'La lista separa lo que falta por coger de lo que ya está en la cesta, con el total estimado siempre actualizado.',
     bullets: ['«Por recoger» frente a «en la cesta»', 'Total estimado en vivo', 'Ordenada por las zonas del súper'],
   },
   {
     eyebrow: 'Grupos', tab: 'groups', Screen: GroupsScreen,
+    img: '/mock/groups.PNG', alt: 'Tus grupos de compra con el carrito activo en QuéFalta',
     title: 'Una lista, todo tu grupo',
     desc: 'Crea grupos para casa, una fiesta o la oficina y decide qué carrito está activo en cada momento.',
     bullets: ['Listas compartidas con todo el grupo', 'Miembros con su avatar y su rol', 'Cambia de carrito al instante'],
@@ -257,7 +259,7 @@ function RealtimeBand() {
           </div>
         </Reveal>
         <Reveal className="qf-band-media" delay={100}>
-          <div className="qf-stage"><PhoneRender f={{ Screen: GroupDetailScreen, noNav: true }} /></div>
+          <div className="qf-stage"><PhoneRender f={{ Screen: GroupDetailScreen, noNav: true, img: '/mock/groups_2.PNG', alt: 'Detalle de un grupo con la cesta compartida y los miembros en QuéFalta' }} /></div>
         </Reveal>
       </div>
     </section>
