@@ -12,7 +12,12 @@
 // Objetivo de financiación del año (coste aproximado de servidores).
 export const GOAL = 240;
 
-// Gastos reales, lo más reciente arriba. Empieza vacío: rellena con tus gastos.
+// Gastos reales, lo más reciente arriba. Para añadir uno nuevo, copia una línea.
 export const GASTOS = [
-  // { fecha: '2026-06-18', concepto: 'Servidor y base de datos · junio', importe: 20 },
+  { fecha: '2026-06-21', concepto: 'Base de datos · Supabase', importe: 22.56 },
+  { fecha: '2026-06-21', concepto: 'Expo Go Pro', importe: 17.22 },
+  { fecha: '2026-06-21', concepto: 'Correo corporativo', importe: 8.57 },
+  { fecha: '2026-06-11', concepto: 'Alta en Google Play', importe: 21.69 },
+  { fecha: '2026-06-05', concepto: 'Cuenta de desarrollador de Apple (App Store)', importe: 99 },
+  { fecha: '2026-06-05', concepto: 'Dominio quefalta.es', importe: 8.46 },
 ];

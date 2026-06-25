@@ -48,9 +48,14 @@ const DESTINOS = [
   { icon: 'shield', title: 'Mantenimiento', desc: 'Arreglar errores y cuidar tu privacidad a largo plazo.' },
 ];
 
-// Euros sin decimales (los importes de ejemplo son redondos).
+// Euros sin decimales, para las cantidades sugeridas (3/5/10 €, redondas).
 const eur = (n) => new Intl.NumberFormat('es-ES', {
   style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0,
+}).format(n);
+
+// Euros con 2 decimales, para las cifras contables de la transparencia.
+const eurc = (n) => new Intl.NumberFormat('es-ES', {
+  style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2,
 }).format(n);
 
 const fmtFecha = (iso) => {
@@ -142,23 +147,23 @@ const ICONS = {
 
       <div class="sup-stats">
         <div class="sup-stat">
-          <div class="sup-stat-k">{eur(recaudado)}</div>
+          <div class="sup-stat-k">{eurc(recaudado)}</div>
           <div class="sup-stat-l">Recaudado</div>
         </div>
         <div class="sup-stat">
-          <div class="sup-stat-k">{eur(invertido)}</div>
+          <div class="sup-stat-k">{eurc(invertido)}</div>
           <div class="sup-stat-l">Invertido en mejoras</div>
         </div>
         <div class="sup-stat">
-          <div class="sup-stat-k">{eur(saldo)}</div>
-          <div class="sup-stat-l">Saldo por invertir</div>
+          <div class="sup-stat-k">{eurc(saldo)}</div>
+          <div class="sup-stat-l">Balance</div>
         </div>
       </div>
 
       <div class="sup-goal">
         <div class="sup-goal-top">
           <span>Objetivo {new Date().getFullYear()}: cubrir los servidores</span>
-          <span class="sup-goal-num">{eur(recaudado)} / {eur(GOAL)}</span>
+          <span class="sup-goal-num">{eurc(recaudado)} / {eurc(GOAL)}</span>
         </div>
         <div class="sup-bar" role="progressbar" aria-valuenow={recaudado} aria-valuemin="0" aria-valuemax={GOAL} aria-label="Progreso del objetivo de financiación">
           <span class="sup-bar-fill" style={`width:${pct}%`}></span>
@@ -176,7 +181,7 @@ const ICONS = {
                 <span class="sup-mov-concept">{m.concepto}</span>
                 <time class="sup-mov-date" datetime={m.fecha}>{fmtFecha(m.fecha)}</time>
               </div>
-              <span class="sup-mov-amount">{m.tipo === 'ingreso' ? '+' : '−'}{eur(m.importe)}</span>
+              <span class="sup-mov-amount">{m.tipo === 'ingreso' ? '+' : '−'}{eurc(m.importe)}</span>
             </li>
           ))}
         </ul>
