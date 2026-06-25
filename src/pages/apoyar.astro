@@ -22,20 +22,21 @@ const AMOUNTS = [
 ];
 
 // ── Transparencia ──────────────────────────────────────────────
-// Objetivo de financiación del año (p. ej. coste anual de servidores).
-const GOAL = 240;
+// Cifras reales: las APORTACIONES se leen de Stripe en tiempo de build; los
+// GASTOS y el OBJETIVO se mantienen a mano en src/data/finanzas.js.
+import { GOAL, GASTOS } from '../data/finanzas.js';
+import { getAportaciones } from '../lib/aportaciones.js';
 
-// Libro de movimientos, lo más reciente arriba. `tipo`: 'ingreso' (aportación
-// de la comunidad) o 'inversion' (gasto destinado a mejorar la app). Datos de
-// ejemplo: sustituir por los reales y actualizar cada mes.
-const MOVIMIENTOS = [
-  { fecha: '2026-06-18', tipo: 'inversion', concepto: 'Servidor y base de datos · junio', importe: 20 },
-  { fecha: '2026-06-10', tipo: 'ingreso', concepto: 'Aportaciones de la comunidad', importe: 48 },
-  { fecha: '2026-05-12', tipo: 'ingreso', concepto: 'Aportaciones de la comunidad', importe: 35 },
-];
+const aportaciones = await getAportaciones();
 
-const recaudado = MOVIMIENTOS.filter((m) => m.tipo === 'ingreso').reduce((s, m) => s + m.importe, 0);
-const invertido = MOVIMIENTOS.filter((m) => m.tipo === 'inversion').reduce((s, m) => s + m.importe, 0);
+// Libro de movimientos: ingresos (Stripe, agregados por mes) + gastos (data),
+// unidos y ordenados con lo más reciente arriba.
+const inversiones = GASTOS.map((g) => ({ ...g, tipo: 'inversion' }));
+const MOVIMIENTOS = [...aportaciones.porMes, ...inversiones]
+  .sort((a, b) => b.fecha.localeCompare(a.fecha));
+
+const recaudado = aportaciones.total;
+const invertido = GASTOS.reduce((s, g) => s + g.importe, 0);
 const saldo = recaudado - invertido;
 const pct = GOAL > 0 ? Math.min(100, Math.round((recaudado / GOAL) * 100)) : 0;
 
@@ -164,21 +165,25 @@ const ICONS = {
         </div>
       </div>
 
-      <ul class="sup-ledger">
-        {MOVIMIENTOS.map((m) => (
-          <li class={`sup-mov sup-mov--${m.tipo}`}>
-            <span class="sup-mov-ic" aria-hidden="true">
-              {m.tipo === 'ingreso' ? '↑' : '↓'}
-            </span>
-            <div class="sup-mov-main">
-              <span class="sup-mov-concept">{m.concepto}</span>
-              <time class="sup-mov-date" datetime={m.fecha}>{fmtFecha(m.fecha)}</time>
-            </div>
-            <span class="sup-mov-amount">{m.tipo === 'ingreso' ? '+' : '−'}{eur(m.importe)}</span>
-          </li>
-        ))}
-      </ul>
-      <p class="sup-transp-note">Cifras actualizadas periódicamente. ¿Dudas sobre las cuentas? Escríbenos a <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a>.</p>
+      {MOVIMIENTOS.length > 0 ? (
+        <ul class="sup-ledger">
+          {MOVIMIENTOS.map((m) => (
+            <li class={`sup-mov sup-mov--${m.tipo}`}>
+              <span class="sup-mov-ic" aria-hidden="true">
+                {m.tipo === 'ingreso' ? '↑' : '↓'}
+              </span>
+              <div class="sup-mov-main">
+                <span class="sup-mov-concept">{m.concepto}</span>
+                <time class="sup-mov-date" datetime={m.fecha}>{fmtFecha(m.fecha)}</time>
+              </div>
+              <span class="sup-mov-amount">{m.tipo === 'ingreso' ? '+' : '−'}{eur(m.importe)}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="sup-ledger-empty">Aún no hay movimientos. En cuanto lleguen las primeras aportaciones, aparecerán aquí.</p>
+      )}
+      <p class="sup-transp-note">Las aportaciones se leen directamente de Stripe y se actualizan en cada publicación de la web. ¿Dudas sobre las cuentas? Escríbenos a <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a>.</p>
     </section>
 
     <!-- En qué se invierte -->
@@ -329,6 +334,11 @@ const ICONS = {
     .sup-mov-amount { font-family: var(--geo); font-weight: 700; font-size: 15px; letter-spacing: -0.01em; white-space: nowrap; }
     .sup-mov--ingreso .sup-mov-amount { color: #2f8f68; }
     .sup-mov--inversion .sup-mov-amount { color: var(--ink-soft); }
+    .sup-ledger-empty {
+      margin-top: 30px; padding: 28px 24px; text-align: center;
+      border: 1px dashed var(--border); border-radius: 18px;
+      color: var(--ink-soft); font-size: 14.5px; line-height: 1.5; background: var(--white);
+    }
     .sup-transp-note { font-size: 13px; color: var(--ink-faint); text-align: center; margin-top: 18px; }
     .sup-transp-note a { color: var(--accent); }
 
