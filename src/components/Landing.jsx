@@ -6,7 +6,7 @@
 import React from 'react';
 const { useState, useEffect, useRef } = React;
 
-import { PHONE_THEME, ThemeCtx, Icon } from '../phone/theme.jsx';
+import { PHONE_THEME, ThemeCtx, Icon, hexA } from '../phone/theme.jsx';
 import { Phone } from '../phone/frame.jsx';
 import { HomeScreen } from '../phone/screens/Home.jsx';
 import { CatalogScreen } from '../phone/screens/Catalog.jsx';
@@ -26,11 +26,11 @@ const STEPS = [
   },
   {
     n: '2', title: 'Añadid lo que falta',
-    desc: 'Cada uno suma productos del catálogo real del súper. La lista es de todos y se actualiza al momento.',
+    desc: 'Cada uno suma productos del catálogo de su supermercado favorito. La lista es de todos y se actualiza al momento.',
   },
   {
     n: '3', title: 'Comprad sin líos',
-    desc: 'Marcad lo que va cayendo en la cesta. Todos veis qué falta y qué ya está, en tiempo real.',
+    desc: 'Marcad lo que vais incluyendo en el carrito. Todos veis qué falta, en tiempo real.',
   },
 ];
 
@@ -40,7 +40,7 @@ const ROWS = [
     img: '/mock/catalog.png', alt: 'Catálogo de productos de Mercadona en QuéFalta',
     title: 'Un catálogo de verdad, no una hoja en blanco',
     desc: 'Olvídate de escribir la lista a mano. Busca entre miles de productos reales de tu supermercado y añádelos con un toque.',
-    bullets: ['6 supermercados dentro de la app', 'Buscador instantáneo mientras escribes', 'Categorías claras y ordenadas'],
+    bullets: ['6 supermercados dentro de la app', 'Busca entre miles de productos por supermercado', 'Categorías claras y ordenadas'],
   },
   {
     eyebrow: 'Productos', tab: 'catalog', Screen: ProductsScreen,
@@ -54,7 +54,7 @@ const ROWS = [
     img: '/mock/cesta.PNG', alt: 'Lista de la compra del grupo con artículos por recoger y en la cesta en QuéFalta',
     title: 'Marca lo que ya tienes',
     desc: 'La lista separa lo que falta por coger de lo que ya está en la cesta, con el total estimado siempre actualizado.',
-    bullets: ['«Por recoger» frente a «en la cesta»', 'Total estimado en vivo', 'Ordenada por las zonas del súper'],
+    bullets: ['«Por recoger» frente a «En cesta»', 'Total estimado en vivo', 'Ordenada por las categorias del supermercado para no perder tiempo'],
   },
   {
     eyebrow: 'Grupos', tab: 'groups', Screen: GroupsScreen,
@@ -80,6 +80,23 @@ const EXTRAS = [
   { icon: 'at', title: 'Tu @usuario', desc: 'Elige tu @, tu foto y deja que tus amigos te encuentren para sumar a sus grupos.' },
   { icon: 'bell', title: 'Notificaciones', desc: 'Entérate de lo que pasa en tus grupos, con los avisos ajustados a tu gusto.' },
 ];
+
+// Avisos de ejemplo para la sección «Notificaciones».
+const NOTIFS = [
+  { icon: 'cart', tint: '#2f6cb5', title: 'Marta ha añadido Leche entera a la cesta', time: 'ahora' },
+  { icon: 'users', tint: '#3fa078', title: 'Te han añadido al grupo «Piso Centro»', time: '2 min' },
+  { icon: 'userPlus', tint: '#7c5cd6', title: 'Carlos te ha enviado una solicitud de amistad', time: '5 min' },
+];
+
+// Amigos de ejemplo para la sección «Amigos».
+const FRIENDS = [
+  { initials: 'MG', color: '#df4b2e', name: 'Marta García', user: '@marta' },
+  { initials: 'CL', color: '#3fa078', name: 'Carlos López', user: '@carlos' },
+  { initials: 'AV', color: '#7c5cd6', name: 'Ana Vidal', user: '@anav' },
+];
+
+// Colores de acento disponibles en «Preferencias».
+const PREF_COLORS = ['#2f6cb5', '#3fa078', '#7c5cd6', '#df4b2e', '#e0608f', '#1f9bb3', '#e6a23c'];
 
 // ── Hooks ──────────────────────────────────────────────────────
 function useReveal() {
@@ -171,7 +188,6 @@ function Hero() {
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
           </a>
         </div>
-        <p className="qf-hero-meta">Gratis · iOS 16+ · Hecho en España</p>
       </Reveal>
       <Reveal className="qf-hero-stage" delay={140}>
         <div className="qf-hero-phone"><PhoneRender f={{ tab: 'home', Screen: HomeScreen, img: '/mock/home.png', alt: 'Pantalla de inicio de QuéFalta con el carrito activo y los grupos', eager: true }} /></div>
@@ -239,6 +255,184 @@ function Features() {
         </section>
       ))}
     </div>
+  );
+}
+
+// ── Ilustraciones de las secciones extra ───────────────────────
+function NotifVisual() {
+  return (
+    <div className="qf-notif-stack" aria-hidden="true">
+      {NOTIFS.map((n) => (
+        <div key={n.title} className="qf-notif">
+          <span className="qf-notif-ic" style={{ background: hexA(n.tint, 0.12) }}>
+            <Icon name={n.icon} size={18} color={n.tint} />
+          </span>
+          <span className="qf-notif-txt">{n.title}</span>
+          <span className="qf-notif-time">{n.time}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function FriendsVisual() {
+  return (
+    <div className="qf-friends-card" aria-hidden="true">
+      <div className="qf-friends-head">
+        <span className="qf-friends-title">Compartir «Casa»</span>
+        <span className="qf-friends-badge"><Icon name="share" size={14} color="var(--accent)" /></span>
+      </div>
+      <div className="qf-friends-search">
+        <Icon name="at" size={15} color="var(--ink-faint)" />
+        <span>Busca por @usuario…</span>
+      </div>
+      {FRIENDS.map((fr) => (
+        <div key={fr.user} className="qf-friend">
+          <span className="qf-friend-av" style={{ background: fr.color }}>{fr.initials}</span>
+          <span className="qf-friend-meta">
+            <span className="qf-friend-name">{fr.name}</span>
+            <span className="qf-friend-user">{fr.user}</span>
+          </span>
+          <span className="qf-friend-add"><Icon name="plus" size={15} color="#fff" stroke={2.4} /></span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SunIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+    </svg>
+  );
+}
+
+// Aplica el color de acento a toda la web (vars en <html>).
+function applyAccent(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const rgb = `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
+  const el = document.documentElement;
+  el.style.setProperty('--accent', hex);
+  el.style.setProperty('--accent-soft', `rgba(${rgb},0.14)`);
+  el.style.setProperty('--accent-light', `rgba(${rgb},0.10)`);
+}
+
+// Activa el modo claro/oscuro en toda la web.
+function applyTheme(mode) {
+  if (mode === 'dark') document.documentElement.dataset.theme = 'dark';
+  else delete document.documentElement.dataset.theme;
+}
+
+function PrefVisual() {
+  const [mode, setMode] = useState('light');
+  const [accent, setAccent] = useState(PREF_COLORS[0]);
+
+  // Sincroniza el selector con lo que el script del Layout ya aplicó.
+  useEffect(() => {
+    try {
+      const t = localStorage.getItem('qf-theme');
+      if (t === 'dark' || t === 'light') setMode(t);
+      const a = localStorage.getItem('qf-accent');
+      if (a) setAccent(a);
+    } catch (e) { /* sin almacenamiento: usa valores por defecto */ }
+  }, []);
+
+  const chooseMode = (m) => {
+    setMode(m);
+    applyTheme(m);
+    try { localStorage.setItem('qf-theme', m); } catch (e) { /* noop */ }
+  };
+  const chooseAccent = (c) => {
+    setAccent(c);
+    applyAccent(c);
+    try { localStorage.setItem('qf-accent', c); } catch (e) { /* noop */ }
+  };
+
+  return (
+    <div className="qf-pref-card">
+      <div className="qf-pref-block">
+        <span className="qf-pref-label">Apariencia</span>
+        <div className="qf-pref-modes">
+          <button type="button" className={`qf-pref-mode${mode === 'light' ? ' is-on' : ''}`} aria-pressed={mode === 'light'} onClick={() => chooseMode('light')}>
+            <SunIcon />Claro
+          </button>
+          <button type="button" className={`qf-pref-mode${mode === 'dark' ? ' is-on' : ''}`} aria-pressed={mode === 'dark'} onClick={() => chooseMode('dark')}>
+            <Icon name="moon" size={15} color="currentColor" />Noche
+          </button>
+        </div>
+      </div>
+      <div className="qf-pref-block">
+        <span className="qf-pref-label">Color de acento</span>
+        <div className="qf-pref-colors">
+          {PREF_COLORS.map((c) => (
+            <button
+              type="button" key={c} className={`qf-pref-dot${accent === c ? ' is-on' : ''}`}
+              style={{ background: c }} aria-label={`Usar el color ${c}`} aria-pressed={accent === c}
+              onClick={() => chooseAccent(c)}
+            >
+              {accent === c && <Icon name="check" size={15} color="#fff" stroke={2.6} />}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="qf-pref-block">
+        <span className="qf-pref-label">Idioma</span>
+        <div className="qf-pref-langs">
+          <span className="qf-pref-lang is-on">Español</span>
+          <span className="qf-pref-lang">Català</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ExtraRow({ id, alt, flip, eyebrow, title, desc, bullets, children }) {
+  return (
+    <section id={id} className={alt ? 'qf-rowband alt' : 'qf-rowband'}>
+      <div className={`qf-row ${flip ? 'flip' : ''}`}>
+        <Reveal className="qf-row-copy">
+          <span className="qf-eyebrow">{eyebrow}</span>
+          <h2 className="qf-row-title">{title}</h2>
+          <p className="qf-row-desc">{desc}</p>
+          <ul className="qf-bullets">
+            {bullets.map((b) => (
+              <li key={b}><span className="qf-check"><Icon name="check" size={13} color="#fff" stroke={2.6} /></span>{b}</li>
+            ))}
+          </ul>
+        </Reveal>
+        <Reveal className="qf-row-media" delay={80}>{children}</Reveal>
+      </div>
+    </section>
+  );
+}
+
+function MoreFeatures() {
+  return (
+    <>
+      <ExtraRow
+        id="notificaciones" eyebrow="Notificaciones" title="No te pierdas nada importante"
+        desc="Activa las notificaciones y QuéFalta te avisa justo cuando algo cambia en tus grupos, sin tener que estar abriendo la app."
+        bullets={['Cuando alguien añade un producto a la cesta', 'Cuando te añaden a un grupo nuevo', 'Cuando recibes una solicitud de amistad']}
+      >
+        <NotifVisual />
+      </ExtraRow>
+      <ExtraRow
+        id="amigos" alt flip eyebrow="Amigos" title="Comparte con tu gente, sin rodeos"
+        desc="Añade a tus amigos, compañeros de trabajo o familia y comparte tus grupos directamente con ellos."
+        bullets={['Encuéntralos por su @usuario', 'Comparte cualquier grupo con un toque', 'Amigos, familia o compañeros de oficina']}
+      >
+        <FriendsVisual />
+      </ExtraRow>
+      <ExtraRow
+        id="preferencias" eyebrow="Preferencias" title="Haz que la app sea tuya"
+        desc="Ajusta QuéFalta a tu gusto: elige los supermercados que quieres ver, cambia la apariencia y úsala en tu idioma."
+        bullets={['Elige tus supermercados favoritos: solo esos aparecen en tu catálogo', 'Modo claro u oscuro y 7 colores de acento', 'Interfaz en català, con el catálogo de Mercadona, BonPreu Esclat i bonÀrea']}
+      >
+        <PrefVisual />
+      </ExtraRow>
+    </>
   );
 }
 
@@ -359,6 +553,7 @@ export default function Landing() {
         <Hero />
         <HowItWorks />
         <Features />
+        <MoreFeatures />
         <RealtimeBand />
         <Supermarkets />
         <Extras />

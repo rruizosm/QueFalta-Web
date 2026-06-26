@@ -44,6 +44,24 @@ const ogImage = new URL(image, Astro.site).href;
       rel="stylesheet"
     />
     <title>{title}</title>
+    <!-- Aplica el tema (claro/oscuro) y el color de acento guardados antes de
+         pintar, para evitar el parpadeo y mantenerlos entre páginas. -->
+    <script is:inline>
+      (function () {
+        try {
+          var el = document.documentElement;
+          if (localStorage.getItem('qf-theme') === 'dark') el.dataset.theme = 'dark';
+          var a = localStorage.getItem('qf-accent');
+          if (a) {
+            var n = parseInt(a.slice(1), 16);
+            var r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+            el.style.setProperty('--accent', a);
+            el.style.setProperty('--accent-soft', 'rgba(' + r + ',' + g + ',' + b + ',0.14)');
+            el.style.setProperty('--accent-light', 'rgba(' + r + ',' + g + ',' + b + ',0.10)');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     {!bare && <SiteNav />}
@@ -95,7 +113,10 @@ const ogImage = new URL(image, Astro.site).href;
 
       * { box-sizing: border-box; margin: 0; padding: 0; }
 
-      html { scroll-behavior: smooth; }
+      /* Compensa la barra de navegación fija (61px) al saltar a un ancla,
+         para que #top quede arriba del todo y las secciones no se oculten
+         tras el navbar. */
+      html { scroll-behavior: smooth; scroll-padding-top: 61px; }
 
       body {
         font-family: var(--geo);

@@ -10,7 +10,45 @@
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-::selection { background: var(--ink); color: #fff; }
+/* Modo oscuro: solo redefine los tokens; el resto del CSS los usa via var().
+   Se activa con [data-theme="dark"] en <html> (lo pone el script del Layout
+   y el selector de Apariencia de la landing). */
+[data-theme="dark"] {
+  --ink: #f1f1f4;
+  --ink-soft: #b4b4be;
+  --ink-faint: #7e7e89;
+  --paper: #0f0f14;
+  --paper-2: #16161d;
+  --surface: #1b1b23;
+  /* Borde claro y translúcido: hace visibles TODOS los contornos (tarjetas,
+     píldoras, separadores, navbar y footer) sobre fondo oscuro de una sola vez. */
+  --border: rgba(255, 255, 255, 0.22);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px rgba(0, 0, 0, 0.32);
+  --shadow-md: 0 10px 34px rgba(0, 0, 0, 0.46), 0 2px 10px rgba(0, 0, 0, 0.34);
+}
+
+::selection { background: var(--accent); color: #fff; }
+
+/* Ajustes puntuales en modo oscuro para elementos que no dependen solo de los
+   tokens (la franja oscura y el navbar global). */
+[data-theme="dark"] .qf-band { background: #08080c; }
+[data-theme="dark"] nav.qf-nav { background: rgba(13, 13, 18, 0.72); }
+[data-theme="dark"] nav.qf-nav .qf-nav-cta { background: var(--accent); color: #fff; }
+/* Texto del navbar totalmente blanco en oscuro (los enlaces eran gris tenue). */
+[data-theme="dark"] nav.qf-nav .qf-word,
+[data-theme="dark"] nav.qf-nav .qf-word-txt span,
+[data-theme="dark"] nav.qf-nav .qf-nav-link { color: #fff; }
+
+/* Los logos de los supermercados son PNG pensados para fondo claro: en modo
+   oscuro mantenemos su chip con fondo y borde blancos para que se lean. */
+[data-theme="dark"] .qf-hero-logo { background: #fff; border-color: #fff; }
+[data-theme="dark"] .qf-super-logo { background: #fff; border: 1px solid #fff; border-radius: 6px; padding: 2px; box-sizing: content-box; }
+
+/* Footer: mismo trato que el navbar — texto blanco y separadores visibles. */
+[data-theme="dark"] .qf-footer-brand,
+[data-theme="dark"] .qf-footer-word span,
+[data-theme="dark"] .qf-footer-links a { color: #fff; }
+[data-theme="dark"] .qf-footer-copy { color: var(--ink-soft); }
 
 .qf {
   --pad: 24px;
@@ -45,7 +83,7 @@
 /* ── Apple-style badge ─────────────────────────────────────── */
 .qf-badge {
   display: inline-flex; align-items: center; gap: 11px;
-  background: var(--ink); color: #fff;
+  background: var(--ink); color: var(--paper);
   padding: 12px 20px 12px 17px; border-radius: 14px;
   transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
   box-shadow: var(--shadow-sm);
@@ -54,7 +92,7 @@
 .qf-badge-txt { display: flex; flex-direction: column; line-height: 1.05; text-align: left; }
 .qf-badge-txt small { font-size: 10px; font-weight: 500; opacity: 0.82; letter-spacing: 0.01em; }
 .qf-badge-txt strong { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
-.qf-badge.light { background: #fff; color: var(--ink); border: 1px solid var(--border); }
+.qf-badge.light { background: var(--surface); color: var(--ink); border: 1px solid var(--border); }
 
 .qf-ghost {
   display: inline-flex; align-items: center; gap: 8px;
@@ -81,13 +119,13 @@
 .qf-hero-bg {
   position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
-    radial-gradient(60% 50% at 50% -8%, rgba(47, 108, 181, 0.10), transparent 70%),
+    radial-gradient(60% 50% at 50% -8%, var(--accent-light), transparent 70%),
     radial-gradient(40% 40% at 85% 8%, rgba(63, 160, 120, 0.07), transparent 70%);
 }
 .qf-pill {
   display: inline-flex; align-items: center; gap: 9px;
   font-size: 13px; font-weight: 600; color: var(--ink-soft);
-  background: #fff; border: 1px solid var(--border);
+  background: var(--surface); border: 1px solid var(--border);
   padding: 7px 15px; border-radius: 980px; box-shadow: var(--shadow-sm);
 }
 .qf-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 4px rgba(47, 170, 79, 0.16); }
@@ -99,7 +137,7 @@
 .qf-hero-logos { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; margin: 22px auto 0; max-width: 560px; }
 .qf-hero-logo {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 42px; height: 42px; background: #fff;
+  width: 42px; height: 42px; background: var(--surface);
   border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-sm);
   transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
 }
@@ -128,7 +166,7 @@
     right: max(40px, calc((100% - 1440px) / 2));
     width: auto;
   }
-  .qf-hero-phone { transform: scale(0.76); transform-origin: center right; }
+  .qf-hero-phone { transform: scale(0.88); transform-origin: center right; }
 }
 
 /* ── Section scaffolding ───────────────────────────────────── */
@@ -141,7 +179,7 @@
 /* ── How it works (3 steps) ────────────────────────────────── */
 .qf-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 56px; }
 .qf-step {
-  position: relative; background: #fff; border: 1px solid var(--border);
+  position: relative; background: var(--surface); border: 1px solid var(--border);
   border-radius: 24px; padding: 30px 26px 28px; box-shadow: var(--shadow-sm);
 }
 .qf-step-num {
@@ -181,8 +219,74 @@
 }
 .qf-stage::before {
   content: ''; position: absolute; inset: 0; border-radius: 40px; z-index: -1;
-  background: radial-gradient(circle at 50% 30%, rgba(47, 108, 181, 0.10), transparent 68%);
+  background: radial-gradient(circle at 50% 30%, var(--accent-light), transparent 68%);
 }
+
+/* ── Secciones extra: ilustraciones (notificaciones / amigos / preferencias) ── */
+/* Notificaciones: pila de avisos escalonada */
+.qf-notif-stack { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 400px; }
+.qf-notif {
+  display: flex; align-items: center; gap: 13px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+  padding: 14px 16px; box-shadow: var(--shadow-md);
+}
+.qf-notif:nth-child(2) { margin-left: 22px; }
+.qf-notif:nth-child(3) { margin-left: 44px; }
+.qf-notif-ic { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.qf-notif-txt { flex: 1; font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.35; }
+.qf-notif-time { flex: 0 0 auto; font-size: 11.5px; font-weight: 500; color: var(--ink-faint); }
+
+/* Amigos: tarjeta de compartir grupo */
+.qf-friends-card {
+  width: 100%; max-width: 360px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 24px;
+  box-shadow: var(--shadow-md); padding: 18px;
+}
+.qf-friends-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.qf-friends-title { font-family: var(--geo); font-weight: 800; font-size: 17px; letter-spacing: -0.02em; color: var(--ink); }
+.qf-friends-badge { flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; }
+.qf-friends-search {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+  padding: 10px 13px; border-radius: 12px; background: var(--paper-2);
+  color: var(--ink-faint); font-size: 13.5px; font-weight: 500;
+}
+.qf-friend { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+.qf-friend + .qf-friend { border-top: 1px solid var(--border); }
+.qf-friend-av { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 50%; color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.qf-friend-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.25; }
+.qf-friend-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+.qf-friend-user { font-size: 12.5px; color: var(--ink-soft); }
+.qf-friend-add { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+
+/* Preferencias: apariencia + colores + idioma */
+.qf-pref-card {
+  width: 100%; max-width: 360px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 24px;
+  box-shadow: var(--shadow-md); padding: 22px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.qf-pref-block { display: flex; flex-direction: column; gap: 11px; }
+.qf-pref-label { font-size: 11px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.12em; }
+.qf-pref-modes, .qf-pref-langs { display: flex; gap: 10px; }
+.qf-pref-mode, .qf-pref-lang {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: 12px; border: 1px solid var(--border);
+  font-family: var(--geo); font-size: 13.5px; font-weight: 600; color: var(--ink-soft);
+  background: var(--surface);
+}
+/* Los modos (Claro/Noche) son botones reales y seleccionables. */
+.qf-pref-mode { -webkit-appearance: none; appearance: none; cursor: pointer; transition: border-color 0.15s var(--ease), background 0.15s var(--ease), color 0.15s var(--ease); }
+.qf-pref-mode.is-on, .qf-pref-lang.is-on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.qf-pref-colors { display: flex; gap: 12px; flex-wrap: wrap; }
+.qf-pref-dot {
+  width: 30px; height: 30px; border-radius: 50%; border: none; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; -webkit-appearance: none; appearance: none;
+  transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+.qf-pref-dot:hover { transform: scale(1.08); }
+.qf-pref-dot.is-on { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
+.qf-pref-mode:focus-visible, .qf-pref-dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ── Realtime band (dark) ──────────────────────────────────── */
 .qf-band { background: var(--ink); color: #fff; padding: 104px 0; position: relative; overflow: hidden; }
@@ -206,7 +310,7 @@
 .qf-supers { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 44px; }
 .qf-super {
   display: inline-flex; align-items: center; gap: 9px;
-  background: #fff; border: 1px solid var(--border); border-radius: 980px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 980px;
   padding: 11px 20px 11px 14px; font-size: 15px; font-weight: 600; color: var(--ink);
   box-shadow: var(--shadow-sm); transition: transform 0.18s var(--ease);
 }
@@ -217,7 +321,7 @@
 /* ── Extras grid ───────────────────────────────────────────── */
 .qf-extras { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 52px; }
 .qf-extra {
-  background: #fff; border: 1px solid var(--border); border-radius: 22px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 22px;
   padding: 26px 24px; box-shadow: var(--shadow-sm);
   transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
@@ -233,7 +337,7 @@
 .qf-cta { padding: 110px 40px; text-align: center; position: relative; overflow: hidden; }
 .qf-cta-bg {
   position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: radial-gradient(55% 70% at 50% 30%, rgba(47, 108, 181, 0.12), transparent 70%);
+  background: radial-gradient(55% 70% at 50% 30%, var(--accent-light), transparent 70%);
 }
 .qf-cta-word { font-family: var(--geo); font-weight: 800; font-size: 26px; letter-spacing: -0.04em; color: var(--ink); }
 .qf-cta-word span { color: var(--accent); }
