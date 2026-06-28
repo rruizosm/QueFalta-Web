@@ -1,0 +1,19 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+    build:
+      # Necesita STRIPE_SECRET_KEY como variable de entorno en la consola de
+      # Amplify (App settings → Environment variables). Sin ella, la página
+      # /apoyar compila igualmente y muestra 0 € (ver src/lib/aportaciones.js).
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*

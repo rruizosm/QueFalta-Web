@@ -3,8 +3,9 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 
-// Sitio estático (output por defecto). El despliegue es en Vercel.
-// La ruta /join/:id se sirve con un rewrite definido en vercel.json.
+// Sitio estático (output por defecto). El despliegue es en AWS Amplify.
+// La ruta /join/:id se sirve con un rewrite (200) configurado en la consola
+// de Amplify; el Content-Type del AASA lo fija customHttp.yml.
 // La landing (/) usa una isla React para los mockups del teléfono.
 export default defineConfig({
   site: 'https://quefalta.es',

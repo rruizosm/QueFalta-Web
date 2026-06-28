@@ -10,10 +10,11 @@ node_modules/
 
 # environment
 .env
-.env.production
+.env.*
+!.env.example
 
-# vercel
-.vercel/
+# local tooling
+.claude/
 
 # logs / os
 *.log

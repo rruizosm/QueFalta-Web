@@ -1,0 +1,8 @@
+customHeaders:
+  # Universal Links de iOS: el fichero de asociación de Apple debe servirse
+  # como application/json, por HTTPS y sin redirecciones. Amplify lo aplica
+  # desde este fichero (en la raíz del repo) por encima de la consola.
+  - pattern: '/.well-known/apple-app-site-association'
+    headers:
+      - key: 'Content-Type'
+        value: 'application/json'

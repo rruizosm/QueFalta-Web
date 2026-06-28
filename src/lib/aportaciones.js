@@ -2,8 +2,8 @@
 //
 // Necesita la variable de entorno STRIPE_SECRET_KEY. Recomendado: usar una
 // "restricted key" de Stripe con permiso de SOLO LECTURA sobre Payment Intents,
-// no la clave secreta completa. Configúrala en Vercel (Project Settings →
-// Environment Variables) y, para probar en local, en un archivo .env (ignorado
+// no la clave secreta completa. Configúrala en AWS Amplify (App settings →
+// Environment variables) y, para probar en local, en un archivo .env (ignorado
 // por git). Sin la clave, devuelve cero y la web compila igualmente.
 //
 // Como la web es estática, la cifra se calcula al compilar y se actualiza en
