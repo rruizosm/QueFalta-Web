@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 // TODO antes de publicar: si se quiere, añadir una dirección postal del responsable.
 // Recomendable una revisión por un profesional antes del lanzamiento.
-const updated = '23 de junio de 2026';
+const updated = '28 de junio de 2026';
 ---
 
 <Layout
@@ -43,6 +43,12 @@ const updated = '23 de junio de 2026';
         que te unes, tus listas de la compra y sus productos, tu historial de
         compras finalizadas, tus favoritos y tus relaciones de amistad dentro de
         la app.
+      </li>
+      <li>
+        <strong>Token de notificaciones (opcional):</strong> si activas las
+        notificaciones push, guardamos el identificador (token) que genera tu
+        dispositivo para poder enviártelas. Si desactivas las notificaciones,
+        ese token se elimina.
       </li>
       <li>
         <strong>Datos de navegación en la web (quefalta.es):</strong> si
@@ -94,8 +100,9 @@ const updated = '23 de junio de 2026';
     <h2>5. Con quién compartimos tus datos</h2>
     <p>No vendemos ni cedemos tus datos a terceros. Para funcionar, QuéFalta se apoya en estos encargados de tratamiento:</p>
     <ul>
-      <li><strong>Supabase</strong> (backend y base de datos): almacena los datos descritos arriba.</li>
+      <li><strong>Supabase</strong> (backend y base de datos, con servidores en la Unión Europea): almacena los datos descritos arriba.</li>
       <li><strong>Google / Apple</strong> (inicio de sesión): gestionan la autenticación de tu cuenta.</li>
+      <li><strong>Expo</strong> (Expo Push API): solo si activas las notificaciones push. Envía los avisos a tu dispositivo; la entrega final la realizan los servicios del sistema operativo —Apple (APNs) en iPhone y Google (FCM) en Android—, lo que puede implicar transferencias internacionales con las garantías previstas en sus políticas.</li>
       <li><strong>Google Analytics</strong> (analítica web): solo si aceptas las cookies de análisis en quefalta.es. Puede implicar transferencias internacionales con las garantías de su política. Detalle en la <a href="/cookies">política de cookies</a>.</li>
     </ul>
     <p>
@@ -140,14 +147,25 @@ const updated = '23 de junio de 2026';
         rel="noopener">aepd.es</a>).
     </p>
 
-    <h2>8. Cambios en esta política</h2>
+    <h2>8. Menores de edad</h2>
+    <p>
+      QuéFalta está dirigida a personas de <strong>14 años o más</strong>, edad
+      mínima a partir de la cual la normativa española permite consentir el
+      tratamiento de datos personales. Si detectamos que una cuenta pertenece a
+      un menor de 14 años, la eliminaremos. Si eres madre, padre o tutor y crees
+      que un menor nos ha facilitado sus datos, escríbenos a
+      <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a> y los
+      suprimiremos.
+    </p>
+
+    <h2>9. Cambios en esta política</h2>
     <p>
       Si esta política cambia de forma sustancial, te lo comunicaremos dentro de
       la app antes de que el cambio entre en vigor. La fecha de la última
       actualización aparece al inicio de la página.
     </p>
 
-    <h2>9. Contacto</h2>
+    <h2>10. Contacto</h2>
     <p>
       Para cualquier duda sobre privacidad:
       <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a>.

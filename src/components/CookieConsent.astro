@@ -18,7 +18,7 @@ const GA_ID = 'G-GE1347XYRH';
 >
   <div class="qf-cookie-inner">
     <p class="qf-cookie-text">
-      Usamos cookies propias de <strong>análisis</strong> (Google Analytics) para
+      Usamos cookies de <strong>análisis</strong> de terceros (Google Analytics) para
       entender cómo se usa la web y mejorarla. Las cookies técnicas necesarias
       están siempre activas. Puedes aceptarlas, rechazarlas o leer más en la
       <a href="/cookies">política de cookies</a>.
@@ -166,6 +166,8 @@ const GA_ID = 'G-GE1347XYRH';
     color: var(--white, #fff);
   }
   .qf-cookie-solid:hover { background: var(--accent, #2f6cb5); }
+  /* En oscuro el fondo (--ink) pasa a claro: invertimos el texto para que se lea. */
+  [data-theme="dark"] .qf-cookie-solid { color: var(--paper, #0f0f14); }
 
   @media (max-width: 520px) {
     .qf-cookie-actions { width: 100%; }

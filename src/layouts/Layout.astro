@@ -111,6 +111,30 @@ const ogImage = new URL(image, Astro.site).href;
         --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
       }
 
+      /* Modo oscuro: redefine los tokens de color; el resto del CSS los usa vía
+         var(). Se activa con [data-theme="dark"] en <html> (lo pone el script de
+         arriba). Vive aquí (global) para que TODAS las páginas —incluidas las
+         legales, que no cargan landing.css— hereden el tema oscuro. */
+      [data-theme="dark"] {
+        --ink: #f1f1f4;
+        --ink-soft: #b4b4be;
+        --ink-faint: #7e7e89;
+        --paper: #0f0f14;
+        --paper-2: #16161d;
+        --surface: #1b1b23;
+        --border: rgba(255, 255, 255, 0.22);
+      }
+
+      /* Navbar en modo oscuro (global: aplica en TODAS las páginas, no solo la
+         home). El fondo y el CTA del navbar usan colores fijos, así que aquí se
+         adaptan; el enlace activo se mantiene en el color de acento. */
+      [data-theme="dark"] nav.qf-nav { background: rgba(13, 13, 18, 0.72); }
+      [data-theme="dark"] nav.qf-nav .qf-word,
+      [data-theme="dark"] nav.qf-nav .qf-word-txt span,
+      [data-theme="dark"] nav.qf-nav .qf-nav-link { color: #fff; }
+      [data-theme="dark"] nav.qf-nav .qf-nav-cta { background: var(--accent); color: #fff; }
+      [data-theme="dark"] nav.qf-nav .qf-nav-link.is-active { color: var(--accent); }
+
       * { box-sizing: border-box; margin: 0; padding: 0; }
 
       /* Compensa la barra de navegación fija (61px) al saltar a un ancla,

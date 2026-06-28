@@ -27,6 +27,46 @@
     const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
+
+    // Marca en color de acento el enlace de la sección/página activa.
+    const links = Array.from(nav.querySelectorAll('.qf-nav-link'));
+    const norm = (p) => (p.length > 1 ? p.replace(/\/$/, '') : p);
+    const path = norm(location.pathname);
+    const activate = (link) => links.forEach((l) => l.classList.toggle('is-active', l === link));
+
+    // Enlaces a otras páginas (sin ancla): se marcan por la URL actual.
+    const pageLink = links.find((l) => {
+      const u = new URL(l.href, location.origin);
+      return !u.hash && norm(u.pathname) === path;
+    });
+
+    // Enlaces ancla de la home (#...).
+    const anchors = links
+      .map((l) => {
+        const u = new URL(l.href, location.origin);
+        return u.hash && norm(u.pathname) === '/' ? { link: l, id: u.hash.slice(1) } : null;
+      })
+      .filter(Boolean);
+
+    if (path === '/' && anchors.length) {
+      // Marca inmediata al hacer clic.
+      anchors.forEach((a) => a.link.addEventListener('click', () => activate(a.link)));
+      // Scroll spy: resalta la sección que cruza el centro de la pantalla.
+      const byEl = new Map();
+      anchors.forEach((a) => {
+        const el = document.getElementById(a.id);
+        if (el) byEl.set(el, a.link);
+      });
+      if (byEl.size) {
+        const spy = new IntersectionObserver(
+          (entries) => entries.forEach((e) => { if (e.isIntersecting) activate(byEl.get(e.target)); }),
+          { rootMargin: '-45% 0px -50% 0px', threshold: 0 }
+        );
+        byEl.forEach((_, el) => spy.observe(el));
+      }
+    } else if (pageLink) {
+      activate(pageLink);
+    }
   }
 </script>
 
@@ -51,6 +91,10 @@
   .qf-nav-right { display: flex; align-items: center; gap: 28px; }
   .qf-nav-link { font-size: 14.5px; font-weight: 500; color: var(--ink-soft); transition: color 0.15s; }
   .qf-nav-link:hover { color: var(--ink); }
+  /* Sección o página activa: solo el texto, en el color de acento de la web.
+     Vive aquí (y no solo en landing.css) para que también funcione en las
+     subpáginas como Novedades o Apoyar, que no cargan landing.css. */
+  .qf-nav-link.is-active { color: var(--accent); font-weight: 600; }
   .qf-nav-cta {
     font-size: 14px; font-weight: 600; color: #fff; background: var(--ink);
     padding: 9px 18px; border-radius: 980px;

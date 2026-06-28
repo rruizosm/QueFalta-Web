@@ -22,15 +22,15 @@ const APP_STORE_URL = '#';
 const STEPS = [
   {
     n: '1', title: 'Crea tu grupo',
-    desc: 'Tu casa, el piso compartido o la cena del finde. Invita a quien quieras con un solo enlace.',
+    desc: 'Tu familia, compañeros de piso, escapada de casa rural o la cena del finde.',
   },
   {
-    n: '2', title: 'Añadid lo que falta',
-    desc: 'Cada uno suma productos del catálogo de su supermercado favorito. La lista es de todos y se actualiza al momento.',
+    n: '2', title: 'Comparte el grupo',
+    desc: 'Puedes compartir un enlace o invitar a tus amigos por su @usuario. Todos ven la misma lista.',
   },
   {
-    n: '3', title: 'Comprad sin líos',
-    desc: 'Marcad lo que vais incluyendo en el carrito. Todos veis qué falta, en tiempo real.',
+    n: '3', title: 'Añade productos a la cesta',
+    desc: 'Busca entre miles de productos reales de tus supermercados favoritos y añádelos con un toque. Ajusta cantidades y ve el precio en vivo.',
   },
 ];
 
@@ -46,15 +46,15 @@ const ROWS = [
     eyebrow: 'Productos', tab: 'catalog', Screen: ProductsScreen,
     img: '/mock/catalog_3.png', alt: 'Añadir productos a la lista ajustando cantidades en QuéFalta',
     title: 'Añade con un solo toque',
-    desc: 'Dentro de cada categoría sumas productos a la lista y ajustas las cantidades sin perder de vista el precio.',
+    desc: 'Busca el producto concreto que necesitas o busca dentro de cada categoría. Sumas productos a la lista y ajustas las cantidades.',
     bullets: ['Selector de cantidad por producto', 'Precio y formato siempre visibles', 'Resumen de lo que llevas seleccionado'],
   },
   {
-    eyebrow: 'Tu lista', tab: 'list', Screen: ListScreen,
+    eyebrow: 'Tu carrito', tab: 'list', Screen: ListScreen,
     img: '/mock/cesta.PNG', alt: 'Lista de la compra del grupo con artículos por recoger y en la cesta en QuéFalta',
     title: 'Marca lo que ya tienes',
-    desc: 'La lista separa lo que falta por coger de lo que ya está en la cesta, con el total estimado siempre actualizado.',
-    bullets: ['«Por recoger» frente a «En cesta»', 'Total estimado en vivo', 'Ordenada por las categorias del supermercado para no perder tiempo'],
+    desc: 'El carrito permite seleccionarlo que ya está en la cesta. Controla lo que queda por recoger y lo que ya has cogido. Borra un producto si ya no lo quieres.',
+    bullets: ['«Por recoger» frente a «En el carrito»', 'Total estimado en vivo', 'Ordenada por las categorias del supermercado para no perder tiempo','Borra productos que ya no quieres'],
   },
   {
     eyebrow: 'Grupos', tab: 'groups', Screen: GroupsScreen,
@@ -83,7 +83,7 @@ const EXTRAS = [
 
 // Avisos de ejemplo para la sección «Notificaciones».
 const NOTIFS = [
-  { icon: 'cart', tint: '#2f6cb5', title: 'Marta ha añadido Leche entera a la cesta', time: 'ahora' },
+  { icon: 'cart', tint: '#2f6cb5', title: 'Adrià ha añadido Tinto de verano a la cesta Mundial2026', time: 'ahora' },
   { icon: 'users', tint: '#3fa078', title: 'Te han añadido al grupo «Piso Centro»', time: '2 min' },
   { icon: 'userPlus', tint: '#7c5cd6', title: 'Carlos te ha enviado una solicitud de amistad', time: '5 min' },
 ];
@@ -97,6 +97,20 @@ const FRIENDS = [
 
 // Colores de acento disponibles en «Preferencias».
 const PREF_COLORS = ['#2f6cb5', '#3fa078', '#7c5cd6', '#df4b2e', '#e0608f', '#1f9bb3', '#e6a23c'];
+
+// Producto de ejemplo para la sección «Ficha del producto».
+const FICHA = { name: 'Tomate en rama', size: 'Malla 1 kg', price: '1,79 €', emoji: '🍅', store: 'Mercadona', logo: '/stores/mercadona.png' };
+const FICHA_FACTS = [
+  { icon: 'leaf', label: 'Ingredientes', value: 'Tomate en rama 100%' },
+  { icon: 'tag', label: 'Proveedor', value: 'Agrícola Valenciana' },
+  { icon: 'clock', label: 'Conservación', value: 'Refrigerar entre 1 y 8 °C' },
+];
+const FICHA_NUTRI = [
+  { k: '18', l: 'kcal' },
+  { k: '0,2 g', l: 'Grasas' },
+  { k: '3,5 g', l: 'Hidratos' },
+  { k: '0,9 g', l: 'Proteínas' },
+];
 
 // ── Hooks ──────────────────────────────────────────────────────
 function useReveal() {
@@ -210,14 +224,12 @@ function HowItWorks() {
         <div className="qf-steps">
           {STEPS.map((s, i) => (
             <Reveal key={s.n} className="qf-step" delay={i * 90}>
-              <span className="qf-step-num">{s.n}</span>
-              <h3 className="qf-step-title">{s.title}</h3>
-              <p className="qf-step-desc">{s.desc}</p>
-              {i < STEPS.length - 1 && (
-                <span className="qf-step-arrow" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-                </span>
-              )}
+              <span className="qf-step-bg" aria-hidden="true">{s.n}</span>
+              <div className="qf-step-body">
+                <span className="qf-step-bar" aria-hidden="true" />
+                <h3 className="qf-step-title">{s.title}</h3>
+                <p className="qf-step-desc">{s.desc}</p>
+              </div>
             </Reveal>
           ))}
         </div>
@@ -250,9 +262,12 @@ function Features() {
   return (
     <div className="qf-rows" id="funciones">
       {ROWS.map((f, i) => (
-        <section key={f.eyebrow} className={i % 2 === 1 ? 'qf-rowband alt' : 'qf-rowband'}>
-          <FeatureRow f={f} flip={i % 2 === 1} />
-        </section>
+        <React.Fragment key={f.eyebrow}>
+          <section className={i % 2 === 1 ? 'qf-rowband alt' : 'qf-rowband'}>
+            <FeatureRow f={f} flip={i % 2 === 1} />
+          </section>
+          {f.eyebrow === 'Productos' && <ProductDetailSection />}
+        </React.Fragment>
       ))}
     </div>
   );
@@ -328,6 +343,8 @@ function applyTheme(mode) {
 function PrefVisual() {
   const [mode, setMode] = useState('light');
   const [accent, setAccent] = useState(PREF_COLORS[0]);
+  // Todos los supermercados marcados salvo Dia y Consum.
+  const [supers, setSupers] = useState(() => SUPERS.filter((s) => s.name !== 'Dia' && s.name !== 'Consum').map((s) => s.name));
 
   // Sincroniza el selector con lo que el script del Layout ya aplicó.
   useEffect(() => {
@@ -349,6 +366,7 @@ function PrefVisual() {
     applyAccent(c);
     try { localStorage.setItem('qf-accent', c); } catch (e) { /* noop */ }
   };
+  const toggleSuper = (name) => setSupers((prev) => (prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]));
 
   return (
     <div className="qf-pref-card">
@@ -361,6 +379,26 @@ function PrefVisual() {
           <button type="button" className={`qf-pref-mode${mode === 'dark' ? ' is-on' : ''}`} aria-pressed={mode === 'dark'} onClick={() => chooseMode('dark')}>
             <Icon name="moon" size={15} color="currentColor" />Noche
           </button>
+        </div>
+      </div>
+      <div className="qf-pref-block">
+        <span className="qf-pref-label">Supermercados</span>
+        <div className="qf-pref-supers">
+          {SUPERS.map((s) => {
+            const on = supers.includes(s.name);
+            return (
+              <button
+                type="button" key={s.name} className={`qf-pref-super${on ? ' is-on' : ''}`}
+                aria-pressed={on} onClick={() => toggleSuper(s.name)}
+              >
+                <img className="qf-pref-super-logo" src={s.logo} alt="" width="24" height="24" loading="lazy" />
+                <span className="qf-pref-super-name">{s.name}</span>
+                <span className="qf-pref-super-check" aria-hidden="true">
+                  {on && <Icon name="check" size={13} color="#fff" stroke={2.8} />}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
       <div className="qf-pref-block">
@@ -388,6 +426,52 @@ function PrefVisual() {
   );
 }
 
+function ProductDetailVisual() {
+  return (
+    <div className="qf-ficha-card" aria-hidden="true">
+      <div className="qf-ficha-head">
+        <span className="qf-ficha-thumb">{FICHA.emoji}</span>
+        <span className="qf-ficha-meta">
+          <span className="qf-ficha-name">{FICHA.name}</span>
+          <span className="qf-ficha-size">{FICHA.size}</span>
+        </span>
+        <span className="qf-ficha-price">{FICHA.price}</span>
+      </div>
+      <span className="qf-ficha-store">
+        <img src={FICHA.logo} alt="" width="18" height="18" loading="lazy" />
+        {FICHA.store}
+      </span>
+      <div className="qf-ficha-facts">
+        {FICHA_FACTS.map((f) => (
+          <div key={f.label} className="qf-fact">
+            <span className="qf-fact-ic"><Icon name={f.icon} size={16} color="var(--accent)" /></span>
+            <span className="qf-fact-meta">
+              <span className="qf-fact-label">{f.label}</span>
+              <span className="qf-fact-value">{f.value}</span>
+            </span>
+            <Icon name="chevron" size={15} color="var(--ink-faint)" />
+          </div>
+        ))}
+        <div className="qf-fact">
+          <span className="qf-fact-ic"><Icon name="info" size={16} color="var(--accent)" /></span>
+          <span className="qf-fact-meta">
+            <span className="qf-fact-label">Información nutricional</span>
+            <span className="qf-fact-value">Valores medios por 100 g</span>
+          </span>
+        </div>
+        <div className="qf-nutri">
+          {FICHA_NUTRI.map((n) => (
+            <span key={n.l} className="qf-nutri-cell">
+              <span className="qf-nutri-k">{n.k}</span>
+              <span className="qf-nutri-l">{n.l}</span>
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ExtraRow({ id, alt, flip, eyebrow, title, desc, bullets, children }) {
   return (
     <section id={id} className={alt ? 'qf-rowband alt' : 'qf-rowband'}>
@@ -405,6 +489,20 @@ function ExtraRow({ id, alt, flip, eyebrow, title, desc, bullets, children }) {
         <Reveal className="qf-row-media" delay={80}>{children}</Reveal>
       </div>
     </section>
+  );
+}
+
+// Sección «Ficha del producto»: se inyecta justo debajo de la fila «Productos».
+// Comparte fondo (alt) con «Productos» para leerse como un par temático.
+function ProductDetailSection() {
+  return (
+    <ExtraRow
+      id="ficha" alt eyebrow="Ficha del producto" title="Conoce cada producto a fondo"
+      desc="Toca cualquier producto y descubre todo lo que necesitas saber antes de añadirlo: de qué está hecho, quién lo produce, cómo conservarlo y sus valores nutricionales."
+      bullets={['Ingredientes y alérgenos a la vista', 'Proveedor y origen del producto', 'Conservación e información nutricional', 'Mucho más en cada ficha']}
+    >
+      <ProductDetailVisual />
+    </ExtraRow>
   );
 }
 

@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 // TODO antes de publicar: revisar con el resto de textos legales. La fecha debe
 // coincidir con el lanzamiento real de la analítica.
-const updated = '19 de junio de 2026';
+const updated = '28 de junio de 2026';
 ---
 
 <Layout
@@ -173,5 +173,7 @@ const updated = '19 de junio de 2026';
       cursor: pointer;
     }
     .cookie-config-btn:hover { background: var(--accent); }
+    /* En oscuro el fondo (--ink) pasa a claro: invertimos el texto para que se lea. */
+    [data-theme="dark"] .cookie-config-btn { color: var(--paper); }
   </style>
 </Layout>

@@ -1,7 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 // Página puente de invitación. Se sirve para cualquier /join/:id mediante el
-// rewrite de vercel.json. El id se lee en cliente desde la URL.
+// rewrite (200) configurado en la consola de Amplify. El id se lee en cliente
+// desde la URL.
 // Si el usuario tiene la app instalada (iOS), el Universal Link abre la app
 // directamente y esta página ni se carga.
 ---
@@ -102,7 +103,7 @@ import Layout from '../../layouts/Layout.astro';
       max-width: 320px;
     }
     .btn-primary { background: var(--accent); color: var(--white); }
-    .btn-secondary { background: var(--white); color: var(--ink); border: 1px solid var(--border); }
+    .btn-secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--border); }
 
     .join-hint { margin-top: 20px; font-size: 13px; color: var(--ink-soft); }
   </style>
