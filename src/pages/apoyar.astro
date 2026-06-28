@@ -359,9 +359,11 @@ const ICONS = {
     .sup-final-p { color: var(--ink-soft); font-size: 16px; line-height: 1.55; margin: 14px auto 26px; }
 
     /* Modo oscuro: bloques con fondo/borde claros fijos que hay que adaptar. */
-    [data-theme="dark"] .sup-free { background: var(--surface); border-color: var(--border); }
-    /* El botón usa fondo --ink (claro en oscuro): invertimos el texto para que se lea. */
-    [data-theme="dark"] .sup-btn { color: var(--paper); }
+    /* El selector del tema vive en <html> (fuera de este componente), así que va en
+       :global() para que Astro no le añada el hash de scope y la regla sí aplique. */
+    :global([data-theme="dark"]) .sup-free { background: var(--surface); border-color: var(--border); }
+    /* El botón usa fondo --ink (claro en oscuro): el texto debe ir en negro para que se lea. */
+    :global([data-theme="dark"]) .sup-btn { color: #000; }
 
     @media (max-width: 640px) {
       .sup-amounts { grid-template-columns: 1fr; }
