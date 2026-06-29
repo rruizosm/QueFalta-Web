@@ -445,21 +445,33 @@ nav.qf-nav .qf-nav-link.is-active,
 @media (max-width: 980px) {
   .qf-wrap, .qf-row, .qf-band-grid, .qf-footer-inner { padding-left: 24px; padding-right: 24px; }
   .qf-section { padding: 72px 0; }
+  /* Hero y CTA recuperan ancho: antes conservaban 40px de margen lateral. */
+  .qf-hero { padding: 40px 24px; }
+  .qf-hero-lead { text-align: center; }   /* el justificado deja "ríos" de huecos en pantalla estrecha */
+  .qf-hero-stage { margin-top: 40px; }
+  .qf-cta { padding: 80px 24px; }
+  .qf-band { padding: 76px 0; }
   .qf-steps { grid-template-columns: 1fr; gap: 16px; }
   .qf-row { grid-template-columns: 1fr; gap: 38px; padding: 48px 24px; text-align: center; }
   .qf-row-copy, .qf-row.flip .qf-row-copy { max-width: 520px; margin: 0 auto; }
-  .qf-row.flip .qf-row-media { order: 0; }
-  .qf-row .qf-row-media { order: -1; }
+  /* En móvil, SIEMPRE el texto primero (presentación) y el mockup debajo,
+     tanto en filas normales como invertidas. */
+  .qf-row .qf-row-media, .qf-row.flip .qf-row-media { order: 0; }
   .qf-bullets { display: inline-flex; text-align: left; }
   .qf-band-grid { grid-template-columns: 1fr; gap: 44px; text-align: center; }
   .qf-band-desc { margin-left: auto; margin-right: auto; }
   .qf-stats { justify-content: center; }
   .qf-extras { grid-template-columns: repeat(2, 1fr); }
-  .qf-nav-link { display: none; }
+  /* La navegación móvil (hamburguesa + panel) vive en SiteNav.astro. */
 }
 
 @media (max-width: 560px) {
-  .qf-hero { padding-top: 60px; }
+  .qf-hero { padding: 36px 20px 44px; }
+  .qf-hero-title { font-size: clamp(33px, 8.6vw, 46px); max-width: 18ch; margin-top: 20px; }
+  .qf-hero-sub { display: none; }   /* dato redundante con la fila de logos que va justo debajo */
+  .qf-hero-logos { margin-top: 18px; }
+  .qf-section { padding: 60px 0; }
+  .qf-cta { padding: 64px 20px; }
   .qf-extras { grid-template-columns: 1fr; }
   .qf-hero-phone, .qf-row-media .qf-phone-scale { transform: scale(0.88); transform-origin: top center; }
   .qf-footer-inner { flex-direction: column; align-items: flex-start; }
