@@ -452,13 +452,20 @@ nav.qf-nav .qf-nav-link.is-active,
   .qf-cta { padding: 80px 24px; }
   .qf-band { padding: 76px 0; }
   .qf-steps { grid-template-columns: 1fr; gap: 16px; }
-  .qf-row { grid-template-columns: 1fr; gap: 38px; padding: 48px 24px; text-align: center; }
+  /* minmax(0, 1fr) (no "1fr" a secas): el marco del móvil tiene un ancho fijo
+     de layout (~374px aunque se escale visualmente), y con el "auto" implícito
+     del 1fr ensancharía la columna —y el texto— más que la pantalla, comiéndose
+     el padding derecho. min-width: 0 deja que el mockup se recorte/centre en su
+     celda sin arrastrar el ancho del texto. */
+  .qf-row { grid-template-columns: minmax(0, 1fr); gap: 38px; padding: 48px 24px; text-align: center; }
+  .qf-row-copy, .qf-row-media { min-width: 0; }
   .qf-row-copy, .qf-row.flip .qf-row-copy { max-width: 520px; margin: 0 auto; }
   /* En móvil, SIEMPRE el texto primero (presentación) y el mockup debajo,
      tanto en filas normales como invertidas. */
   .qf-row .qf-row-media, .qf-row.flip .qf-row-media { order: 0; }
   .qf-bullets { display: inline-flex; text-align: left; }
-  .qf-band-grid { grid-template-columns: 1fr; gap: 44px; text-align: center; }
+  .qf-band-grid { grid-template-columns: minmax(0, 1fr); gap: 44px; text-align: center; }
+  .qf-band-grid > * { min-width: 0; }
   .qf-band-desc { margin-left: auto; margin-right: auto; }
   .qf-stats { justify-content: center; }
   .qf-extras { grid-template-columns: repeat(2, 1fr); }
