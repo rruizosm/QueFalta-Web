@@ -157,7 +157,14 @@ const ogImage = new URL(image, Astro.site).href;
         line-height: 1.5;
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
+        /* Sticky footer: en páginas cortas el <main> crece hasta llenar la
+           ventana y empuja el pie al fondo, en vez de quedarse a media altura. */
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
+
+      main { flex: 1 0 auto; }
 
       a { color: inherit; text-decoration: none; }
 
