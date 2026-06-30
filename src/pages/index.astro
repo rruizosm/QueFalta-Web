@@ -3,12 +3,28 @@ import Layout from '../layouts/Layout.astro';
 import SiteNav from '../components/SiteNav.astro';
 import Landing from '../components/Landing.jsx';
 import '../styles/landing.css';
+
+// Datos estructurados de la app: QuéFalta es una app iOS gratuita. Sin
+// `aggregateRating` a propósito: solo se añadirá cuando haya valoraciones
+// reales (inventarlas va contra las directrices de Google).
+const appSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'QuéFalta',
+  operatingSystem: 'iOS',
+  applicationCategory: 'ShoppingApplication',
+  description:
+    'La lista de la compra compartida para iPhone. Añade, reparte y marca lo que ya tienes, todos a la vez y en tiempo real, con el catálogo real de seis supermercados.',
+  url: 'https://quefalta.es/',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
 ---
 
 <Layout
   title="QuéFalta — Tu lista de la compra, compartida"
   description="La lista de la compra compartida para iPhone. Añade, reparte y marca lo que ya tienes, todos a la vez y en tiempo real. Para tu hogar, tus amigos o la oficina."
   bare
+  jsonld={appSchema}
 >
   <SiteNav />
   <Landing client:load />

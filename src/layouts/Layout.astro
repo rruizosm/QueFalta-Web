@@ -9,15 +9,40 @@ interface Props {
   bare?: boolean;
   /** Imagen para previews al compartir (ruta absoluta dentro del sitio). */
   image?: string;
+  /** Pide a los buscadores que no indexen la página (p. ej. páginas-puente). */
+  noindex?: boolean;
+  /** Datos estructurados Schema.org propios de la página (objeto o lista). */
+  jsonld?: object | object[];
 }
 const {
   title = 'QuéFalta — La compra compartida, sin líos',
   description = 'Organiza la compra en grupo: lista compartida en tiempo real, carrito por grupos y catálogo de seis supermercados. ¿Qué falta?',
   bare = false,
   image = '/og.png',
+  noindex = false,
+  jsonld,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;
+
+// Identidad del sitio para los buscadores, presente en todas las páginas. A esto
+// se le suma el `jsonld` que cada página aporte (p. ej. la app en la home).
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'QuéFalta',
+  url: Astro.site?.href,
+  logo: new URL('/quefalta-logo-blue.png', Astro.site).href,
+  email: 'contacto@quefalta.es',
+};
+const siteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'QuéFalta',
+  url: Astro.site?.href,
+  inLanguage: 'es-ES',
+};
+const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? jsonld : [jsonld]) : [])];
 ---
 
 <!doctype html>
@@ -26,6 +51,7 @@ const ogImage = new URL(image, Astro.site).href;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonical} />
     <meta property="og:site_name" content="QuéFalta" />
     <meta property="og:title" content={title} />
@@ -41,6 +67,8 @@ const ogImage = new URL(image, Astro.site).href;
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={title} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <meta name="theme-color" content="#ffffff" />
     <link rel="sitemap" href="/sitemap-index.xml" />
@@ -52,6 +80,9 @@ const ogImage = new URL(image, Astro.site).href;
       rel="stylesheet"
     />
     <title>{title}</title>
+    {schemas.map((s) => (
+      <script type="application/ld+json" set:html={JSON.stringify(s)} />
+    ))}
     <!-- Aplica el tema (claro/oscuro) y el color de acento guardados antes de
          pintar, para evitar el parpadeo y mantenerlos entre páginas. -->
     <script is:inline>

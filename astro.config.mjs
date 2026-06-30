@@ -9,5 +9,10 @@ import sitemap from '@astrojs/sitemap';
 // La landing (/) usa una isla React para los mockups del teléfono.
 export default defineConfig({
   site: 'https://quefalta.es',
-  integrations: [react(), sitemap()],
+  integrations: [
+    react(),
+    // Las páginas-puente /join/:id no se indexan (van con noindex), así que
+    // tampoco entran en el sitemap.
+    sitemap({ filter: (page) => !page.includes('/join') }),
+  ],
 });
