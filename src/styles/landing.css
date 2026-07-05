@@ -447,7 +447,11 @@ nav.qf-nav .qf-nav-link.is-active,
   .qf-section { padding: 72px 0; }
   /* Hero y CTA recuperan ancho: antes conservaban 40px de margen lateral. */
   .qf-hero { padding: 40px 24px; }
-  .qf-hero-lead { text-align: center; }   /* el justificado deja "ríos" de huecos en pantalla estrecha */
+  /* Prosa justificada también en móvil, sin partir palabras (sin hyphens). */
+  .qf-hero-lead, .qf-section-lead, .qf-row-desc, .qf-band-desc, .qf-cta-lead,
+  .qf-step-desc, .qf-extra-desc {
+    text-align: justify;
+  }
   .qf-hero-stage { margin-top: 40px; }
   .qf-cta { padding: 80px 24px; }
   .qf-band { padding: 76px 0; }
