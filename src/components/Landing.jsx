@@ -15,8 +15,7 @@ import { ListScreen } from '../phone/screens/List.jsx';
 import { GroupsScreen } from '../phone/screens/Groups.jsx';
 import { GroupDetailScreen } from '../phone/screens/GroupDetail.jsx';
 
-// Sustituir por la URL real de la ficha en la App Store cuando exista.
-const APP_STORE_URL = '#';
+const APP_STORE_URL = 'https://apps.apple.com/us/app/qu%C3%A9falta/id6777720373';
 
 // ── Datos de la página ─────────────────────────────────────────
 const STEPS = [
