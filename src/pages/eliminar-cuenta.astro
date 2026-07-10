@@ -1,0 +1,81 @@
+---
+import Layout from '../layouts/Layout.astro';
+// URL requerida por Google Play (Datos de seguridad → eliminación de cuenta):
+// debe explicar cómo borrar la cuenta desde la app Y cómo solicitarlo sin ella.
+const updated = '8 de julio de 2026';
+---
+
+<Layout
+  title="Eliminar tu cuenta — QuéFalta"
+  description="Cómo eliminar tu cuenta de QuéFalta y todos tus datos, desde la app o por correo."
+>
+  <article class="legal container">
+    <h1>Eliminar tu cuenta</h1>
+    <p class="updated">Última actualización: {updated}</p>
+
+    <p>
+      Esta página explica cómo eliminar tu cuenta de <strong>QuéFalta</strong>
+      (app de Rubén Ruiz Osma) y qué ocurre con tus datos al hacerlo. El borrado
+      es <strong>permanente</strong>: no se puede deshacer ni recuperar.
+    </p>
+
+    <h2>Desde la app (inmediato)</h2>
+    <ol>
+      <li>Abre QuéFalta e inicia sesión.</li>
+      <li>Ve a <em>Perfil → Privacidad y seguridad</em>.</li>
+      <li>Toca <em>Eliminar cuenta</em> y confirma.</li>
+    </ol>
+    <p>
+      La cuenta y tus datos se eliminan de forma <strong>inmediata</strong>.
+    </p>
+
+    <h2>Sin acceso a la app</h2>
+    <p>
+      Si ya no tienes la app instalada o no puedes acceder, escríbenos a
+      <a href="mailto:contacto@quefalta.es?subject=Eliminar%20cuenta">contacto@quefalta.es</a>
+      con el asunto <em>«Eliminar cuenta»</em> <strong>desde la dirección de
+      correo asociada a tu cuenta</strong> (la de Google o Apple con la que
+      iniciabas sesión). Eliminaremos la cuenta y te lo confirmaremos en un
+      plazo máximo de <strong>30 días</strong>.
+    </p>
+
+    <h2>Qué datos se eliminan</h2>
+    <ul>
+      <li>Tu cuenta y perfil: nombre, correo electrónico, @usuario, foto de perfil y preferencias.</li>
+      <li>Tus listas de la compra personales, favoritos e historial de compras.</li>
+      <li>Tus relaciones de amistad y tu pertenencia a grupos.</li>
+      <li>El token de notificaciones push de tus dispositivos.</li>
+    </ul>
+    <p>
+      <strong>Única excepción:</strong> los productos que añadiste a listas de
+      grupos compartidos pueden permanecer en esas listas para el resto de
+      miembros, pero dejan de estar vinculados a tu identidad. No conservamos
+      ningún otro dato tras el borrado.
+    </p>
+
+    <h2>¿Solo quieres borrar parte de tus datos?</h2>
+    <p>
+      No hace falta eliminar la cuenta: desde <em>Perfil → Editar</em> puedes
+      quitar o cambiar tu foto y tus datos, y desde <em>Perfil</em> puedes
+      desactivar las notificaciones (se elimina el token de tu dispositivo).
+      Para cualquier otra solicitud sobre tus datos, escríbenos a
+      <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a>.
+    </p>
+
+    <p>
+      Más detalle sobre qué datos tratamos y tus derechos en la
+      <a href="/privacidad">política de privacidad</a>.
+    </p>
+  </article>
+
+  <style>
+    .legal { max-width: 720px; padding-top: 48px; }
+    .legal h1 { font-size: clamp(30px, 5vw, 42px); letter-spacing: -1px; }
+    .updated { color: var(--ink-soft); font-size: 13px; margin: 8px 0 28px; }
+    .legal h2 { font-size: 20px; margin: 32px 0 10px; letter-spacing: -0.4px; }
+    .legal p { color: var(--ink); margin-bottom: 12px; }
+    .legal ul, .legal ol { margin: 0 0 12px 20px; color: var(--ink); }
+    .legal li { margin-bottom: 6px; }
+    .legal a { color: var(--accent); }
+  </style>
+</Layout>
