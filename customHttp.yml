@@ -6,3 +6,17 @@ customHeaders:
     headers:
       - key: 'Content-Type'
         value: 'application/json'
+  # App Links de Android: mismas condiciones que el AASA (application/json,
+  # HTTPS, sin redirecciones). La extensión .json ya daría el tipo correcto,
+  # pero se fija explícito para que no dependa de la config de Amplify.
+  - pattern: '/.well-known/assetlinks.json'
+    headers:
+      - key: 'Content-Type'
+        value: 'application/json'
+  # Los assets que genera Astro llevan hash de contenido en el nombre: si el
+  # contenido cambia, cambia la URL. Se pueden cachear un año sin revalidar,
+  # lo que mejora las visitas repetidas (Core Web Vitals).
+  - pattern: '/_astro/*'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, immutable'

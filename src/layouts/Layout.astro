@@ -34,6 +34,7 @@ const orgSchema = {
   url: Astro.site?.href,
   logo: new URL('/quefalta-logo-blue.png', Astro.site).href,
   email: 'contacto@quefalta.es',
+  sameAs: ['https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373'],
 };
 const siteSchema = {
   '@context': 'https://schema.org',
@@ -52,7 +53,12 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, follow" />}
+    <!-- Permite a Google usar previews grandes de imagen (Discover, resultados
+         enriquecidos). Conviven bien con el noindex de arriba: se combinan. -->
+    <meta name="robots" content="max-image-preview:large" />
     <link rel="canonical" href={canonical} />
+    <!-- Smart App Banner de Safari en iOS: banner nativo con enlace a la app. -->
+    <meta name="apple-itunes-app" content="app-id=6777720373" />
     <meta property="og:site_name" content="QuéFalta" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -73,6 +79,7 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     <meta name="theme-color" content="#ffffff" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -83,6 +90,8 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     {schemas.map((s) => (
       <script type="application/ld+json" set:html={JSON.stringify(s)} />
     ))}
+    <!-- Extras de <head> por página (p. ej. preload de la imagen LCP en la home). -->
+    <slot name="head" />
     <!-- Aplica el tema (claro/oscuro) y el color de acento guardados antes de
          pintar, para evitar el parpadeo y mantenerlos entre páginas. -->
     <script is:inline>
@@ -122,6 +131,7 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
             <a href="/privacidad">Privacidad</a>
             <a href="/condiciones">Condiciones</a>
             <a href="/cookies">Cookies</a>
+            <a href="/eliminar-cuenta">Eliminar cuenta</a>
             <a href="mailto:contacto@quefalta.es">Contacto</a>
           </nav>
           <p class="footer-copy">© {new Date().getFullYear()} QuéFalta · Hecho en España</p>

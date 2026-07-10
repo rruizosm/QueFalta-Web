@@ -4,6 +4,8 @@ import SiteNav from '../components/SiteNav.astro';
 import Landing from '../components/Landing.jsx';
 import '../styles/landing.css';
 
+const APP_STORE_URL = 'https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373';
+
 // Datos estructurados de la app: QuéFalta es una app iOS gratuita. Sin
 // `aggregateRating` a propósito: solo se añadirá cuando haya valoraciones
 // reales (inventarlas va contra las directrices de Google).
@@ -16,16 +18,24 @@ const appSchema = {
   description:
     'La lista de la compra compartida para iPhone. Añade, reparte y marca lo que ya tienes, todos a la vez y en tiempo real, con el catálogo real de seis supermercados.',
   url: 'https://quefalta.es/',
+  image: 'https://quefalta.es/og.png',
+  inLanguage: ['es', 'ca'],
+  installUrl: APP_STORE_URL,
+  downloadUrl: APP_STORE_URL,
+  author: { '@type': 'Organization', name: 'QuéFalta', url: 'https://quefalta.es/' },
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
 };
 ---
 
 <Layout
-  title="QuéFalta — Tu lista de la compra, compartida"
-  description="La lista de la compra compartida para iPhone. Añade, reparte y marca lo que ya tienes, todos a la vez y en tiempo real. Para tu hogar, tus amigos o la oficina."
+  title="QuéFalta — La app de lista de la compra compartida"
+  description="Lista de la compra compartida en tiempo real, gratis para iPhone. Con productos y precios reales de Mercadona, Carrefour, Consum, Dia, Bonpreu y bonÀrea."
   bare
   jsonld={appSchema}
 >
+  <!-- El mockup del hero es el elemento LCP de la página: se descarga desde el
+       primer byte de HTML en vez de esperar al render de la isla React. -->
+  <link slot="head" rel="preload" as="image" href="/mock/home.png" fetchpriority="high" />
   <SiteNav />
   <Landing client:load />
 </Layout>

@@ -43,6 +43,10 @@ export function Phone({ children, tab, noNav, image, alt = '', eager }) {
             src={image}
             alt={alt}
             loading={eager ? 'eager' : 'lazy'}
+            decoding="async"
+            // Minúsculas a propósito: React 18 no conoce fetchPriority (llega en
+            // el 19) y los atributos desconocidos en minúscula sí se emiten.
+            fetchpriority={eager ? 'high' : undefined}
             style={{ width: '100%', height: '100%', display: 'block' }}
           />
         ) : (

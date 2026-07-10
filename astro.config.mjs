@@ -11,8 +11,8 @@ export default defineConfig({
   site: 'https://quefalta.es',
   integrations: [
     react(),
-    // Las páginas-puente /join/:id no se indexan (van con noindex), así que
-    // tampoco entran en el sitemap.
-    sitemap({ filter: (page) => !page.includes('/join') }),
+    // Las páginas-puente /join/:id y la de error 404 no se indexan (van con
+    // noindex), así que tampoco entran en el sitemap.
+    sitemap({ filter: (page) => !page.includes('/join') && !page.includes('/404') }),
   ],
 });
