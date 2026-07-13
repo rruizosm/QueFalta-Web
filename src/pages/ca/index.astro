@@ -1,0 +1,222 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Home en català (plan AEO F3). Versión estática y "citable" de la landing:
+// Astro puro, sin la isla React. Para consultes en català ("app llista de la
+// compra compartida") gairebé no hi ha competència → respuesta directa primero.
+// ⚠️ Regla de oro: solo afirmar lo que la app publicada tiene (6 supers).
+
+const APP_STORE_URL = 'https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373';
+
+const appSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'QuéFalta',
+  operatingSystem: 'iOS',
+  applicationCategory: 'ShoppingApplication',
+  description:
+    "La llista de la compra compartida per a iPhone. Afegeix, reparteix i marca el que ja tens, tots alhora i en temps real, amb el catàleg real de sis supermercats.",
+  url: 'https://quefalta.es/ca/',
+  image: 'https://quefalta.es/og.png',
+  inLanguage: ['es', 'ca'],
+  installUrl: APP_STORE_URL,
+  downloadUrl: APP_STORE_URL,
+  author: { '@type': 'Organization', name: 'QuéFalta', url: 'https://quefalta.es/' },
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+
+const SUPERS = [
+  { name: 'Mercadona', logo: '/stores/mercadona.png', slug: 'mercadona' },
+  { name: 'Carrefour', logo: '/stores/carrefour.png', slug: 'carrefour' },
+  { name: 'Consum', logo: '/stores/consum.png', slug: 'consum' },
+  { name: 'Dia', logo: '/stores/dia.png', slug: 'dia' },
+  { name: 'Bonpreu i Esclat', logo: '/stores/bonpreuesclat.png', slug: 'bonpreu' },
+  { name: 'bonÀrea', logo: '/stores/bonarea.png', slug: 'bonarea' },
+];
+
+const PASSOS = [
+  { n: '1', title: 'Crea el teu grup', desc: 'La família, els companys de pis, l’escapada de cap de setmana o el sopar amb amics.' },
+  { n: '2', title: 'Comparteix el grup', desc: 'Comparteix un enllaç o convida els teus amics pel seu @usuari. Tothom veu la mateixa llista.' },
+  { n: '3', title: 'Afegeix productes a la cistella', desc: 'Busca entre milers de productes reals dels teus supermercats preferits i afegeix-los amb un toc. Ajusta quantitats i veu el preu en viu.' },
+];
+
+const FUNCIONS = [
+  { title: 'Catàleg real', desc: 'Milers de productes de sis supermercats amb la imatge, el format i el preu reals. Res d’escriure la llista a mà.' },
+  { title: 'En temps real', desc: 'Quan algú afegeix o recull un producte, tot el grup ho veu a l’instant. S’han acabat els xats de «has comprat el pa?».' },
+  { title: 'Fitxa de producte', desc: 'Ingredients, al·lèrgens, valors nutricionals i origen quan el supermercat els publica.' },
+  { title: 'Ordenada pel súper', desc: 'La cistella s’agrupa per zones del supermercat (fruita i verdura, frescos, congelats…) per recórrer la botiga una sola vegada.' },
+  { title: 'En català', desc: 'Interfície en català, i el catàleg també en català a Mercadona, Bonpreu i Esclat i bonÀrea.' },
+  { title: 'Gratuïta i sense anuncis', desc: 'Tots els grups i llistes que vulguis, sense pagar res. Les teves dades no es venen.' },
+];
+---
+
+<Layout
+  title="QuéFalta — L'app de llista de la compra compartida"
+  description="Llista de la compra compartida en temps real, gratuïta per a iPhone. Amb productes i preus reals de Mercadona, Carrefour, Consum, Dia, Bonpreu i bonÀrea."
+  lang="ca"
+  alternates={{ es: '/', ca: '/ca/' }}
+  jsonld={appSchema}
+>
+  <section class="ca" id="top">
+    <header class="ca-hero">
+      <span class="ca-pill"><span class="ca-dot"></span>Disponible per a iPhone</span>
+      <h1 class="ca-title"><span class="ca-em">QuéFalta</span> a la teva llista de la compra?</h1>
+      <p class="ca-lead">
+        QuéFalta és l'app gratuïta de llista de la compra compartida: crees un
+        grup, hi convides la teva gent i tothom afegeix i marca productes de la
+        mateixa cistella en temps real, amb el catàleg i els preus reals de sis
+        supermercats d'Espanya.
+      </p>
+      <div class="ca-actions">
+        <a class="ca-btn" href={APP_STORE_URL}>Descarrega-la a l'App Store</a>
+        <a class="ca-ghost" href="/ca/preguntes">Preguntes freqüents</a>
+      </div>
+      <div class="ca-supers" aria-label="Supermercats inclosos">
+        {SUPERS.map((s) => (
+          <a class="ca-super" href={`/supermercados/${s.slug}`}>
+            <img src={s.logo} alt="" width="22" height="22" loading="lazy" />
+            {s.name}
+          </a>
+        ))}
+      </div>
+    </header>
+
+    <section class="ca-block" id="com-funciona">
+      <h2 class="ca-h2">Com funciona</h2>
+      <p class="ca-sub">Tres passos i ja pots començar a compartir la llista. Sense manuals ni configuracions rares.</p>
+      <div class="ca-steps">
+        {PASSOS.map((p) => (
+          <article class="ca-step">
+            <span class="ca-step-n">{p.n}</span>
+            <h3 class="ca-h3">{p.title}</h3>
+            <p class="ca-desc">{p.desc}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="ca-block" id="funcions">
+      <h2 class="ca-h2">Funcions</h2>
+      <div class="ca-grid">
+        {FUNCIONS.map((f) => (
+          <article class="ca-card">
+            <h3 class="ca-h3">{f.title}</h3>
+            <p class="ca-desc">{f.desc}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="ca-block" id="descarrega">
+      <div class="ca-cta">
+        <h2 class="ca-h2">Que no se t'oblidi <span class="ca-em">res</span>.</h2>
+        <p class="ca-desc">
+          Descarrega QuéFalta i comença a compartir la compra amb la teva gent
+          avui mateix. Gratuïta i sense anuncis.
+        </p>
+        <a class="ca-btn" href={APP_STORE_URL}>Descarrega-la a l'App Store</a>
+      </div>
+      <p class="ca-disclaimer">
+        Els preus són orientatius i poden variar. QuéFalta no està afiliada,
+        associada ni patrocinada per cap d'aquests supermercats.
+      </p>
+    </section>
+  </section>
+
+  <style>
+    .ca { max-width: 880px; margin: 0 auto; padding: 48px 24px 0; }
+
+    .ca-hero { text-align: center; max-width: 680px; margin: 0 auto; }
+    .ca-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600; color: var(--ink-soft);
+      background: var(--paper-2); border: 1px solid var(--border);
+      border-radius: 980px; padding: 7px 14px;
+    }
+    .ca-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+    .ca-title {
+      font-family: var(--geo); font-weight: 800; letter-spacing: -0.035em;
+      line-height: 1.05; font-size: clamp(34px, 6vw, 56px);
+      margin-top: 18px; color: var(--ink);
+    }
+    .ca-em { color: var(--accent); }
+    .ca-lead {
+      color: var(--ink-soft); font-size: clamp(16px, 1.7vw, 18.5px);
+      line-height: 1.6; margin: 18px auto 0; max-width: 600px;
+    }
+    .ca-actions { margin-top: 26px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .ca-btn {
+      display: inline-block; background: var(--accent); color: #fff !important;
+      font-weight: 700; font-size: 15px; padding: 13px 24px; border-radius: 12px;
+      transition: opacity 0.15s;
+    }
+    .ca-btn:hover { opacity: 0.9; }
+    .ca-ghost {
+      display: inline-block; color: var(--accent); font-weight: 600; font-size: 15px;
+      padding: 13px 18px; border: 1px solid var(--border); border-radius: 12px;
+      background: var(--surface); transition: border-color 0.15s;
+    }
+    .ca-ghost:hover { border-color: var(--accent); }
+
+    .ca-supers { margin-top: 34px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .ca-super {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 980px; padding: 9px 16px 9px 11px;
+      font-size: 14px; font-weight: 600; color: var(--ink);
+      transition: transform 0.18s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    .ca-super:hover { transform: translateY(-2px); }
+    .ca-super img { width: 22px; height: 22px; object-fit: contain; }
+    :global([data-theme="dark"]) .ca-super img {
+      background: #fff; border-radius: 5px; padding: 2px; box-sizing: content-box;
+    }
+
+    .ca-block { margin-top: 72px; text-align: center; }
+    .ca-h2 {
+      font-family: var(--geo); font-weight: 800; letter-spacing: -0.03em;
+      font-size: clamp(24px, 3.6vw, 34px); color: var(--ink);
+    }
+    .ca-sub { color: var(--ink-soft); font-size: 16px; line-height: 1.55; margin: 12px auto 0; max-width: 520px; }
+    .ca-h3 {
+      font-family: var(--geo); font-weight: 700; font-size: 17px;
+      letter-spacing: -0.015em; color: var(--ink);
+    }
+    .ca-desc { color: var(--ink-soft); font-size: 15px; line-height: 1.6; margin-top: 8px; }
+
+    .ca-steps { margin-top: 34px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: left; }
+    .ca-step {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 22px;
+      box-shadow: 0 1px 2px rgba(17, 17, 20, 0.04), 0 4px 16px rgba(17, 17, 20, 0.05);
+    }
+    .ca-step-n {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--accent-soft); color: var(--accent);
+      font-family: var(--geo); font-weight: 800; font-size: 14px; margin-bottom: 12px;
+    }
+
+    .ca-grid { margin-top: 34px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; text-align: left; }
+    .ca-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 22px;
+      box-shadow: 0 1px 2px rgba(17, 17, 20, 0.04), 0 4px 16px rgba(17, 17, 20, 0.05);
+    }
+
+    .ca-cta {
+      background: var(--paper-2); border: 1px solid var(--border);
+      border-radius: 24px; padding: 40px 28px;
+    }
+    .ca-cta .ca-desc { max-width: 480px; margin-left: auto; margin-right: auto; }
+    .ca-cta .ca-btn { margin-top: 20px; }
+    .ca-disclaimer {
+      font-size: 13px; color: var(--ink-faint);
+      margin: 28px auto 0; max-width: 580px; line-height: 1.5;
+    }
+
+    @media (max-width: 720px) {
+      .ca-steps, .ca-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</Layout>

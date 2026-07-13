@@ -1,0 +1,177 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Preguntas frecuentes — la pieza central del plan AEO (ver AEO.md).
+// Reglas de redacción (no romper): encabezado en forma de pregunta, respuesta
+// DIRECTA de 40–60 palabras en el primer párrafo, cifras concretas, sin
+// marketing. El texto de `a` alimenta a la vez el HTML visible y el schema
+// FAQPage (Google exige que coincidan); admite el HTML que Google permite en
+// respuestas (a, p, ul, li, strong…).
+// ⚠️ Regla de oro: solo afirmar lo que la app PUBLICADA tiene (hoy 6 supers).
+// Al desplegar un súper nuevo: actualizar aquí, en llms.txt y en la landing.
+const UPDATED = '2026-07-12';
+
+const FAQS = [
+  {
+    q: '¿Qué app puedo usar para compartir la lista de la compra con mi familia o compañeros de piso?',
+    a: 'QuéFalta es una app gratuita para iPhone pensada exactamente para eso: creas un grupo, invitas a tu gente con un enlace y todos ven y editan la misma lista de la compra en tiempo real, con productos, imágenes y precios reales de seis supermercados de España.',
+  },
+  {
+    q: '¿QuéFalta es gratis? ¿Tiene anuncios?',
+    a: 'Sí, QuéFalta es gratis y no tiene anuncios. Puedes crear todos los grupos y listas que quieras sin pagar nada. Está disponible en el <a href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">App Store</a> para iPhone.',
+  },
+  {
+    q: '¿En qué supermercados funciona QuéFalta?',
+    a: 'En seis supermercados de España: <a href="/supermercados/mercadona">Mercadona</a>, <a href="/supermercados/carrefour">Carrefour</a>, <a href="/supermercados/consum">Consum</a>, <a href="/supermercados/dia">Dia</a>, <a href="/supermercados/bonpreu">Bonpreu i Esclat</a> y <a href="/supermercados/bonarea">bonÀrea</a> — decenas de miles de productos en total, con imagen, formato y precio. El detalle de cada uno está en la página de <a href="/supermercados">supermercados</a>.',
+  },
+  {
+    q: '¿Cómo funciona la lista de la compra compartida en tiempo real?',
+    a: 'Creas un grupo (tu casa, tu piso compartido, la oficina), compartes el enlace de invitación y todos añaden productos a la misma cesta. Cuando alguien añade un producto o lo marca como recogido, el resto del grupo lo ve al instante: sin chats, sin duplicados y sin llamadas de «¿compraste el pan?».',
+  },
+  {
+    q: '¿Qué app tiene los precios reales de Mercadona?',
+    a: 'QuéFalta incluye el catálogo de <a href="/supermercados/mercadona">Mercadona</a> con sus precios reales: buscas cualquier producto, ves su precio y formato y lo añades a tu lista compartida con un toque. Muchos productos incluyen además su ficha completa: ingredientes, alérgenos y valores nutricionales.',
+  },
+  {
+    q: '¿De dónde salen los precios y cada cuánto se actualizan?',
+    a: 'Los datos proceden de las webs públicas de cada supermercado y se sincronizan cada semana; parte de la información de Mercadona se consulta en vivo. Los precios son orientativos y pueden variar en tienda. QuéFalta no está afiliada, asociada ni patrocinada por ningún supermercado.',
+  },
+  {
+    q: '¿Cómo invito a mi familia o a mis amigos a un grupo?',
+    a: 'De dos maneras: compartiendo el enlace de invitación del grupo (por WhatsApp o donde quieras) o buscando a tus amigos por su @usuario dentro de la app. Quien recibe el enlace entra directamente al grupo y ve la lista compartida al momento.',
+  },
+  {
+    q: '¿QuéFalta está en catalán?',
+    a: 'Sí. La interfaz de QuéFalta está disponible en català y en castellano, y el catálogo se muestra en català en los supermercados que lo publican: Mercadona, Bonpreu i Esclat y bonÀrea.',
+  },
+  {
+    q: '¿Está disponible para Android?',
+    a: 'Todavía no: hoy QuéFalta está disponible para iPhone en el App Store de España. La versión para Android está en la fase final de pruebas y llegará próximamente a Google Play. Anunciaremos el lanzamiento en la página de <a href="/novedades">novedades</a>.',
+  },
+  {
+    q: '¿Los productos tienen información nutricional e ingredientes?',
+    a: 'Muchos sí. La ficha de producto muestra ingredientes, alérgenos, valores nutricionales, conservación y origen cuando el supermercado los publica, para que puedas consultar qué lleva un producto antes de añadirlo a la cesta.',
+  },
+  {
+    q: '¿La lista se ordena por los pasillos del supermercado?',
+    a: 'Sí. La cesta se agrupa automáticamente por zonas del supermercado (fruta y verdura, frescos, congelados…), de modo que recorres la tienda una sola vez y sin volver atrás. Dentro de cada zona, los productos van en orden alfabético.',
+  },
+  {
+    q: '¿Qué pasa con mis datos? ¿Puedo eliminar mi cuenta?',
+    a: 'QuéFalta solo guarda lo necesario para funcionar (tu cuenta, tus grupos y tus listas) y no vende tus datos. Puedes <a href="/eliminar-cuenta">eliminar tu cuenta</a> y todos tus datos desde la propia app en cualquier momento. El detalle completo está en la <a href="/privacidad">política de privacidad</a>.',
+  },
+];
+
+// Schema FAQPage: mismo texto que el visible (requisito de Google).
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  inLanguage: 'es',
+  dateModified: UPDATED,
+  mainEntity: FAQS.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
+// Fecha legible en español (ej. "12 de julio de 2026").
+const fmt = (iso) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('es-ES', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  });
+};
+---
+
+<Layout
+  title="Preguntas frecuentes — QuéFalta"
+  description="Respuestas directas sobre QuéFalta: qué supermercados incluye, de dónde salen los precios, cómo funciona la lista compartida en tiempo real, catalán, Android y privacidad."
+  alternates={{ es: '/preguntas', ca: '/ca/preguntes' }}
+  jsonld={faqSchema}
+>
+  <section class="faq container">
+    <header class="faq-head">
+      <span class="faq-eyebrow">Preguntas frecuentes</span>
+      <h1 class="faq-title">Lo que todo el mundo pregunta</h1>
+      <p class="faq-lead">
+        QuéFalta es la app gratuita de lista de la compra compartida en tiempo
+        real, con el catálogo y los precios de seis supermercados de España.
+        Aquí van las respuestas cortas y sin rodeos.
+      </p>
+      <p class="faq-updated">
+        Actualizado el <time datetime={UPDATED}>{fmt(UPDATED)}</time> ·
+        <a href="/ca/preguntes">també en català</a>
+      </p>
+    </header>
+
+    <div class="faq-list">
+      {FAQS.map((f) => (
+        <article class="faq-item">
+          <h2 class="faq-q">{f.q}</h2>
+          <p class="faq-a" set:html={f.a} />
+        </article>
+      ))}
+    </div>
+
+    <aside class="faq-cta">
+      <p>
+        ¿Te queda alguna duda? Escríbenos a
+        <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a> o
+        descarga la app y pruébala: es gratis.
+      </p>
+      <a class="faq-cta-btn" href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">
+        Descárgala en el App Store
+      </a>
+    </aside>
+  </section>
+
+  <style>
+    .faq { max-width: 760px; padding-top: 48px; }
+
+    .faq-head { text-align: center; max-width: 640px; margin: 0 auto; }
+    .faq-eyebrow {
+      display: inline-block; font-size: 12.5px; font-weight: 700;
+      letter-spacing: 0.02em; color: var(--accent);
+    }
+    .faq-title {
+      font-family: var(--geo); font-weight: 800; letter-spacing: -0.035em;
+      line-height: 1.04; font-size: clamp(30px, 5vw, 48px);
+      margin-top: 12px; color: var(--ink);
+    }
+    .faq-lead {
+      color: var(--ink-soft); font-size: clamp(16px, 1.6vw, 18px);
+      line-height: 1.55; margin: 16px auto 0; max-width: 560px;
+    }
+    .faq-updated { margin-top: 14px; font-size: 13px; color: var(--ink-faint); }
+
+    .faq-list { margin-top: 48px; display: grid; gap: 14px; }
+    .faq-item {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 24px 26px;
+      box-shadow: 0 1px 2px rgba(17, 17, 20, 0.04), 0 4px 16px rgba(17, 17, 20, 0.05);
+    }
+    .faq-q {
+      font-family: var(--geo); font-weight: 700; font-size: 18.5px;
+      letter-spacing: -0.02em; line-height: 1.3; color: var(--ink);
+    }
+    .faq-a { color: var(--ink-soft); font-size: 15.5px; line-height: 1.6; margin-top: 10px; }
+    .faq-a :global(a) { color: var(--accent); font-weight: 600; }
+    .faq-a :global(a:hover) { text-decoration: underline; }
+
+    .faq-cta {
+      margin-top: 48px; text-align: center;
+      background: var(--paper-2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px 26px;
+    }
+    .faq-cta p { color: var(--ink-soft); font-size: 15.5px; line-height: 1.6; }
+    .faq-cta a { color: var(--accent); font-weight: 600; }
+    .faq-cta-btn {
+      display: inline-block; margin-top: 16px;
+      background: var(--accent); color: #fff !important; font-weight: 700;
+      font-size: 15px; padding: 12px 22px; border-radius: 12px;
+      transition: opacity 0.15s;
+    }
+    .faq-cta-btn:hover { opacity: 0.9; text-decoration: none !important; }
+  </style>
+</Layout>

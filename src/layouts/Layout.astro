@@ -13,6 +13,11 @@ interface Props {
   noindex?: boolean;
   /** Datos estructurados Schema.org propios de la página (objeto o lista). */
   jsonld?: object | object[];
+  /** Idioma de la página: gobierna <html lang>, og:locale y el chrome (nav/pie). */
+  lang?: 'es' | 'ca';
+  /** Rutas de las versiones de idioma de ESTA página → hreflang recíprocos
+      (es ↔ ca + x-default apuntando a la versión es). Solo en páginas con par. */
+  alternates?: { es: string; ca: string };
 }
 const {
   title = 'QuéFalta — La compra compartida, sin líos',
@@ -21,9 +26,30 @@ const {
   image = '/og.png',
   noindex = false,
   jsonld,
+  lang = 'es',
+  alternates,
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;
+const ogLocale = lang === 'ca' ? 'ca_ES' : 'es_ES';
+const ogLocaleAlt = alternates ? (lang === 'ca' ? 'es_ES' : 'ca_ES') : null;
+
+// Textos del pie genérico en el idioma de la página. "Preguntas" es la única
+// sección con versión catalana propia; el resto enlaza a las páginas en
+// castellano (mejor un enlace cruzado que ninguno).
+const T = lang === 'ca'
+  ? {
+      novedades: 'Novetats', supermercados: 'Supermercats', preguntas: 'Preguntes',
+      preguntasHref: '/ca/preguntes', apoyar: 'Donar suport', privacidad: 'Privacitat',
+      condiciones: 'Condicions', cookies: 'Cookies',
+      contacto: 'Contacte', copy: 'Fet a Espanya',
+    }
+  : {
+      novedades: 'Novedades', supermercados: 'Supermercados', preguntas: 'Preguntas',
+      preguntasHref: '/preguntas', apoyar: 'Apoyar', privacidad: 'Privacidad',
+      condiciones: 'Condiciones', cookies: 'Cookies',
+      contacto: 'Contacto', copy: 'Hecho en España',
+    };
 
 // Identidad del sitio para los buscadores, presente en todas las páginas. A esto
 // se le suma el `jsonld` que cada página aporte (p. ej. la app en la home).
@@ -41,13 +67,13 @@ const siteSchema = {
   '@type': 'WebSite',
   name: 'QuéFalta',
   url: Astro.site?.href,
-  inLanguage: 'es-ES',
+  inLanguage: lang === 'ca' ? 'ca' : 'es-ES',
 };
 const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? jsonld : [jsonld]) : [])];
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -57,6 +83,13 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
          enriquecidos). Conviven bien con el noindex de arriba: se combinan. -->
     <meta name="robots" content="max-image-preview:large" />
     <link rel="canonical" href={canonical} />
+    {alternates && (
+      <>
+        <link rel="alternate" hreflang="es" href={new URL(alternates.es, Astro.site).href} />
+        <link rel="alternate" hreflang="ca" href={new URL(alternates.ca, Astro.site).href} />
+        <link rel="alternate" hreflang="x-default" href={new URL(alternates.es, Astro.site).href} />
+      </>
+    )}
     <!-- Smart App Banner de Safari en iOS: banner nativo con enlace a la app. -->
     <meta name="apple-itunes-app" content="app-id=6777720373" />
     <meta property="og:site_name" content="QuéFalta" />
@@ -64,7 +97,8 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
-    <meta property="og:locale" content="es_ES" />
+    <meta property="og:locale" content={ogLocale} />
+    {ogLocaleAlt && <meta property="og:locale:alternate" content={ogLocaleAlt} />}
     <meta property="og:image" content={ogImage} />
     <!-- Dimensiones explícitas: WhatsApp/Telegram/iMessage reservan la tarjeta
          grande sin tener que descargar la imagen primero (las OG miden 1200×630). -->
@@ -112,7 +146,7 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     </script>
   </head>
   <body>
-    {!bare && <SiteNav />}
+    {!bare && <SiteNav lang={lang} />}
 
     <main>
       <slot />
@@ -121,20 +155,21 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     {!bare && (
       <footer class="site-footer">
         <div class="footer-inner">
-          <a href="/" class="footer-brand">
+          <a href={lang === 'ca' ? '/ca/' : '/'} class="footer-brand">
             <img src="/quefalta-logo-blue.png" alt="" class="footer-logo" width="24" height="24" />
             <span class="footer-word">Qué<span>Falta</span></span>
           </a>
           <nav class="footer-links">
-            <a href="/novedades">Novedades</a>
-            <a href="/apoyar">Apoyar</a>
-            <a href="/privacidad">Privacidad</a>
-            <a href="/condiciones">Condiciones</a>
-            <a href="/cookies">Cookies</a>
-            <a href="/eliminar-cuenta">Eliminar cuenta</a>
-            <a href="mailto:contacto@quefalta.es">Contacto</a>
+            <a href="/novedades">{T.novedades}</a>
+            <a href="/supermercados">{T.supermercados}</a>
+            <a href={T.preguntasHref}>{T.preguntas}</a>
+            <a href="/apoyar">{T.apoyar}</a>
+            <a href="/privacidad">{T.privacidad}</a>
+            <a href="/condiciones">{T.condiciones}</a>
+            <a href="/cookies">{T.cookies}</a>
+            <a href="mailto:contacto@quefalta.es">{T.contacto}</a>
           </nav>
-          <p class="footer-copy">© {new Date().getFullYear()} QuéFalta · Hecho en España</p>
+          <p class="footer-copy">© {new Date().getFullYear()} QuéFalta · {T.copy}</p>
         </div>
       </footer>
     )}

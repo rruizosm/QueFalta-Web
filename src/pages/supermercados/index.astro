@@ -1,0 +1,153 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { STORES, UPDATED } from '../../data/supermercados.js';
+
+// Índice de las páginas por supermercado (plan AEO F2). El contenido de cada
+// súper vive en src/data/supermercados.js.
+
+const site = 'https://quefalta.es';
+
+const itemListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Supermercados incluidos en QuéFalta',
+  numberOfItems: STORES.length,
+  itemListElement: STORES.map((s, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: s.name,
+    url: `${site}/supermercados/${s.slug}`,
+  })),
+};
+
+// Fecha legible en español (ej. "12 de julio de 2026").
+const fmt = (iso) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('es-ES', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  });
+};
+---
+
+<Layout
+  title="Supermercados en QuéFalta — Mercadona, Carrefour, Consum, Dia, Bonpreu y bonÀrea"
+  description="Los seis supermercados incluidos en QuéFalta y qué ofrece cada uno: catálogo con precios, ficha de producto e idiomas. Datos actualizados cada semana."
+  jsonld={itemListSchema}
+>
+  <section class="sup container">
+    <header class="sup-head">
+      <span class="sup-eyebrow">Supermercados</span>
+      <h1 class="sup-title">Seis supermercados, una sola app</h1>
+      <p class="sup-lead">
+        QuéFalta incluye el catálogo y los precios de seis supermercados de
+        España: Mercadona, Carrefour, Consum, Dia, Bonpreu i Esclat y bonÀrea.
+        Elige cuáles quieres ver y añade sus productos a una lista de la compra
+        compartida en tiempo real.
+      </p>
+      <p class="sup-updated">
+        Actualizado el <time datetime={UPDATED}>{fmt(UPDATED)}</time>
+      </p>
+    </header>
+
+    <div class="sup-grid">
+      {STORES.map((s) => (
+        <a class="sup-card" href={`/supermercados/${s.slug}`}>
+          <span class="sup-card-head">
+            <img class="sup-card-logo" src={s.logo} alt="" width="28" height="28" loading="lazy" />
+            <span class="sup-card-name">{s.name}</span>
+          </span>
+          <span class="sup-card-desc">{s.summary}</span>
+          <span class="sup-card-more">Ver detalles →</span>
+        </a>
+      ))}
+    </div>
+
+    <p class="sup-disclaimer">
+      Los precios son orientativos y proceden de las webs públicas de cada
+      cadena. QuéFalta no está afiliada, asociada ni patrocinada por ninguno de
+      estos supermercados.
+    </p>
+
+    <aside class="sup-cta">
+      <p>
+        ¿Dudas sobre cómo funciona? Están resueltas en las
+        <a href="/preguntas">preguntas frecuentes</a>.
+      </p>
+      <a class="sup-cta-btn" href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">
+        Descárgala en el App Store
+      </a>
+    </aside>
+  </section>
+
+  <style>
+    .sup { max-width: 880px; padding-top: 36px; }
+
+    .sup-head { text-align: center; max-width: 710px; margin: 48px auto 0; }
+    .sup-eyebrow {
+      display: inline-block; font-size: 12.5px; font-weight: 700;
+      letter-spacing: 0.02em; color: var(--accent);
+    }
+    .sup-title {
+      font-family: var(--geo); font-weight: 800; letter-spacing: -0.035em;
+      line-height: 1.04; font-size: clamp(30px, 5vw, 48px);
+      margin-top: 12px; color: var(--ink);
+    }
+    .sup-lead {
+      color: var(--ink-soft); font-size: clamp(16px, 1.6vw, 18px);
+      line-height: 1.55; margin: 16px auto 0; max-width: 600px;
+    }
+    .sup-updated { margin-top: 14px; font-size: 13px; color: var(--ink-faint); }
+
+    .sup-grid {
+      margin-top: 48px; display: grid; gap: 16px;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .sup-card {
+      display: flex; flex-direction: column; gap: 10px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 22px 24px;
+      box-shadow: 0 1px 2px rgba(17, 17, 20, 0.04), 0 4px 16px rgba(17, 17, 20, 0.05);
+      transition: transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1),
+                  box-shadow 0.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    .sup-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(17, 17, 20, 0.08), 0 2px 8px rgba(17, 17, 20, 0.04);
+    }
+    .sup-card-head { display: flex; align-items: center; gap: 10px; }
+    .sup-card-logo { width: 28px; height: 28px; object-fit: contain; }
+    :global([data-theme="dark"]) .sup-card-logo {
+      background: #fff; border-radius: 6px; padding: 2px; box-sizing: content-box;
+    }
+    .sup-card-name {
+      font-family: var(--geo); font-weight: 700; font-size: 18px;
+      letter-spacing: -0.02em; color: var(--ink);
+    }
+    .sup-card-desc { color: var(--ink-soft); font-size: 14.5px; line-height: 1.55; }
+    .sup-card-more { color: var(--accent); font-weight: 600; font-size: 14px; margin-top: auto; }
+
+    .sup-disclaimer {
+      text-align: center; font-size: 13px; color: var(--ink-faint);
+      margin: 36px auto 0; max-width: 580px; line-height: 1.5;
+    }
+
+    .sup-cta {
+      margin-top: 40px; text-align: center;
+      background: var(--paper-2); border: 1px solid var(--border);
+      border-radius: 20px; padding: 28px 26px;
+    }
+    .sup-cta p { color: var(--ink-soft); font-size: 15.5px; line-height: 1.6; }
+    .sup-cta a { color: var(--accent); font-weight: 600; }
+    .sup-cta-btn {
+      display: inline-block; margin-top: 16px;
+      background: var(--accent); color: #fff !important; font-weight: 700;
+      font-size: 15px; padding: 12px 22px; border-radius: 12px;
+      transition: opacity 0.15s;
+    }
+    .sup-cta-btn:hover { opacity: 0.9; }
+
+    @media (max-width: 640px) {
+      .sup-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</Layout>

@@ -66,13 +66,14 @@ const ROWS = [
   },
 ];
 
+// `slug` = su página de detalle en /supermercados/{slug} (plan AEO F2).
 const SUPERS = [
-  { name: 'Mercadona', logo: '/stores/mercadona.png' },
-  { name: 'Carrefour', logo: '/stores/carrefour.png' },
-  { name: 'Consum', logo: '/stores/consum.png' },
-  { name: 'Dia', logo: '/stores/dia.png' },
-  { name: 'Bonpreu i Esclat', logo: '/stores/bonpreuesclat.png' },
-  { name: 'bonÀrea', logo: '/stores/bonarea.png' },
+  { name: 'Mercadona', logo: '/stores/mercadona.png', slug: 'mercadona' },
+  { name: 'Carrefour', logo: '/stores/carrefour.png', slug: 'carrefour' },
+  { name: 'Consum', logo: '/stores/consum.png', slug: 'consum' },
+  { name: 'Dia', logo: '/stores/dia.png', slug: 'dia' },
+  { name: 'Bonpreu i Esclat', logo: '/stores/bonpreuesclat.png', slug: 'bonpreu' },
+  { name: 'bonÀrea', logo: '/stores/bonarea.png', slug: 'bonarea' },
 ];
 
 const EXTRAS = [
@@ -572,11 +573,14 @@ function Supermarkets() {
         </div>
         <Reveal className="qf-supers" delay={120}>
           {SUPERS.map((s) => (
-            <span key={s.name} className="qf-super">
+            <a key={s.name} className="qf-super" href={`/supermercados/${s.slug}`}>
               <img className="qf-super-logo" src={s.logo} alt="" width="24" height="24" loading="lazy" />
               {s.name}
-            </span>
+            </a>
           ))}
+        </Reveal>
+        <Reveal as="p" className="qf-supers-more" delay={140}>
+          <a href="/supermercados">Qué ofrece cada supermercado en QuéFalta →</a>
         </Reveal>
         <Reveal as="p" className="qf-disclaimer" delay={160}>
           Los precios son orientativos y pueden variar. QuéFalta no está afiliada, asociada ni patrocinada por
@@ -633,11 +637,12 @@ function Footer() {
         </a>
         <nav className="qf-footer-links">
           <a href="/novedades">Novedades</a>
+          <a href="/supermercados">Supermercados</a>
+          <a href="/preguntas">Preguntas</a>
           <a href="/apoyar">Apoyar</a>
           <a href="/privacidad">Privacidad</a>
           <a href="/condiciones">Condiciones</a>
           <a href="/cookies">Cookies</a>
-          <a href="/eliminar-cuenta">Eliminar cuenta</a>
           <a href="mailto:contacto@quefalta.es">Contacto</a>
         </nav>
         <p className="qf-footer-copy">© {new Date().getFullYear()} QuéFalta · Hecho en España</p>

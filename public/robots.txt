@@ -1,3 +1,6 @@
+# Los bots de IA (GPTBot, ClaudeBot, PerplexityBot, Google-Extended…) son
+# bienvenidos: sin crawl no hay cita en los answer engines. No bloquearlos.
+# Resumen del sitio para agentes LLM: https://quefalta.es/llms.txt
 User-agent: *
 Allow: /
 
