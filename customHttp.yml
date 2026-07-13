@@ -13,6 +13,19 @@ customHeaders:
     headers:
       - key: 'Content-Type'
         value: 'application/json'
+  # Ficheros de texto plano con acentos y otros caracteres multibyte (UTF-8).
+  # Amplify sirve los .txt como text/plain SIN charset → el navegador y los
+  # crawlers los leen como Latin-1 y "é" sale como "Ã©". Declarar utf-8 lo
+  # arregla (el .txt no puede declarar su propia codificación como hace el
+  # <meta charset> del HTML).
+  - pattern: '/llms.txt'
+    headers:
+      - key: 'Content-Type'
+        value: 'text/plain; charset=utf-8'
+  - pattern: '/robots.txt'
+    headers:
+      - key: 'Content-Type'
+        value: 'text/plain; charset=utf-8'
   # Los assets que genera Astro llevan hash de contenido en el nombre: si el
   # contenido cambia, cambia la URL. Se pueden cachear un año sin revalidar,
   # lo que mejora las visitas repetidas (Core Web Vitals).
