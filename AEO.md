@@ -159,18 +159,21 @@ en el sitemap; hreflang verificados en el HTML de las 4 páginas con par).
 La mitad del AEO: cuando alguien pregunta "mejor app de lista de la compra",
 los engines citan comparativas, Reddit y directorios — no la web del producto.
 
-- [ ] **AlternativeTo**: crear la ficha de QuéFalta (legítimo hacerlo uno
-  mismo; listar como alternativa a Bring!, Listonic, AnyList).
-- [ ] **Product Hunt**: lanzamiento (preparar assets; ya hay capturas de
-  marketing/appstore).
-- [ ] **Reddit y foros en español** (r/es, r/askspain, forocoches, foros de
-  ahorro): responder donde YA se pregunta por apps de lista de la compra,
-  con transparencia (soy el desarrollador). Reddit es de lo más citado
-  por los answer engines. Ritmo natural, nunca spam.
-- [ ] Contactar 2–3 blogs/medios de apps en español (Xataka Móvil, Andro4all
-  cuando haya Android…) — una mención con enlace vale más que 10 páginas
-  propias.
-- [ ] Ficha del App Store: ya publicada ✅ (los engines la leen). Mantener
+📋 MATERIAL LISTO 2026-07-12 en `quefalta-web/AEO-F4-KIT.md` (fichero LOCAL, NO
+commitear — repos públicos). Trae texto para pegar en cada sitio + email de
+prensa + plantillas de Reddit. Falta EJECUTARLO (crear cuentas y publicar; eso
+solo lo puede hacer el usuario). Tabla de seguimiento dentro del kit.
+
+- [ ] **AlternativeTo** (prioridad ALTA): crear la ficha (alternativa a Bring!,
+  Listonic, AnyList, OurGroceries). Texto en el kit §1.
+- [ ] **Slant** (§2): añadir QuéFalta a "best shared shopping list apps".
+- [ ] **Product Hunt** (§3): lanzar mar–jue 00:01 PT; tagline + maker comment +
+  galería (capturas `marketing/appstore/out/iphone-6.9-es/01–06.png`) en el kit.
+- [ ] **Reddit y foros ES** (§4): responder donde YA se pregunta, SIEMPRE
+  declarando que eres el dev, 1–2/semana. Plantillas A/B/C en el kit.
+- [ ] **Prensa** (§5): priorizar medios Apple ES (Applesfera el 1º) porque hoy
+  es iOS-only; email listo en el kit. Andro4all/El Output cuando haya Android.
+- [x] **Ficha del App Store**: ya publicada ✅ (los engines la leen). Mantener
   keywords/descripción al día con cada súper nuevo.
 
 ## F5 — Medición (mensual, ~15 min)
@@ -199,7 +202,7 @@ los engines citan comparativas, Reddit y directorios — no la web del producto.
 | F1 | FAQ + FAQPage schema | ½ día | ✅ código 2026-07-12 (falta deploy + rich results test) |
 | F2 | 6 páginas de súper + índice | 1–2 días | ✅ código 2026-07-12 (falta deploy + rich results test) |
 | F3 | Catalán (FAQ + home) | ½–1 día | ✅ código 2026-07-12 (falta deploy) |
-| F4 | Terceros (AlternativeTo, PH, Reddit, prensa) | continuo | ⬜ |
+| F4 | Terceros (AlternativeTo, PH, Reddit, prensa) | continuo | 📋 material listo (AEO-F4-KIT.md); falta publicar (manual) |
 | F5 | Medición mensual | 15 min/mes | ⬜ |
 
 F0+F1 pueden ir en el mismo deploy. F4 puede empezar en paralelo desde ya
