@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.quefalta.app",
+      "sha256_cert_fingerprints": [
+        "63:0A:D9:8B:63:DE:52:AD:65:5C:88:A8:E0:B0:6E:E9:7E:A5:B4:0C:5A:F0:39:DB:75:94:81:06:30:FD:CF:75"
+      ]
+    }
+  }
+]
