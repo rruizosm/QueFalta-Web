@@ -30,19 +30,19 @@ const fmt = (iso) => {
 ---
 
 <Layout
-  title="Supermercados en QuéFalta — Mercadona, Carrefour, Consum, Dia, Bonpreu y bonÀrea"
-  description="Los seis supermercados incluidos en QuéFalta y qué ofrece cada uno: catálogo con precios, ficha de producto e idiomas. Datos actualizados cada semana."
+  title="15 supermercados en QuéFalta — catálogos, precios y fichas"
+  description="Los 15 supermercados incluidos en QuéFalta y qué ofrece cada uno: catálogo con precios, ofertas, ficha de producto, idiomas y disponibilidad regional."
   jsonld={itemListSchema}
 >
   <section class="sup container">
     <header class="sup-head">
       <span class="sup-eyebrow">Supermercados</span>
-      <h1 class="sup-title">Seis supermercados, una sola app</h1>
+      <h1 class="sup-title">Quince supermercados, una sola app</h1>
       <p class="sup-lead">
-        QuéFalta incluye el catálogo y los precios de seis supermercados de
-        España: Mercadona, Carrefour, Consum, Dia, Bonpreu i Esclat y bonÀrea.
-        Elige cuáles quieres ver y añade sus productos a una lista de la compra
-        compartida en tiempo real.
+        QuéFalta incluye el catálogo y los precios de quince supermercados de
+        España, entre cadenas nacionales y regionales. La app te muestra los
+        disponibles en tu zona: elige cuáles quieres ver y añade sus productos
+        a una lista de la compra compartida en tiempo real.
       </p>
       <p class="sup-updated">
         Actualizado el <time datetime={UPDATED}>{fmt(UPDATED)}</time>
@@ -73,9 +73,10 @@ const fmt = (iso) => {
         ¿Dudas sobre cómo funciona? Están resueltas en las
         <a href="/preguntas">preguntas frecuentes</a>.
       </p>
-      <a class="sup-cta-btn" href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">
-        Descárgala en el App Store
-      </a>
+      <div class="sup-cta-actions">
+        <a class="sup-cta-btn" href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">Descárgala en el App Store</a>
+        <a class="sup-cta-btn sup-cta-btn-play" href="https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1">Descárgala en Google Play</a>
+      </div>
     </aside>
   </section>
 
@@ -138,8 +139,9 @@ const fmt = (iso) => {
     }
     .sup-cta p { color: var(--ink-soft); font-size: 15.5px; line-height: 1.6; }
     .sup-cta a { color: var(--accent); font-weight: 600; }
+    .sup-cta-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 16px; }
     .sup-cta-btn {
-      display: inline-block; margin-top: 16px;
+      display: inline-block;
       background: var(--accent); color: #fff !important; font-weight: 700;
       font-size: 15px; padding: 12px 22px; border-radius: 12px;
       transition: opacity 0.15s;

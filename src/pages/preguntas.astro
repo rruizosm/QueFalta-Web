@@ -7,22 +7,22 @@ import Layout from '../layouts/Layout.astro';
 // marketing. El texto de `a` alimenta a la vez el HTML visible y el schema
 // FAQPage (Google exige que coincidan); admite el HTML que Google permite en
 // respuestas (a, p, ul, li, strong…).
-// ⚠️ Regla de oro: solo afirmar lo que la app PUBLICADA tiene (hoy 6 supers).
+// ⚠️ Regla de oro: solo afirmar lo que la app PUBLICADA tiene (hoy 15 supers).
 // Al desplegar un súper nuevo: actualizar aquí, en llms.txt y en la landing.
-const UPDATED = '2026-07-12';
+const UPDATED = '2026-08-01';
 
 const FAQS = [
   {
     q: '¿Qué app puedo usar para compartir la lista de la compra con mi familia o compañeros de piso?',
-    a: 'QuéFalta es una app gratuita para iPhone pensada exactamente para eso: creas un grupo, invitas a tu gente con un enlace y todos ven y editan la misma lista de la compra en tiempo real, con productos, imágenes y precios reales de seis supermercados de España.',
+    a: 'QuéFalta es una app gratuita para iPhone y Android pensada exactamente para eso: creas un grupo, invitas a tu gente con un enlace y todos ven y editan la misma lista de la compra en tiempo real, con productos, imágenes y precios reales de quince supermercados de España.',
   },
   {
     q: '¿QuéFalta es gratis? ¿Tiene anuncios?',
-    a: 'Sí, QuéFalta es gratis y no tiene anuncios. Puedes crear todos los grupos y listas que quieras sin pagar nada. Está disponible en el <a href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">App Store</a> para iPhone.',
+    a: 'Sí, QuéFalta es gratis y no tiene anuncios. Puedes crear todos los grupos y listas que quieras sin pagar nada. Está disponible en el <a href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">App Store</a> y en <a href="https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1">Google Play</a>.',
   },
   {
     q: '¿En qué supermercados funciona QuéFalta?',
-    a: 'En seis supermercados de España: <a href="/supermercados/mercadona">Mercadona</a>, <a href="/supermercados/carrefour">Carrefour</a>, <a href="/supermercados/consum">Consum</a>, <a href="/supermercados/dia">Dia</a>, <a href="/supermercados/bonpreu">Bonpreu i Esclat</a> y <a href="/supermercados/bonarea">bonÀrea</a> — decenas de miles de productos en total, con imagen, formato y precio. El detalle de cada uno está en la página de <a href="/supermercados">supermercados</a>.',
+    a: 'En quince supermercados: <a href="/supermercados/mercadona">Mercadona</a>, <a href="/supermercados/carrefour">Carrefour</a>, <a href="/supermercados/consum">Consum</a>, <a href="/supermercados/dia">Dia</a>, <a href="/supermercados/bonpreu">Bonpreu i Esclat</a>, <a href="/supermercados/bonarea">bonÀrea</a>, <a href="/supermercados/sorli">Sorli</a>, <a href="/supermercados/eroski">Eroski</a>, <a href="/supermercados/caprabo">Caprabo</a>, <a href="/supermercados/condis">Condis</a>, <a href="/supermercados/ametller">Ametller Origen</a>, <a href="/supermercados/aldi">Aldi</a>, <a href="/supermercados/hiperdino">HiperDino</a>, <a href="/supermercados/alcampo">Alcampo</a> y <a href="/supermercados/plusfresc">Plusfresc</a>. La app muestra las cadenas disponibles en tu zona.',
   },
   {
     q: '¿Cómo funciona la lista de la compra compartida en tiempo real?',
@@ -42,11 +42,11 @@ const FAQS = [
   },
   {
     q: '¿QuéFalta está en catalán?',
-    a: 'Sí. La interfaz de QuéFalta está disponible en català y en castellano, y el catálogo se muestra en català en los supermercados que lo publican: Mercadona, Bonpreu i Esclat y bonÀrea.',
+    a: 'Sí. La interfaz de QuéFalta está disponible en catalán y en castellano, y el catálogo se muestra en catalán en los supermercados que lo publican: Mercadona, Bonpreu i Esclat, bonÀrea, Sorli, Condis, Ametller Origen y Plusfresc.',
   },
   {
     q: '¿Está disponible para Android?',
-    a: 'Todavía no: hoy QuéFalta está disponible para iPhone en el App Store de España. La versión para Android está en la fase final de pruebas y llegará próximamente a Google Play. Anunciaremos el lanzamiento en la página de <a href="/novedades">novedades</a>.',
+    a: 'Sí. QuéFalta está disponible para iPhone en el <a href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">App Store</a> y para Android en <a href="https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1">Google Play</a>. Puedes descargarla gratis y usar las mismas listas compartidas, grupos y catálogo de supermercados en ambos sistemas.',
   },
   {
     q: '¿Los productos tienen información nutricional e ingredientes?',
@@ -96,7 +96,7 @@ const fmt = (iso) => {
       <h1 class="faq-title">Lo que todo el mundo pregunta</h1>
       <p class="faq-lead">
         QuéFalta es la app gratuita de lista de la compra compartida en tiempo
-        real, con el catálogo y los precios de seis supermercados de España.
+        real, con el catálogo y los precios de quince supermercados de España.
         Aquí van las respuestas cortas y sin rodeos.
       </p>
       <p class="faq-updated">
@@ -120,9 +120,10 @@ const fmt = (iso) => {
         <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a> o
         descarga la app y pruébala: es gratis.
       </p>
-      <a class="faq-cta-btn" href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">
-        Descárgala en el App Store
-      </a>
+      <div class="faq-cta-actions">
+        <a class="faq-cta-btn" href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">Descárgala en el App Store</a>
+        <a class="faq-cta-btn faq-cta-btn-play" href="https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1">Descárgala en Google Play</a>
+      </div>
     </aside>
   </section>
 
@@ -166,8 +167,9 @@ const fmt = (iso) => {
     }
     .faq-cta p { color: var(--ink-soft); font-size: 15.5px; line-height: 1.6; }
     .faq-cta a { color: var(--accent); font-weight: 600; }
+    .faq-cta-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 16px; }
     .faq-cta-btn {
-      display: inline-block; margin-top: 16px;
+      display: inline-block;
       background: var(--accent); color: #fff !important; font-weight: 700;
       font-size: 15px; padding: 12px 22px; border-radius: 12px;
       transition: opacity 0.15s;

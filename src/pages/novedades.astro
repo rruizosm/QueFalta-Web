@@ -6,9 +6,31 @@ import Layout from '../layouts/Layout.astro';
 // FINAL de la lista. `tag` es opcional (Nuevo / Mejora / Corrección).
 const UPDATES = [
   {
-    date: '2026-07-05', version: 'v1.0', tag: 'Nuevo',
+    date: '2026-07-05', version: 'v1.0',
     title: 'QuéFalta llega a la App Store',
     desc: 'Primera versión pública: listas compartidas en tiempo real, catálogo real de seis supermercados y grupos ilimitados.',
+  },
+  {
+    date: '2026-07-29', version: 'v1.2.0', tag: 'Nuevo',
+    title: 'QuéFalta 1.2.0: compara y organiza mejor tu compra',
+    desc: 'Esta versión amplía el catálogo y añade nuevas herramientas para encontrar productos y ahorrar en cada compra.',
+    items: [
+      'Nuevo catálogo multitienda con búsqueda, filtros y vistas de lista o cuadrícula.',
+      'Nuevas secciones de Ofertas, Novedades y Cambios de precio.',
+      'Nuevo Índice alimentario con información nutricional de Open Food Facts.',
+      'Fichas de producto y favoritos rediseñados.',
+      'Mejoras en las cestas compartidas, los grupos y la navegación.',
+      'Correcciones de estabilidad y rendimiento.',
+    ],
+  },
+  {
+    date: '2026-07-30', version: 'v1.2.0', tag: 'Nuevo',
+    title: 'QuéFalta llega a Android',
+    desc: 'QuéFalta ya está disponible para Android en Google Play. Descárgala gratis y organiza las mismas listas compartidas, grupos y compras de supermercado desde tu móvil.',
+    link: {
+      href: 'https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1',
+      label: 'Descargar en Google Play',
+    },
   },
 ];
 
@@ -47,6 +69,12 @@ const fmt = (iso) => {
             </div>
             <h2 class="tl-card-title">{u.title}</h2>
             <p class="tl-desc">{u.desc}</p>
+            {u.items && (
+              <ul class="tl-list">
+                {u.items.map((item) => <li>{item}</li>)}
+              </ul>
+            )}
+            {u.link && <a class="tl-link" href={u.link.href}>{u.link.label} →</a>}
           </div>
         </li>
       ))}
@@ -131,6 +159,12 @@ const fmt = (iso) => {
     letter-spacing: -0.02em; margin-top: 14px; color: var(--ink);
   }
   .tl-desc { color: var(--ink-soft); font-size: 15px; line-height: 1.55; margin-top: 9px; }
+  .tl-list {
+    display: grid; gap: 8px; margin: 15px 0 0; padding-left: 20px;
+    color: var(--ink-soft); font-size: 14.5px; line-height: 1.5;
+  }
+  .tl-link { display: inline-block; margin-top: 15px; color: var(--accent); font-size: 14.5px; font-weight: 700; }
+  .tl-link:hover { text-decoration: underline; }
 
   /* ── Móvil: una columna con la línea a la izquierda ────────── */
   @media (max-width: 720px) {

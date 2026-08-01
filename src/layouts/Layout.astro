@@ -21,7 +21,7 @@ interface Props {
 }
 const {
   title = 'QuéFalta — La compra compartida, sin líos',
-  description = 'Organiza la compra en grupo: lista compartida en tiempo real, carrito por grupos y catálogo de seis supermercados. ¿Qué falta?',
+  description = 'Organiza la compra en grupo: lista compartida en tiempo real, carrito por grupos y catálogo de quince supermercados. ¿Qué falta?',
   bare = false,
   image = '/og.png',
   noindex = false,
@@ -60,7 +60,10 @@ const orgSchema = {
   url: Astro.site?.href,
   logo: new URL('/quefalta-logo-blue.png', Astro.site).href,
   email: 'contacto@quefalta.es',
-  sameAs: ['https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373'],
+  sameAs: [
+    'https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373',
+    'https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1',
+  ],
 };
 const siteSchema = {
   '@context': 'https://schema.org',

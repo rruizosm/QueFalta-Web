@@ -5,23 +5,24 @@ import Landing from '../components/Landing.jsx';
 import '../styles/landing.css';
 
 const APP_STORE_URL = 'https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373';
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1';
 
-// Datos estructurados de la app: QuéFalta es una app iOS gratuita. Sin
+// Datos estructurados de la app: QuéFalta es una app gratuita para iOS y Android. Sin
 // `aggregateRating` a propósito: solo se añadirá cuando haya valoraciones
 // reales (inventarlas va contra las directrices de Google).
 const appSchema = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
   name: 'QuéFalta',
-  operatingSystem: 'iOS',
+  operatingSystem: ['iOS', 'Android'],
   applicationCategory: 'ShoppingApplication',
   description:
-    'La lista de la compra compartida para iPhone. Añade, reparte y marca lo que ya tienes, todos a la vez y en tiempo real, con el catálogo real de seis supermercados.',
+    'La lista de la compra compartida para iPhone y Android. Añade, reparte y marca lo que ya tienes, todos a la vez y en tiempo real, con el catálogo real de quince supermercados.',
   url: 'https://quefalta.es/',
   image: 'https://quefalta.es/og.png',
   inLanguage: ['es', 'ca'],
-  installUrl: APP_STORE_URL,
-  downloadUrl: APP_STORE_URL,
+  installUrl: [APP_STORE_URL, PLAY_STORE_URL],
+  downloadUrl: [APP_STORE_URL, PLAY_STORE_URL],
   author: { '@type': 'Organization', name: 'QuéFalta', url: 'https://quefalta.es/' },
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
 };
@@ -29,7 +30,7 @@ const appSchema = {
 
 <Layout
   title="QuéFalta — La app de lista de la compra compartida"
-  description="Lista de la compra compartida en tiempo real, gratis para iPhone. Con productos y precios reales de Mercadona, Carrefour, Consum, Dia, Bonpreu y bonÀrea."
+  description="Lista de la compra compartida en tiempo real, gratis para iPhone y Android. Con productos y precios reales de quince supermercados nacionales y regionales."
   bare
   alternates={{ es: '/', ca: '/ca/' }}
   jsonld={appSchema}

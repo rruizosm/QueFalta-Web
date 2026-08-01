@@ -18,6 +18,7 @@ import { GroupDetailScreen } from '../phone/screens/GroupDetail.jsx';
 // Storefront /es/: la app se vende en España; con /us/ Apple puede enseñar
 // "no disponible en tu país" a quien entre desde España sin cookie de región.
 const APP_STORE_URL = 'https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373';
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1';
 
 // ── Datos de la página ─────────────────────────────────────────
 const STEPS = [
@@ -41,7 +42,7 @@ const ROWS = [
     img: '/mock/catalog.png', alt: 'Catálogo de productos de Mercadona en QuéFalta',
     title: 'Un catálogo de verdad, no una hoja en blanco',
     desc: 'Olvídate de escribir la lista a mano. Busca entre miles de productos reales de tu supermercado y añádelos con un toque.',
-    bullets: ['6 supermercados dentro de la app', 'Busca entre miles de productos por supermercado', 'Categorías claras y ordenadas'],
+    bullets: ['15 supermercados dentro de la app', 'Busca entre miles de productos por supermercado', 'Categorías claras y ordenadas'],
   },
   {
     eyebrow: 'Productos', tab: 'catalog', Screen: ProductsScreen,
@@ -74,6 +75,15 @@ const SUPERS = [
   { name: 'Dia', logo: '/stores/dia.png', slug: 'dia' },
   { name: 'Bonpreu i Esclat', logo: '/stores/bonpreuesclat.png', slug: 'bonpreu' },
   { name: 'bonÀrea', logo: '/stores/bonarea.png', slug: 'bonarea' },
+  { name: 'Sorli', logo: '/stores/sorli.png', slug: 'sorli' },
+  { name: 'Eroski', logo: '/stores/eroski.png', slug: 'eroski' },
+  { name: 'Caprabo', logo: '/stores/caprabo.png', slug: 'caprabo' },
+  { name: 'Condis', logo: '/stores/condis.png', slug: 'condis' },
+  { name: 'Ametller Origen', logo: '/stores/ametller.png', slug: 'ametller' },
+  { name: 'Aldi', logo: '/stores/aldi.png', slug: 'aldi' },
+  { name: 'HiperDino', logo: '/stores/hiperdino.jpg', slug: 'hiperdino' },
+  { name: 'Alcampo', logo: '/stores/alcampo.png', slug: 'alcampo' },
+  { name: 'Plusfresc', logo: '/stores/plusfresc.png', slug: 'plusfresc' },
 ];
 
 const EXTRAS = [
@@ -159,6 +169,17 @@ function AppleBadge({ light }) {
   );
 }
 
+function GooglePlayBadge({ light }) {
+  return (
+    <a href={PLAY_STORE_URL} aria-label="Descárgalo en Google Play" className={`qf-badge ${light ? 'light' : ''}`}>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+        <path d="M4.1 2.6A2.3 2.3 0 0 0 3 4.6v14.8a2.3 2.3 0 0 0 1.1 2l10-9.4-10-9.4Zm11.7 10.9 2.5-2.3-2.4-1.4-1.1 1.1 1 2.6Zm-1 1.5-1 2.6 1.1 1.1 2.4-1.4-2.5-2.3Zm4.7-1.8-1.4-.8-2.7 2.5 2.7 2.5 1.5-.9c1.3-.7 1.3-2.5-.1-3.2Z" />
+      </svg>
+      <span className="qf-badge-txt"><small>Disponible en</small><strong>Google Play</strong></span>
+    </a>
+  );
+}
+
 function PhoneRender({ f }) {
   return (
     <div className="qf-phone-scale">
@@ -177,7 +198,7 @@ function Hero() {
     <header className="qf-hero" id="top">
       <div className="qf-hero-bg" aria-hidden="true" />
       <Reveal>
-        <span className="qf-pill"><span className="qf-dot" />Disponible para iPhone</span>
+        <span className="qf-pill"><span className="qf-dot" />Disponible para iPhone y Android</span>
       </Reveal>
       <Reveal as="h1" className="qf-display qf-hero-title" delay={60}>
         <span className="qf-em">QuéFalta</span> en tu lista de la compra?
@@ -199,6 +220,7 @@ function Hero() {
       <Reveal delay={180}>
         <div className="qf-hero-actions">
           <AppleBadge />
+          <GooglePlayBadge />
           <a href="#como-funciona" className="qf-ghost">
             Cómo funciona
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
@@ -621,7 +643,7 @@ function DownloadCTA() {
         <div className="qf-cta-word">Qué<span>Falta</span></div>
         <h2 className="qf-display qf-cta-title">Que no se te olvide <span className="qf-em">nada</span>.</h2>
         <p className="qf-lead qf-cta-lead">Descarga QuéFalta y empieza a compartir la compra con tu gente hoy mismo.</p>
-        <div className="qf-cta-actions"><AppleBadge /></div>
+        <div className="qf-cta-actions"><AppleBadge /><GooglePlayBadge /></div>
       </Reveal>
     </section>
   );

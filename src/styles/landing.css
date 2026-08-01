@@ -269,7 +269,7 @@ nav.qf-nav .qf-nav-link.is-active,
 
 /* Preferencias: apariencia + colores + idioma */
 .qf-pref-card {
-  width: 100%; max-width: 360px; background: var(--surface);
+  width: 100%; max-width: 520px; background: var(--surface);
   border: 1px solid var(--border); border-radius: 24px;
   box-shadow: var(--shadow-md); padding: 22px;
   display: flex; flex-direction: column; gap: 20px;
@@ -297,8 +297,10 @@ nav.qf-nav .qf-nav-link.is-active,
 .qf-pref-dot.is-on { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent); }
 .qf-pref-mode:focus-visible, .qf-pref-dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-/* Supermercados disponibles: lista vertical con logo, nombre y círculo de selección. */
-.qf-pref-supers { display: flex; flex-direction: column; gap: 8px; }
+/* Supermercados disponibles: cuadrícula de dos columnas con logo, nombre y selección. */
+.qf-pref-supers {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+}
 .qf-pref-super {
   display: flex; align-items: center; gap: 11px; width: 100%; text-align: left;
   padding: 9px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface);

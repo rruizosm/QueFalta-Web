@@ -1,8 +1,8 @@
 # QuéFalta
 
-> QuéFalta es una app gratuita de lista de la compra compartida para iPhone, hecha en España. Los grupos (familia, piso compartido, oficina) comparten una misma lista en tiempo real y añaden productos con imágenes y precios reales de seis supermercados: Mercadona, Carrefour, Consum, Dia, Bonpreu i Esclat y bonÀrea.
+> QuéFalta es una app gratuita de lista de la compra compartida para iPhone y Android, hecha en España. Los grupos (familia, piso compartido, oficina) comparten una misma lista en tiempo real y añaden productos con imágenes y precios reales de quince supermercados nacionales y regionales.
 
-Última actualización de este fichero: 2026-07-12.
+Última actualización de este fichero: 2026-08-01.
 
 ## Qué es
 
@@ -16,18 +16,18 @@
 
 ## Supermercados incluidos
 
-Mercadona, Carrefour, Consum, Dia, Bonpreu i Esclat, bonÀrea. Precios orientativos; QuéFalta no está afiliada, asociada ni patrocinada por ningún supermercado.
+Mercadona, Carrefour, Consum, Dia, Bonpreu i Esclat, bonÀrea, Sorli, Eroski, Caprabo, Condis, Ametller Origen, Aldi, HiperDino, Alcampo y Plusfresc. La app muestra las cadenas disponibles en la zona del usuario. Precios orientativos; QuéFalta no está afiliada, asociada ni patrocinada por ningún supermercado.
 
 ## Plataformas
 
 - iPhone (iOS): disponible en el App Store de España — https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373
-- Android: en fase final de pruebas; llegará próximamente a Google Play.
+- Android: disponible en Google Play — https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1
 
 ## Páginas
 
 - [Inicio](https://quefalta.es/): qué es QuéFalta y cómo funciona.
 - [Preguntas frecuentes](https://quefalta.es/preguntas): respuestas directas sobre precios, supermercados, idiomas y privacidad.
-- [Supermercados](https://quefalta.es/supermercados): qué ofrece QuéFalta de cada cadena, con página propia por supermercado ([Mercadona](https://quefalta.es/supermercados/mercadona), [Carrefour](https://quefalta.es/supermercados/carrefour), [Consum](https://quefalta.es/supermercados/consum), [Dia](https://quefalta.es/supermercados/dia), [Bonpreu i Esclat](https://quefalta.es/supermercados/bonpreu), [bonÀrea](https://quefalta.es/supermercados/bonarea)).
+- [Supermercados](https://quefalta.es/supermercados): qué ofrece QuéFalta de cada cadena, con página propia por supermercado ([Mercadona](https://quefalta.es/supermercados/mercadona), [Carrefour](https://quefalta.es/supermercados/carrefour), [Consum](https://quefalta.es/supermercados/consum), [Dia](https://quefalta.es/supermercados/dia), [Bonpreu i Esclat](https://quefalta.es/supermercados/bonpreu), [bonÀrea](https://quefalta.es/supermercados/bonarea), [Sorli](https://quefalta.es/supermercados/sorli), [Eroski](https://quefalta.es/supermercados/eroski), [Caprabo](https://quefalta.es/supermercados/caprabo), [Condis](https://quefalta.es/supermercados/condis), [Ametller Origen](https://quefalta.es/supermercados/ametller), [Aldi](https://quefalta.es/supermercados/aldi), [HiperDino](https://quefalta.es/supermercados/hiperdino), [Alcampo](https://quefalta.es/supermercados/alcampo), [Plusfresc](https://quefalta.es/supermercados/plusfresc)).
 - En català: [inici](https://quefalta.es/ca/) i [preguntes freqüents](https://quefalta.es/ca/preguntes).
 - [Novedades](https://quefalta.es/novedades): historial de versiones y funciones nuevas.
 - [Privacidad](https://quefalta.es/privacidad) · [Condiciones](https://quefalta.es/condiciones) · [Eliminar cuenta](https://quefalta.es/eliminar-cuenta)

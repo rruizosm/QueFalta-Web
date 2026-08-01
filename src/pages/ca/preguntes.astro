@@ -6,20 +6,20 @@ import Layout from '../../layouts/Layout.astro';
 // el array FAQS alimenta a la vez el HTML y el schema FAQPage).
 // ⚠️ Mantener las DOS versiones sincronizadas: si cambias una respuesta en
 // /preguntas, cámbiala también aquí (y viceversa) y actualiza ambas UPDATED.
-const UPDATED = '2026-07-12';
+const UPDATED = '2026-08-01';
 
 const FAQS = [
   {
     q: 'Quina app puc fer servir per compartir la llista de la compra amb la família o els companys de pis?',
-    a: "QuéFalta és una app gratuïta per a iPhone pensada exactament per a això: crees un grup, hi convides la teva gent amb un enllaç i tothom veu i edita la mateixa llista de la compra en temps real, amb productes, imatges i preus reals de sis supermercats d'Espanya.",
+    a: "QuéFalta és una app gratuïta per a iPhone i Android pensada exactament per a això: crees un grup, hi convides la teva gent amb un enllaç i tothom veu i edita la mateixa llista de la compra en temps real, amb productes, imatges i preus reals de quinze supermercats d'Espanya.",
   },
   {
     q: 'QuéFalta és gratuïta? Té anuncis?',
-    a: "Sí, QuéFalta és gratuïta i no té anuncis. Pots crear tots els grups i llistes que vulguis sense pagar res. És disponible a l'<a href=\"https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373\">App Store</a> per a iPhone.",
+    a: "Sí, QuéFalta és gratuïta i no té anuncis. Pots crear tots els grups i llistes que vulguis sense pagar res. És disponible a l'<a href=\"https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373\">App Store</a> i a <a href=\"https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1\">Google Play</a>.",
   },
   {
     q: 'A quins supermercats funciona QuéFalta?',
-    a: "A sis supermercats d'Espanya: <a href=\"/supermercados/mercadona\">Mercadona</a>, <a href=\"/supermercados/carrefour\">Carrefour</a>, <a href=\"/supermercados/consum\">Consum</a>, <a href=\"/supermercados/dia\">Dia</a>, <a href=\"/supermercados/bonpreu\">Bonpreu i Esclat</a> i <a href=\"/supermercados/bonarea\">bonÀrea</a> — desenes de milers de productes en total, amb imatge, format i preu. El detall de cadascun és a la pàgina de <a href=\"/supermercados\">supermercats</a>.",
+    a: "A quinze supermercats: <a href=\"/supermercados/mercadona\">Mercadona</a>, <a href=\"/supermercados/carrefour\">Carrefour</a>, <a href=\"/supermercados/consum\">Consum</a>, <a href=\"/supermercados/dia\">Dia</a>, <a href=\"/supermercados/bonpreu\">Bonpreu i Esclat</a>, <a href=\"/supermercados/bonarea\">bonÀrea</a>, <a href=\"/supermercados/sorli\">Sorli</a>, <a href=\"/supermercados/eroski\">Eroski</a>, <a href=\"/supermercados/caprabo\">Caprabo</a>, <a href=\"/supermercados/condis\">Condis</a>, <a href=\"/supermercados/ametller\">Ametller Origen</a>, <a href=\"/supermercados/aldi\">Aldi</a>, <a href=\"/supermercados/hiperdino\">HiperDino</a>, <a href=\"/supermercados/alcampo\">Alcampo</a> i <a href=\"/supermercados/plusfresc\">Plusfresc</a>. L'app mostra les cadenes disponibles a la teva zona.",
   },
   {
     q: 'Com funciona la llista de la compra compartida en temps real?',
@@ -39,11 +39,11 @@ const FAQS = [
   },
   {
     q: 'QuéFalta és en català?',
-    a: "Sí. La interfície de QuéFalta és disponible en català i en castellà, i el catàleg es mostra en català als supermercats que el publiquen: Mercadona, Bonpreu i Esclat i bonÀrea.",
+    a: "Sí. La interfície de QuéFalta és disponible en català i en castellà, i el catàleg es mostra en català als supermercats que el publiquen: Mercadona, Bonpreu i Esclat, bonÀrea, Sorli, Condis, Ametller Origen i Plusfresc.",
   },
   {
     q: 'És disponible per a Android?',
-    a: "Encara no: avui QuéFalta és disponible per a iPhone a l'App Store d'Espanya. La versió per a Android és en la fase final de proves i arribarà aviat a Google Play. N'anunciarem el llançament a la pàgina de <a href=\"/novedades\">novetats</a>.",
+    a: "Sí. QuéFalta és disponible per a iPhone a l'<a href=\"https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373\">App Store</a> i per a Android a <a href=\"https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1\">Google Play</a>. Pots descarregar-la de franc i fer servir les mateixes llistes compartides, grups i catàleg de supermercats als dos sistemes.",
   },
   {
     q: 'Els productes tenen informació nutricional i ingredients?',
@@ -94,7 +94,7 @@ const fmt = (iso) => {
       <h1 class="faq-title">El que tothom pregunta</h1>
       <p class="faq-lead">
         QuéFalta és l'app gratuïta de llista de la compra compartida en temps
-        real, amb el catàleg i els preus de sis supermercats d'Espanya. Aquí hi
+        real, amb el catàleg i els preus de quinze supermercats d'Espanya. Aquí hi
         ha les respostes curtes i sense embuts.
       </p>
       <p class="faq-updated">
@@ -118,9 +118,10 @@ const fmt = (iso) => {
         <a href="mailto:contacto@quefalta.es">contacto@quefalta.es</a> o
         descarrega l'app i prova-la: és gratuïta.
       </p>
-      <a class="faq-cta-btn" href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">
-        Descarrega-la a l'App Store
-      </a>
+      <div class="faq-cta-actions">
+        <a class="faq-cta-btn" href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">Descarrega-la a l'App Store</a>
+        <a class="faq-cta-btn faq-cta-btn-play" href="https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1">Descarrega-la a Google Play</a>
+      </div>
     </aside>
   </section>
 
@@ -164,8 +165,9 @@ const fmt = (iso) => {
     }
     .faq-cta p { color: var(--ink-soft); font-size: 15.5px; line-height: 1.6; }
     .faq-cta a { color: var(--accent); font-weight: 600; }
+    .faq-cta-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 16px; }
     .faq-cta-btn {
-      display: inline-block; margin-top: 16px;
+      display: inline-block;
       background: var(--accent); color: #fff !important; font-weight: 700;
       font-size: 15px; padding: 12px 22px; border-radius: 12px;
       transition: opacity 0.15s;
