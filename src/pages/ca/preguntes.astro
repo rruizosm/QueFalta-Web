@@ -6,20 +6,20 @@ import Layout from '../../layouts/Layout.astro';
 // el array FAQS alimenta a la vez el HTML y el schema FAQPage).
 // ⚠️ Mantener las DOS versiones sincronizadas: si cambias una respuesta en
 // /preguntas, cámbiala también aquí (y viceversa) y actualiza ambas UPDATED.
-const UPDATED = '2026-08-01';
+const UPDATED = '2026-09-09';
 
 const FAQS = [
   {
     q: 'Quina app puc fer servir per compartir la llista de la compra amb la família o els companys de pis?',
-    a: "QuéFalta és una app gratuïta per a iPhone i Android pensada exactament per a això: crees un grup, hi convides la teva gent amb un enllaç i tothom veu i edita la mateixa llista de la compra en temps real, amb productes, imatges i preus reals de quinze supermercats d'Espanya.",
+    a: "QuéFalta és una app gratuïta per a iPhone i Android pensada exactament per a això: crees un grup, hi convides la teva gent amb un enllaç i tothom veu i edita la mateixa llista de la compra en temps real, amb productes, imatges i preus reals de dinou supermercats d'Espanya.",
   },
   {
     q: 'QuéFalta és gratuïta? Té anuncis?',
-    a: "Sí, QuéFalta és gratuïta i no té anuncis. Pots crear tots els grups i llistes que vulguis sense pagar res. És disponible a l'<a href=\"https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373\">App Store</a> i a <a href=\"https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1\">Google Play</a>.",
+    a: "Sí. Pots descarregar i fer servir QuéFalta gratuïtament, sense anuncis, i crear tots els grups i llistes que vulguis. QuéFalta Plus és opcional i afegeix funcions avançades, com el Radar d'estalvi il·limitat, estadístiques, ordre per preu unitari i accés conjunt a tots els supermercats, inclòs Lidl.",
   },
   {
     q: 'A quins supermercats funciona QuéFalta?',
-    a: "A quinze supermercats: <a href=\"/supermercados/mercadona\">Mercadona</a>, <a href=\"/supermercados/carrefour\">Carrefour</a>, <a href=\"/supermercados/consum\">Consum</a>, <a href=\"/supermercados/dia\">Dia</a>, <a href=\"/supermercados/bonpreu\">Bonpreu i Esclat</a>, <a href=\"/supermercados/bonarea\">bonÀrea</a>, <a href=\"/supermercados/sorli\">Sorli</a>, <a href=\"/supermercados/eroski\">Eroski</a>, <a href=\"/supermercados/caprabo\">Caprabo</a>, <a href=\"/supermercados/condis\">Condis</a>, <a href=\"/supermercados/ametller\">Ametller Origen</a>, <a href=\"/supermercados/aldi\">Aldi</a>, <a href=\"/supermercados/hiperdino\">HiperDino</a>, <a href=\"/supermercados/alcampo\">Alcampo</a> i <a href=\"/supermercados/plusfresc\">Plusfresc</a>. L'app mostra les cadenes disponibles a la teva zona.",
+    a: "A dinou supermercats: <a href=\"/supermercados/mercadona\">Mercadona</a>, <a href=\"/supermercados/lidl\">Lidl</a>, <a href=\"/supermercados/carrefour\">Carrefour</a>, <a href=\"/supermercados/consum\">Consum</a>, <a href=\"/supermercados/dia\">Dia</a>, <a href=\"/supermercados/bonpreu\">Bonpreu i Esclat</a>, <a href=\"/supermercados/bonarea\">bonÀrea</a>, <a href=\"/supermercados/sorli\">Sorli</a>, <a href=\"/supermercados/eroski\">Eroski</a>, <a href=\"/supermercados/caprabo\">Caprabo</a>, <a href=\"/supermercados/condis\">Condis</a>, <a href=\"/supermercados/ametller\">Ametller Origen</a>, <a href=\"/supermercados/aldi\">Aldi</a>, <a href=\"/supermercados/hiperdino\">HiperDino</a>, <a href=\"/supermercados/alcampo\">Alcampo</a>, <a href=\"/supermercados/plusfresc\">Plusfresc</a>, <a href=\"/supermercados/gadis\">Gadis</a>, <a href=\"/supermercados/froiz\">Froiz</a> i <a href=\"/supermercados/ahorramas\">Ahorramás</a>. Lidl requereix QuéFalta Plus.",
   },
   {
     q: 'Com funciona la llista de la compra compartida en temps real?',
@@ -94,7 +94,7 @@ const fmt = (iso) => {
       <h1 class="faq-title">El que tothom pregunta</h1>
       <p class="faq-lead">
         QuéFalta és l'app gratuïta de llista de la compra compartida en temps
-        real, amb el catàleg i els preus de quinze supermercats d'Espanya. Aquí hi
+        real, amb el catàleg i els preus de dinou supermercats d'Espanya. Aquí hi
         ha les respostes curtes i sense embuts.
       </p>
       <p class="faq-updated">

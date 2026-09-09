@@ -14,6 +14,12 @@ export const GOAL = 240;
 
 // Gastos reales, lo más reciente arriba. Para añadir uno nuevo, copia una línea.
 export const GASTOS = [
+  { fecha: '2026-08-18', concepto: 'ChatGPT', importe: 82.24 },
+  { fecha: '2026-08-15', concepto: 'ChatGPT', importe: 23 },
+  { fecha: '2026-08-07', concepto: 'Resend', importe: 18.04 },
+  { fecha: '2026-07-21', concepto: 'Base de datos · Supabase', importe: 30.40 },
+  { fecha: '2026-07-21', concepto: 'Expo Go Pro', importe: 17.33 },
+  { fecha: '2026-07-15', concepto: 'ChatGPT', importe: 23 },
   { fecha: '2026-06-21', concepto: 'Base de datos · Supabase', importe: 22.56 },
   { fecha: '2026-06-21', concepto: 'Expo Go Pro', importe: 17.22 },
   { fecha: '2026-06-21', concepto: 'Correo corporativo', importe: 8.57 },

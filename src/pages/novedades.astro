@@ -1,14 +1,49 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// Novedades de QuéFalta, en orden de publicación: la más antigua arriba y la
-// más reciente al final. Para añadir una actualización, suma un objeto al
-// FINAL de la lista. `tag` es opcional (Nuevo / Mejora / Corrección).
+// Novedades de QuéFalta, en orden de publicación: la más reciente arriba y la
+// más antigua al final. Para añadir una actualización, suma un objeto al
+// PRINCIPIO de la lista. `tag` es opcional (Nuevo / Mejora / Corrección).
 const UPDATES = [
   {
-    date: '2026-07-05', version: 'v1.0',
-    title: 'QuéFalta llega a la App Store',
-    desc: 'Primera versión pública: listas compartidas en tiempo real, catálogo real de seis supermercados y grupos ilimitados.',
+    date: '2026-09-08', version: 'v1.3.1', tag: 'Nuevo',
+    title: 'QuéFalta 1.3.1: Lidl llega a QuéFalta',
+    desc: 'Lidl se incorpora como el supermercado número 19, con catálogo y promociones adaptados a la tienda que elijas.',
+    items: [
+      'Catálogo, ofertas, novedades y cambios de precio de Lidl disponibles con QuéFalta Plus.',
+      'Promociones exclusivas de Lidl Plus identificadas con sus condiciones y fechas de vigencia.',
+      'Varios administradores por grupo y diseño mejorado de grupos y cestas compartidas.',
+      'Carga más rápida de catálogos, ofertas, fichas e imágenes.',
+      'La selección de supermercado se conserva al cambiar de sección.',
+      'Mejoras visuales, de estabilidad y de rendimiento.',
+    ],
+    link: {
+      href: '/supermercados/lidl',
+      label: 'Ver Lidl en QuéFalta',
+    },
+  },
+  {
+    date: '2026-08-29', version: 'v1.3.0', tag: 'Nuevo',
+    title: 'QuéFalta 1.3.0: Radar de ahorro y QuéFalta Plus',
+    desc: 'Una actualización centrada en encontrar mejores precios, personalizar la compra y hacer más completa la experiencia compartida.',
+    items: [
+      'Catálogo ampliado a 18 supermercados con Gadis, Froiz y Ahorramás.',
+      'Búsqueda más inteligente, con relevancia, prefijos y tolerancia a erratas.',
+      'Nuevo Radar de ahorro para encontrar alternativas similares más económicas.',
+      'Comentarios en los productos de la cesta e iconos personalizados para los grupos.',
+      'Lanzamiento de QuéFalta Plus con Radar ilimitado, estadísticas, orden por precio unitario, alternativas en comentarios y acceso conjunto a todos los supermercados.',
+      'Filtros renovados en Ofertas y Novedades, mejoras visuales, más rendimiento y mejor accesibilidad con VoiceOver.',
+    ],
+  },
+  {
+    date: '2026-08-04', version: 'v1.2.1', tag: 'Mejora',
+    title: 'QuéFalta 1.2.1: acceso por correo y más mejoras',
+    desc: 'Ya puedes acceder a la app con el correo electrónico de tu cuenta, además de los métodos disponibles hasta ahora.',
+    items: [
+      'Enlace a la cuenta de Instagram de QuéFalta en Soporte.',
+      'Corrección en Cambios de precio para mostrar más de 50 artículos.',
+      'Corrección del solapamiento de la sección de Favoritos en Android.',
+    ],
   },
   {
     date: '2026-07-29', version: 'v1.2.0', tag: 'Nuevo',
@@ -16,21 +51,25 @@ const UPDATES = [
     desc: 'Esta versión amplía el catálogo y añade nuevas herramientas para encontrar productos y ahorrar en cada compra.',
     items: [
       'Nuevo catálogo multitienda con búsqueda, filtros y vistas de lista o cuadrícula.',
+      'Nueve supermercados nuevos: Caprabo, Alcampo, Plusfresc, HiperDino, Sorli, Eroski, Condis, Ametller Origen y Aldi.',
       'Nuevas secciones de Ofertas, Novedades y Cambios de precio.',
+      'Precios filtrados por código postal para ajustar el catálogo a tu zona.',
       'Nuevo Índice alimentario con información nutricional de Open Food Facts.',
       'Fichas de producto y favoritos rediseñados.',
+      'Nuevo diseño Liquid Glass.',
       'Mejoras en las cestas compartidas, los grupos y la navegación.',
+      'QuéFalta llega también a Android en Google Play.',
       'Correcciones de estabilidad y rendimiento.',
     ],
-  },
-  {
-    date: '2026-07-30', version: 'v1.2.0', tag: 'Nuevo',
-    title: 'QuéFalta llega a Android',
-    desc: 'QuéFalta ya está disponible para Android en Google Play. Descárgala gratis y organiza las mismas listas compartidas, grupos y compras de supermercado desde tu móvil.',
     link: {
       href: 'https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1',
       label: 'Descargar en Google Play',
     },
+  },
+  {
+    date: '2026-07-05', version: 'v1.0.0',
+    title: 'QuéFalta llega a la App Store',
+    desc: 'Primera versión pública: listas compartidas en tiempo real, catálogo real de seis supermercados y grupos ilimitados.',
   },
 ];
 
@@ -53,7 +92,7 @@ const fmt = (iso) => {
       <h1 class="news-title">El recorrido de QuéFalta</h1>
       <p class="news-lead">
         Aquí iremos contando cada función, mejora y corrección que llegue a la
-        app. El recorrido empieza hoy.
+        app, desde la primera versión hasta la actualización más reciente.
       </p>
     </header>
 

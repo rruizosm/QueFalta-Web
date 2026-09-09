@@ -8,7 +8,7 @@
 // El texto de `faqs[].a` alimenta a la vez el HTML visible y el schema
 // FAQPage (deben coincidir); admite el HTML que Google permite (a, ul, li…).
 
-export const UPDATED = '2026-07-29';
+export const UPDATED = '2026-09-09';
 
 export const STORES = [
   {
@@ -36,6 +36,34 @@ export const STORES = [
       {
         q: '¿Qué información muestra la ficha de un producto de Mercadona?',
         a: 'Ingredientes, alérgenos, valores nutricionales, origen o proveedor y conservación, cuando Mercadona los publica. También la foto, el formato y el precio por unidad de medida, útil para comparar formatos antes de añadir el producto a la cesta.',
+      },
+    ],
+  },
+  {
+    slug: 'lidl',
+    name: 'Lidl',
+    logo: '/stores/lidl.png',
+    title: 'Lidl en QuéFalta — catálogo, ofertas y precios por tienda',
+    description:
+      'Consulta Lidl con QuéFalta Plus: catálogo alimentario, precios, ofertas, novedades y cambios de precio de la tienda que elijas. Añade productos a tu lista compartida.',
+    summary:
+      'Catálogo alimentario, precios y ofertas de la tienda que elijas, con las promociones Lidl Plus identificadas.',
+    intro:
+      'Con QuéFalta Plus puedes elegir tu tienda Lidl y consultar su catálogo alimentario con el precio, la disponibilidad, las ofertas y el formato de cada producto. Las promociones exclusivas para clientes Lidl Plus aparecen identificadas junto con sus condiciones y fechas de vigencia.',
+    datos: [
+      'Miles de productos del catálogo alimentario de la tienda Lidl seleccionada.',
+      'Precio, disponibilidad, imagen, formato y precio por kilo, litro o unidad cuando Lidl los publica.',
+      'Ofertas vigentes con sus condiciones y fechas, diferenciando las promociones exclusivas para clientes Lidl Plus.',
+      'Acceso incluido en QuéFalta Plus; el surtido y los precios pueden variar entre tiendas.',
+    ],
+    faqs: [
+      {
+        q: '¿Los precios de Lidl son los de mi tienda?',
+        a: 'QuéFalta muestra el catálogo, la disponibilidad y los precios correspondientes a la tienda Lidl que elijas en la app. También conserva esa selección al pasar entre Catálogo, Ofertas, Novedades y Cambios de precio. El importe final puede cambiar en el establecimiento o según la fecha de consulta.',
+      },
+      {
+        q: '¿Necesito QuéFalta Plus para consultar Lidl?',
+        a: 'Sí. El acceso a Lidl está incluido en QuéFalta Plus. Puedes consultar el catálogo alimentario de la tienda seleccionada, sus ofertas, novedades y cambios de precio, además de distinguir las promociones exclusivas para clientes Lidl Plus y ver sus condiciones y fechas de vigencia.',
       },
     ],
   },
@@ -423,6 +451,90 @@ export const STORES = [
       {
         q: '¿El catálogo de Plusfresc está en catalán?',
         a: 'Sí. Los nombres y las categorías están disponibles en castellano y catalán. Además, cuando Plusfresc publica la información, la ficha del producto incluye ingredientes, alérgenos, valores nutricionales y condiciones de conservación.',
+      },
+    ],
+  },
+  {
+    slug: 'gadis',
+    name: 'Gadis',
+    logo: '/stores/gadis.png',
+    title: 'Gadis en QuéFalta — más de 10.000 productos con precios y ofertas',
+    description:
+      'Haz la lista de la compra de Gadis con más de 10.000 productos de Gadisline: precios, formatos, ofertas y precio por kilo, litro o unidad. Compartida y gratis.',
+    summary:
+      'Más de 10.000 productos de Gadisline, con precios, formatos y promociones para Galicia y Castilla y León.',
+    intro:
+      'QuéFalta incluye más de 10.000 productos de Gadisline con su precio, imagen y formato. El catálogo está disponible para Galicia y Castilla y León e incorpora las promociones publicadas por la cadena para preparar una cesta compartida antes de comprar.',
+    datos: [
+      'Más de 10.000 productos publicados del supermercado online Gadisline.',
+      'Precio, imagen, formato y precio por kilo, litro o unidad cuando está disponible.',
+      'Ofertas y novedades identificadas a partir de la información publicada por Gadis.',
+      'Cadena disponible en Galicia y Castilla y León; el surtido y los precios pueden variar según la tienda o la zona.',
+    ],
+    faqs: [
+      {
+        q: '¿Dónde está disponible Gadis en QuéFalta?',
+        a: 'QuéFalta muestra Gadis a los usuarios de Galicia y Castilla y León. El catálogo incluye más de 10.000 productos de Gadisline con imagen, formato y precio, además de las promociones que publica la cadena. El surtido y el precio final pueden variar según la tienda o la ubicación seleccionada.',
+      },
+      {
+        q: '¿Puedo comparar el precio por kilo o litro de los productos de Gadis?',
+        a: 'Sí. Cuando Gadisline publica el precio de referencia, QuéFalta lo normaliza por kilo, litro o unidad para facilitar la comparación entre formatos. También puedes consultar el precio del envase y añadir el producto a una cesta compartida que todo el grupo actualiza en tiempo real.',
+      },
+    ],
+  },
+  {
+    slug: 'froiz',
+    name: 'Froiz',
+    logo: '/stores/froiz.jpg',
+    title: 'Froiz en QuéFalta — más de 6.800 productos con precios y ofertas',
+    description:
+      'Haz la lista de la compra de Froiz con más de 6.800 productos: precios, imágenes, categorías, formatos y promociones. Compartida en tiempo real y gratis.',
+    summary:
+      'Más de 6.800 productos con imágenes, categorías, precios y promociones en cuatro comunidades.',
+    intro:
+      'QuéFalta incluye más de 6.800 productos del catálogo online de Froiz con su precio, imagen, formato y categoría. Puedes consultar las promociones publicadas por la cadena y añadir los productos a una lista compartida si compras en alguna de sus zonas de cobertura.',
+    datos: [
+      'Más de 6.800 productos publicados del catálogo online de Froiz.',
+      'Imágenes, categorías, formatos, precios y precio por unidad de medida cuando está disponible.',
+      'Promociones y novedades identificadas a partir de la información pública de la cadena.',
+      'Disponible en Galicia, Castilla y León, Castilla-La Mancha y Madrid.',
+    ],
+    faqs: [
+      {
+        q: '¿En qué zonas aparece Froiz en QuéFalta?',
+        a: 'Froiz aparece para usuarios de Galicia, Castilla y León, Castilla-La Mancha y Madrid. QuéFalta incluye más de 6.800 productos de su catálogo online con imagen, categoría, formato y precio. La disponibilidad y el importe final pueden variar según el establecimiento o la zona de compra.',
+      },
+      {
+        q: '¿Qué información muestra QuéFalta de los productos de Froiz?',
+        a: 'Puedes consultar el nombre, la imagen, la categoría, el formato y el precio de cada producto, además del precio por unidad de medida cuando Froiz lo publica. La app también identifica promociones y novedades y permite añadir cada artículo a una lista compartida en tiempo real.',
+      },
+    ],
+  },
+  {
+    slug: 'ahorramas',
+    name: 'Ahorramás',
+    logo: '/stores/ahorramas.jpg',
+    title: 'Ahorramás en QuéFalta — más de 7.400 productos y ofertas',
+    description:
+      'Haz la lista de la compra de Ahorramás con más de 7.400 productos: precios, formatos, precio por unidad y ofertas. Compartida en tiempo real y gratis.',
+    summary:
+      'Más de 7.400 productos con precios, formatos y promociones para Madrid y las dos Castillas.',
+    intro:
+      'QuéFalta incluye más de 7.400 productos del supermercado online de Ahorramás con su precio, imagen, formato y marca. Consulta las promociones publicadas por la cadena y prepara una cesta compartida si compras en Madrid, Castilla-La Mancha o Castilla y León.',
+    datos: [
+      'Más de 7.400 productos publicados del supermercado online de Ahorramás.',
+      'Precio, imagen, marca, formato y precio por kilo, litro o unidad cuando está disponible.',
+      'Promociones vigentes identificadas a partir de la información publicada por la cadena.',
+      'Disponible en Madrid, Castilla-La Mancha y Castilla y León; surtido y precios orientativos según la zona.',
+    ],
+    faqs: [
+      {
+        q: '¿Dónde está disponible Ahorramás en QuéFalta?',
+        a: 'QuéFalta muestra Ahorramás a los usuarios de Madrid, Castilla-La Mancha y Castilla y León. El catálogo incluye más de 7.400 productos de su supermercado online con imagen, formato, marca y precio. El surtido y el importe final pueden variar según la tienda o el código postal.',
+      },
+      {
+        q: '¿Qué ofertas de Ahorramás aparecen en QuéFalta?',
+        a: 'QuéFalta incorpora las promociones que Ahorramás publica en su catálogo online, junto con el precio actual y el precio por unidad de medida cuando están disponibles. Las condiciones y fechas pueden cambiar, por lo que el precio final es siempre el que indique la cadena al comprar.',
       },
     ],
   },

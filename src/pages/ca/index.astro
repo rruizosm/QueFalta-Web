@@ -4,7 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 // Home en català (plan AEO F3). Versión estática y "citable" de la landing:
 // Astro puro, sin la isla React. Para consultes en català ("app llista de la
 // compra compartida") gairebé no hi ha competència → respuesta directa primero.
-// ⚠️ Regla de oro: solo afirmar lo que la app publicada tiene (15 supers).
+// ⚠️ Regla de oro: solo afirmar lo que la app publicada tiene (19 supers).
 
 const APP_STORE_URL = 'https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1';
@@ -15,8 +15,9 @@ const appSchema = {
   name: 'QuéFalta',
   operatingSystem: ['iOS', 'Android'],
   applicationCategory: 'ShoppingApplication',
+  softwareVersion: '1.3.1',
   description:
-    "La llista de la compra compartida per a iPhone i Android. Afegeix, reparteix i marca el que ja tens, tots alhora i en temps real, amb el catàleg real de quinze supermercats.",
+    "La llista de la compra compartida per a iPhone i Android. Afegeix, reparteix i marca el que ja tens, tots alhora i en temps real, amb el catàleg real de dinou supermercats.",
   url: 'https://quefalta.es/ca/',
   image: 'https://quefalta.es/og.png',
   inLanguage: ['es', 'ca'],
@@ -28,6 +29,7 @@ const appSchema = {
 
 const SUPERS = [
   { name: 'Mercadona', logo: '/stores/mercadona.png', slug: 'mercadona' },
+  { name: 'Lidl', logo: '/stores/lidl.png', slug: 'lidl' },
   { name: 'Carrefour', logo: '/stores/carrefour.png', slug: 'carrefour' },
   { name: 'Consum', logo: '/stores/consum.png', slug: 'consum' },
   { name: 'Dia', logo: '/stores/dia.png', slug: 'dia' },
@@ -42,6 +44,9 @@ const SUPERS = [
   { name: 'HiperDino', logo: '/stores/hiperdino.jpg', slug: 'hiperdino' },
   { name: 'Alcampo', logo: '/stores/alcampo.png', slug: 'alcampo' },
   { name: 'Plusfresc', logo: '/stores/plusfresc.png', slug: 'plusfresc' },
+  { name: 'Gadis', logo: '/stores/gadis.png', slug: 'gadis' },
+  { name: 'Froiz', logo: '/stores/froiz.jpg', slug: 'froiz' },
+  { name: 'Ahorramás', logo: '/stores/ahorramas.jpg', slug: 'ahorramas' },
 ];
 
 const PASSOS = [
@@ -51,18 +56,18 @@ const PASSOS = [
 ];
 
 const FUNCIONS = [
-  { title: 'Catàleg real', desc: 'Milers de productes de quinze supermercats amb la imatge, el format i el preu reals. Res d’escriure la llista a mà.' },
+  { title: 'Catàleg real', desc: 'Milers de productes de dinou supermercats amb la imatge, el format i el preu reals. Res d’escriure la llista a mà.' },
   { title: 'En temps real', desc: 'Quan algú afegeix o recull un producte, tot el grup ho veu a l’instant. S’han acabat els xats de «has comprat el pa?».' },
   { title: 'Fitxa de producte', desc: 'Ingredients, al·lèrgens, valors nutricionals i origen quan el supermercat els publica.' },
   { title: 'Ordenada pel súper', desc: 'La cistella s’agrupa per zones del supermercat (fruita i verdura, frescos, congelats…) per recórrer la botiga una sola vegada.' },
   { title: 'En català', desc: 'Interfície en català, i el catàleg també en català a Mercadona, Bonpreu i Esclat, bonÀrea, Sorli, Condis, Ametller Origen i Plusfresc.' },
-  { title: 'Gratuïta i sense anuncis', desc: 'Tots els grups i llistes que vulguis, sense pagar res. Les teves dades no es venen.' },
+  { title: 'Gratuïta i sense anuncis', desc: 'Tots els grups i llistes que vulguis, sense pagar res, i QuéFalta Plus opcional per a les funcions avançades.' },
 ];
 ---
 
 <Layout
   title="QuéFalta — L'app de llista de la compra compartida"
-  description="Llista de la compra compartida en temps real, gratuïta per a iPhone i Android. Amb productes i preus reals de quinze supermercats nacionals i regionals."
+  description="Llista de la compra compartida en temps real, gratuïta per a iPhone i Android. Amb productes i preus reals de dinou supermercats nacionals i regionals."
   lang="ca"
   alternates={{ es: '/', ca: '/ca/' }}
   jsonld={appSchema}
@@ -74,7 +79,7 @@ const FUNCIONS = [
       <p class="ca-lead">
         QuéFalta és l'app gratuïta de llista de la compra compartida: crees un
         grup, hi convides la teva gent i tothom afegeix i marca productes de la
-        mateixa cistella en temps real, amb el catàleg i els preus reals de quinze
+        mateixa cistella en temps real, amb el catàleg i els preus reals de dinou
         supermercats d'Espanya.
       </p>
       <div class="ca-actions">

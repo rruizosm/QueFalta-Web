@@ -42,7 +42,7 @@ const ROWS = [
     img: '/mock/catalog.png', alt: 'Catálogo de productos de Mercadona en QuéFalta',
     title: 'Un catálogo de verdad, no una hoja en blanco',
     desc: 'Olvídate de escribir la lista a mano. Busca entre miles de productos reales de tu supermercado y añádelos con un toque.',
-    bullets: ['15 supermercados dentro de la app', 'Busca entre miles de productos por supermercado', 'Categorías claras y ordenadas'],
+    bullets: ['19 supermercados dentro de la app', 'Busca entre miles de productos por supermercado', 'Categorías claras y ordenadas'],
   },
   {
     eyebrow: 'Productos', tab: 'catalog', Screen: ProductsScreen,
@@ -70,6 +70,7 @@ const ROWS = [
 // `slug` = su página de detalle en /supermercados/{slug} (plan AEO F2).
 const SUPERS = [
   { name: 'Mercadona', logo: '/stores/mercadona.png', slug: 'mercadona' },
+  { name: 'Lidl', logo: '/stores/lidl.png', slug: 'lidl' },
   { name: 'Carrefour', logo: '/stores/carrefour.png', slug: 'carrefour' },
   { name: 'Consum', logo: '/stores/consum.png', slug: 'consum' },
   { name: 'Dia', logo: '/stores/dia.png', slug: 'dia' },
@@ -84,6 +85,9 @@ const SUPERS = [
   { name: 'HiperDino', logo: '/stores/hiperdino.jpg', slug: 'hiperdino' },
   { name: 'Alcampo', logo: '/stores/alcampo.png', slug: 'alcampo' },
   { name: 'Plusfresc', logo: '/stores/plusfresc.png', slug: 'plusfresc' },
+  { name: 'Gadis', logo: '/stores/gadis.png', slug: 'gadis' },
+  { name: 'Froiz', logo: '/stores/froiz.jpg', slug: 'froiz' },
+  { name: 'Ahorramás', logo: '/stores/ahorramas.jpg', slug: 'ahorramas' },
 ];
 
 const EXTRAS = [

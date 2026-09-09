@@ -26,14 +26,16 @@ export function ProfileToggle({ on }) {
   );
 }
 
-function MenuRow({ icon, label, value, toggle, danger, last }) {
+function MenuRow({ icon, label, value, toggle, danger, last, href }) {
   const t = useTk();
   const col = danger ? '#d6452b' : t.ink;
+  const Row = href ? 'a' : 'div';
   return (
-    <div style={{
+    <Row {...(href ? { href, target: '_blank', rel: 'noreferrer' } : {})} style={{
       display: 'flex', alignItems: 'center', gap: 13,
       padding: `${t.sp(12)}px 0`,
       borderBottom: last ? 'none' : `1px solid ${t.border}`,
+      color: 'inherit', textDecoration: 'none',
     }}>
       <div style={{
         width: 34, height: 34, flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -45,7 +47,7 @@ function MenuRow({ icon, label, value, toggle, danger, last }) {
       <span style={{ flex: 1, fontFamily: t.fontBody, fontSize: 14, fontWeight: 600, color: col, textTransform: t.upper ? 'uppercase' : 'none', letterSpacing: t.upper ? '0.03em' : '0' }}>{label}</span>
       {value && <span style={{ fontFamily: t.fontBody, fontSize: 12.5, color: t.inkSoft, whiteSpace: 'nowrap' }}>{value}</span>}
       {toggle !== undefined ? <ProfileToggle on={toggle} /> : (!danger && <Icon name="chevron" size={16} color={t.inkFaint} />)}
-    </div>
+    </Row>
   );
 }
 
@@ -94,6 +96,7 @@ export function ProfileBody() {
       <MenuRow icon="userPlus" label="Invitar amigos" last />
 
       <SectionLabel>Soporte</SectionLabel>
+      <MenuRow icon="instagram" label="Instagram" href="https://www.instagram.com/quefalta.app/" />
       <MenuRow icon="help" label="Ayuda" />
       <MenuRow icon="info" label="Acerca de QueFalta" value="v2.0" last />
 

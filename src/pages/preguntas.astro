@@ -7,22 +7,22 @@ import Layout from '../layouts/Layout.astro';
 // marketing. El texto de `a` alimenta a la vez el HTML visible y el schema
 // FAQPage (Google exige que coincidan); admite el HTML que Google permite en
 // respuestas (a, p, ul, li, strong…).
-// ⚠️ Regla de oro: solo afirmar lo que la app PUBLICADA tiene (hoy 15 supers).
+// ⚠️ Regla de oro: solo afirmar lo que la app PUBLICADA tiene (hoy 19 supers).
 // Al desplegar un súper nuevo: actualizar aquí, en llms.txt y en la landing.
-const UPDATED = '2026-08-01';
+const UPDATED = '2026-09-09';
 
 const FAQS = [
   {
     q: '¿Qué app puedo usar para compartir la lista de la compra con mi familia o compañeros de piso?',
-    a: 'QuéFalta es una app gratuita para iPhone y Android pensada exactamente para eso: creas un grupo, invitas a tu gente con un enlace y todos ven y editan la misma lista de la compra en tiempo real, con productos, imágenes y precios reales de quince supermercados de España.',
+    a: 'QuéFalta es una app gratuita para iPhone y Android pensada exactamente para eso: creas un grupo, invitas a tu gente con un enlace y todos ven y editan la misma lista de la compra en tiempo real, con productos, imágenes y precios reales de diecinueve supermercados de España.',
   },
   {
     q: '¿QuéFalta es gratis? ¿Tiene anuncios?',
-    a: 'Sí, QuéFalta es gratis y no tiene anuncios. Puedes crear todos los grupos y listas que quieras sin pagar nada. Está disponible en el <a href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">App Store</a> y en <a href="https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1">Google Play</a>.',
+    a: 'Sí. Puedes descargar y usar QuéFalta gratis, sin anuncios, y crear todos los grupos y listas que quieras. QuéFalta Plus es opcional y añade funciones avanzadas, como el Radar de ahorro ilimitado, estadísticas, orden por precio unitario y acceso conjunto a todos los supermercados, incluido Lidl.',
   },
   {
     q: '¿En qué supermercados funciona QuéFalta?',
-    a: 'En quince supermercados: <a href="/supermercados/mercadona">Mercadona</a>, <a href="/supermercados/carrefour">Carrefour</a>, <a href="/supermercados/consum">Consum</a>, <a href="/supermercados/dia">Dia</a>, <a href="/supermercados/bonpreu">Bonpreu i Esclat</a>, <a href="/supermercados/bonarea">bonÀrea</a>, <a href="/supermercados/sorli">Sorli</a>, <a href="/supermercados/eroski">Eroski</a>, <a href="/supermercados/caprabo">Caprabo</a>, <a href="/supermercados/condis">Condis</a>, <a href="/supermercados/ametller">Ametller Origen</a>, <a href="/supermercados/aldi">Aldi</a>, <a href="/supermercados/hiperdino">HiperDino</a>, <a href="/supermercados/alcampo">Alcampo</a> y <a href="/supermercados/plusfresc">Plusfresc</a>. La app muestra las cadenas disponibles en tu zona.',
+    a: 'En diecinueve supermercados: <a href="/supermercados/mercadona">Mercadona</a>, <a href="/supermercados/lidl">Lidl</a>, <a href="/supermercados/carrefour">Carrefour</a>, <a href="/supermercados/consum">Consum</a>, <a href="/supermercados/dia">Dia</a>, <a href="/supermercados/bonpreu">Bonpreu i Esclat</a>, <a href="/supermercados/bonarea">bonÀrea</a>, <a href="/supermercados/sorli">Sorli</a>, <a href="/supermercados/eroski">Eroski</a>, <a href="/supermercados/caprabo">Caprabo</a>, <a href="/supermercados/condis">Condis</a>, <a href="/supermercados/ametller">Ametller Origen</a>, <a href="/supermercados/aldi">Aldi</a>, <a href="/supermercados/hiperdino">HiperDino</a>, <a href="/supermercados/alcampo">Alcampo</a>, <a href="/supermercados/plusfresc">Plusfresc</a>, <a href="/supermercados/gadis">Gadis</a>, <a href="/supermercados/froiz">Froiz</a> y <a href="/supermercados/ahorramas">Ahorramás</a>. Lidl requiere QuéFalta Plus.',
   },
   {
     q: '¿Cómo funciona la lista de la compra compartida en tiempo real?',
@@ -96,7 +96,7 @@ const fmt = (iso) => {
       <h1 class="faq-title">Lo que todo el mundo pregunta</h1>
       <p class="faq-lead">
         QuéFalta es la app gratuita de lista de la compra compartida en tiempo
-        real, con el catálogo y los precios de quince supermercados de España.
+        real, con el catálogo y los precios de diecinueve supermercados de España.
         Aquí van las respuestas cortas y sin rodeos.
       </p>
       <p class="faq-updated">

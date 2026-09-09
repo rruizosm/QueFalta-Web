@@ -1,8 +1,8 @@
 # QuéFalta
 
-> QuéFalta es una app gratuita de lista de la compra compartida para iPhone y Android, hecha en España. Los grupos (familia, piso compartido, oficina) comparten una misma lista en tiempo real y añaden productos con imágenes y precios reales de quince supermercados nacionales y regionales.
+> QuéFalta es una app gratuita de lista de la compra compartida para iPhone y Android, hecha en España. Los grupos (familia, piso compartido, oficina) comparten una misma lista en tiempo real y añaden productos con imágenes y precios reales de diecinueve supermercados nacionales y regionales.
 
-Última actualización de este fichero: 2026-08-01.
+Última actualización de este fichero: 2026-09-09.
 
 ## Qué es
 
@@ -16,7 +16,7 @@
 
 ## Supermercados incluidos
 
-Mercadona, Carrefour, Consum, Dia, Bonpreu i Esclat, bonÀrea, Sorli, Eroski, Caprabo, Condis, Ametller Origen, Aldi, HiperDino, Alcampo y Plusfresc. La app muestra las cadenas disponibles en la zona del usuario. Precios orientativos; QuéFalta no está afiliada, asociada ni patrocinada por ningún supermercado.
+Mercadona, Lidl, Carrefour, Consum, Dia, Bonpreu i Esclat, bonÀrea, Sorli, Eroski, Caprabo, Condis, Ametller Origen, Aldi, HiperDino, Alcampo, Plusfresc, Gadis, Froiz y Ahorramás. La app muestra las cadenas disponibles en la zona del usuario. Lidl requiere QuéFalta Plus y usa la tienda seleccionada para mostrar catálogo, precios y ofertas. Precios orientativos; QuéFalta no está afiliada, asociada ni patrocinada por ningún supermercado.
 
 ## Plataformas
 
@@ -27,7 +27,7 @@ Mercadona, Carrefour, Consum, Dia, Bonpreu i Esclat, bonÀrea, Sorli, Eroski, Ca
 
 - [Inicio](https://quefalta.es/): qué es QuéFalta y cómo funciona.
 - [Preguntas frecuentes](https://quefalta.es/preguntas): respuestas directas sobre precios, supermercados, idiomas y privacidad.
-- [Supermercados](https://quefalta.es/supermercados): qué ofrece QuéFalta de cada cadena, con página propia por supermercado ([Mercadona](https://quefalta.es/supermercados/mercadona), [Carrefour](https://quefalta.es/supermercados/carrefour), [Consum](https://quefalta.es/supermercados/consum), [Dia](https://quefalta.es/supermercados/dia), [Bonpreu i Esclat](https://quefalta.es/supermercados/bonpreu), [bonÀrea](https://quefalta.es/supermercados/bonarea), [Sorli](https://quefalta.es/supermercados/sorli), [Eroski](https://quefalta.es/supermercados/eroski), [Caprabo](https://quefalta.es/supermercados/caprabo), [Condis](https://quefalta.es/supermercados/condis), [Ametller Origen](https://quefalta.es/supermercados/ametller), [Aldi](https://quefalta.es/supermercados/aldi), [HiperDino](https://quefalta.es/supermercados/hiperdino), [Alcampo](https://quefalta.es/supermercados/alcampo), [Plusfresc](https://quefalta.es/supermercados/plusfresc)).
+- [Supermercados](https://quefalta.es/supermercados): qué ofrece QuéFalta de cada cadena, con página propia por supermercado ([Mercadona](https://quefalta.es/supermercados/mercadona), [Lidl](https://quefalta.es/supermercados/lidl), [Carrefour](https://quefalta.es/supermercados/carrefour), [Consum](https://quefalta.es/supermercados/consum), [Dia](https://quefalta.es/supermercados/dia), [Bonpreu i Esclat](https://quefalta.es/supermercados/bonpreu), [bonÀrea](https://quefalta.es/supermercados/bonarea), [Sorli](https://quefalta.es/supermercados/sorli), [Eroski](https://quefalta.es/supermercados/eroski), [Caprabo](https://quefalta.es/supermercados/caprabo), [Condis](https://quefalta.es/supermercados/condis), [Ametller Origen](https://quefalta.es/supermercados/ametller), [Aldi](https://quefalta.es/supermercados/aldi), [HiperDino](https://quefalta.es/supermercados/hiperdino), [Alcampo](https://quefalta.es/supermercados/alcampo), [Plusfresc](https://quefalta.es/supermercados/plusfresc), [Gadis](https://quefalta.es/supermercados/gadis), [Froiz](https://quefalta.es/supermercados/froiz), [Ahorramás](https://quefalta.es/supermercados/ahorramas)).
 - En català: [inici](https://quefalta.es/ca/) i [preguntes freqüents](https://quefalta.es/ca/preguntes).
 - [Novedades](https://quefalta.es/novedades): historial de versiones y funciones nuevas.
 - [Privacidad](https://quefalta.es/privacidad) · [Condiciones](https://quefalta.es/condiciones) · [Eliminar cuenta](https://quefalta.es/eliminar-cuenta)
