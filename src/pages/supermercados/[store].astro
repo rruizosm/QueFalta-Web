@@ -12,13 +12,27 @@ export function getStaticPaths() {
 
 const { store } = Astro.props;
 const others = STORES.filter((s) => s.slug !== store.slug);
+const updated = store.updated ?? UPDATED;
+const breadcrumbs = [
+  { name: 'Inicio', url: '/' },
+  { name: 'Supermercados', url: '/supermercados/' },
+  { name: store.name, url: `/supermercados/${store.slug}/` },
+];
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbs.map((crumb, i) => ({
+    '@type': 'ListItem', position: i + 1, name: crumb.name,
+    item: new URL(crumb.url, Astro.site).href,
+  })),
+};
 
 // Mismo texto que el visible (requisito de Google para FAQPage).
 const faqSchema = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
   inLanguage: 'es',
-  dateModified: UPDATED,
+  dateModified: updated,
   mainEntity: store.faqs.map((f) => ({
     '@type': 'Question',
     name: f.q,
@@ -26,7 +40,7 @@ const faqSchema = {
   })),
 };
 
-// Qué puedes hacer con cualquier súper de la app (común a las 18 páginas).
+// Acciones compartidas; una guía propia sustituye este bloque cuando existe.
 const ACCIONES = [
   'Buscar en todo el catálogo y añadir productos a la lista con un toque.',
   'Compartir la cesta con tu grupo: todos ven los cambios al instante.',
@@ -47,16 +61,34 @@ const fmt = (iso) => {
 <Layout
   title={store.title}
   description={store.description}
-  jsonld={faqSchema}
+  jsonld={[faqSchema, breadcrumbSchema]}
 >
   <section class="st container">
+    <nav class="st-breadcrumbs" aria-label="Ruta de navegación">
+      <ol>
+        {breadcrumbs.map((crumb, i) => (
+          <li>{i === breadcrumbs.length - 1
+            ? <span aria-current="page">{crumb.name}</span>
+            : <a href={crumb.url}>{crumb.name}</a>}</li>
+        ))}
+      </ol>
+    </nav>
     <header class="st-head">
       <img class="st-logo" src={store.logo} alt="" width="44" height="44" />
       <span class="st-eyebrow">Supermercados</span>
-      <h1 class="st-title">{store.name} en QuéFalta</h1>
+      <h1 class="st-title">{store.heading ?? `${store.name} en QuéFalta`}</h1>
       <p class="st-lead">{store.intro}</p>
+      {store.notice && (
+        <>
+          <p class="st-notice">{store.notice}</p>
+          <div class="st-cta-actions">
+            <a class="st-cta-btn" href="https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373">Descargar para iPhone</a>
+            <a class="st-cta-btn" href="https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1">Descargar para Android</a>
+          </div>
+        </>
+      )}
       <p class="st-updated">
-        Actualizado el <time datetime={UPDATED}>{fmt(UPDATED)}</time>
+        Actualizado el <time datetime={updated}>{fmt(updated)}</time>
       </p>
     </header>
 
@@ -67,12 +99,28 @@ const fmt = (iso) => {
       </ul>
     </section>
 
-    <section class="st-block">
+    {store.guide ? (
+      <section class="st-block">
+        <h2 class="st-h2">{store.guide.title}</h2>
+        <ol class="st-guide">
+          {store.guide.steps.map((step) => (
+            <li><h3>{step.title}</h3><p>{step.text}</p></li>
+          ))}
+        </ol>
+      </section>
+    ) : <section class="st-block">
       <h2 class="st-h2">Qué puedes hacer</h2>
       <ul class="st-list">
         {ACCIONES.map((a) => <li>{a}</li>)}
       </ul>
-    </section>
+    </section>}
+
+    {store.pricing && (
+      <section class="st-block">
+        <h2 class="st-h2">{store.pricing.title}</h2>
+        {store.pricing.paragraphs.map((paragraph) => <p class="st-copy">{paragraph}</p>)}
+      </section>
+    )}
 
     <section class="st-block">
       <h2 class="st-h2">Preguntas sobre {store.name}</h2>
@@ -85,7 +133,7 @@ const fmt = (iso) => {
         ))}
       </div>
       <p class="st-morefaq">
-        Más respuestas en las <a href="/preguntas">preguntas frecuentes</a>.
+        Más respuestas en las <a href="/preguntas/">preguntas frecuentes</a>.
       </p>
     </section>
 
@@ -99,7 +147,7 @@ const fmt = (iso) => {
       <h2 class="st-h2">También en QuéFalta</h2>
       <div class="st-chips">
         {others.map((s) => (
-          <a class="st-chip" href={`/supermercados/${s.slug}`}>
+          <a class="st-chip" href={`/supermercados/${s.slug}/`}>
             <img src={s.logo} alt="" width="22" height="22" loading="lazy" />
             {s.name}
           </a>
@@ -118,6 +166,14 @@ const fmt = (iso) => {
 
   <style>
     .st { max-width: 760px; padding-top: 36px; }
+    .st-breadcrumbs ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; font-size: 13px; color: var(--ink-soft); }
+    .st-breadcrumbs li + li::before { content: '/'; margin-right: 8px; color: var(--ink-faint); }
+    .st-breadcrumbs a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .st-notice { margin-top: 16px; color: var(--ink-soft); font-size: 14px; line-height: 1.6; }
+    .st-guide { padding-left: 24px; margin-top: 20px; display: grid; gap: 22px; }
+    .st-guide li::marker { color: var(--accent); font-weight: 700; }
+    .st-guide h3 { font-size: 17px; line-height: 1.4; }
+    .st-guide p, .st-copy { margin-top: 10px; font-size: 15.5px; line-height: 1.65; color: var(--ink-soft); }
 
     .st-head { text-align: center; max-width: 640px; margin: 48px auto 0; }
     .st-logo { width: 44px; height: 44px; object-fit: contain; margin-bottom: 14px; }

@@ -47,7 +47,42 @@ bundle `com.quefalta.app`). Para que los Universal Links verifiquen, este ficher
 debe servirse por HTTPS, sin redirecciones, como `application/json` (ya configurado
 en `customHttp.yml`).
 
-## Pendiente: URL de App Store
+## Dominio canónico y redirección de www
 
-En [`src/pages/join/index.astro`](src/pages/join/index.astro) y en la landing,
-sustituye los `#` / `APP_STORE_URL` por el enlace real de la ficha cuando publiques.
+La URL principal es `https://quefalta.es`. Las páginas usan barra final y el
+canonical, los hreflang y el sitemap deben apuntar a esa misma versión.
+
+La regla de [`docs/amplify-www-redirect.json`](docs/amplify-www-redirect.json)
+está **preparada, pendiente de aplicar en Amplify**. Publicar este fichero o
+ejecutar el build no activa la redirección: Amplify gestiona las reglas fuera
+del repositorio.
+
+En Amplify → Hosting → Rewrites and redirects:
+
+1. Guarda una copia de las reglas actuales para poder revertir.
+2. Añade el objeto del JSON como primera regla, conservando las reglas
+   existentes, especialmente `/join/<*> → /join/index.html` de tipo `200`.
+   No reemplaces toda la lista por el fichero de ejemplo.
+3. Si existe una regla inversa de `quefalta.es` a `www.quefalta.es`, sustitúyela
+   por la nueva para evitar un bucle. No dupliques una regla ya equivalente.
+4. Guarda y comprueba que `https://www.quefalta.es/supermercados/bonpreu/`
+   devuelve `301` hacia `https://quefalta.es/supermercados/bonpreu/`.
+   Prueba también una URL con parámetros para verificar que se conservan.
+5. Comprueba que `/join/<id>` sigue abriendo el puente y que los dos ficheros
+   de `/.well-known/` en `quefalta.es` devuelven `200`, `application/json` y
+   ninguna redirección.
+
+El origen de una regla de dominio **no lleva ruta ni `/<*>`**. Amplify conserva
+la ruta automáticamente. Referencia:
+[ejemplos oficiales de AWS](https://docs.aws.amazon.com/amplify/latest/userguide/redirect-rewrite-examples.html).
+
+## Comprobación de SEO después de compilar
+
+```bash
+npm run build
+node scripts/check-seo.mjs
+```
+
+El chequeo revisa el HTML generado: canonical y sitemap coherentes, enlaces
+de idiomas recíprocos, datos estructurados y contenido visible de las páginas
+modificadas. No certifica el despliegue ni la redirección de dominio en Amplify.

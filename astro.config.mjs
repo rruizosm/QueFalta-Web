@@ -9,6 +9,8 @@ import sitemap from '@astrojs/sitemap';
 // La landing (/) usa una isla React para los mockups del teléfono.
 export default defineConfig({
   site: 'https://quefalta.es',
+  // Coincide con las URLs de directorio que Amplify ya sirve y redirige.
+  trailingSlash: 'always',
   integrations: [
     react(),
     // Las páginas-puente /join/:id y la de error 404 no se indexan (van con

@@ -108,6 +108,16 @@ nav.qf-nav .qf-nav-link.is-active,
 .qf-ghost:hover { color: var(--accent); }
 .qf-ghost:hover svg { transform: translateY(3px); }
 
+.qf-hero-sub a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.qf-questions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 32px; }
+.qf-question { padding: 26px; border: 1px solid var(--border); border-radius: 20px; background: var(--surface); }
+.qf-question h3 { font-size: 19px; line-height: 1.35; letter-spacing: -0.02em; }
+.qf-question p { margin-top: 12px; color: var(--ink-soft); font-size: 16px; line-height: 1.65; }
+@media (max-width: 680px) {
+  .qf-questions { grid-template-columns: 1fr; }
+  .qf-question { padding: 22px; }
+}
+
 /* El navbar global vive en src/components/SiteNav.astro. */
 
 /* ── Hero ──────────────────────────────────────────────────── */
@@ -136,7 +146,7 @@ nav.qf-nav .qf-nav-link.is-active,
 .qf-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 4px rgba(47, 170, 79, 0.16); }
 
 .qf-hero-title { font-size: clamp(44px, 7.2vw, 88px); margin: 26px auto 0; max-width: 14ch; }
-.qf-hero-lead { font-size: clamp(17px, 2vw, 21px); max-width: 720px; margin: 24px auto 0; text-align: justify; }
+.qf-hero-lead { font-size: clamp(17px, 2vw, 21px); max-width: 720px; margin: 24px auto 0; text-align: center; }
 .qf-hero-sub { font-size: clamp(15px, 1.7vw, 18px); max-width: 600px; margin: 16px auto 0; text-align: center; color: var(--ink-soft); line-height: 1.5; }
 .qf-hero-sub strong { color: var(--ink); font-weight: 700; }
 .qf-hero-logos { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; margin: 22px auto 0; max-width: 560px; }
@@ -485,7 +495,8 @@ nav.qf-nav .qf-nav-link.is-active,
 @media (max-width: 560px) {
   .qf-hero { padding: 36px 20px 44px; }
   .qf-hero-title { font-size: clamp(33px, 8.6vw, 46px); max-width: 18ch; margin-top: 20px; }
-  .qf-hero-sub { display: none; }   /* dato redundante con la fila de logos que va justo debajo */
+  .qf-hero-sub { font-size: 14px; } /* Incluye condiciones de Plus también en móvil. */
+  .qf-hero-lead { text-align: center; }
   .qf-hero-logos { margin-top: 18px; }
   .qf-section { padding: 60px 0; }
   .qf-cta { padding: 64px 20px; }

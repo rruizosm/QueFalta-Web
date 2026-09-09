@@ -152,13 +152,31 @@ export const STORES = [
     slug: 'bonpreu',
     name: 'Bonpreu i Esclat',
     logo: '/stores/bonpreuesclat.png',
-    title: 'Bonpreu i Esclat en QuéFalta — la llista de la compra, en catalán',
+    title: 'Catálogo y precios de Bonpreu i Esclat en la app QuéFalta',
+    heading: 'Catálogo y precios de Bonpreu i Esclat en QuéFalta',
     description:
-      'Haz la lista de la compra de Bonpreu i Esclat con el catálogo de su tienda online, en catalán y castellano: miles de productos con precio y formato. Compartida en tiempo real y gratis.',
+      'Consulta productos y precios de Bonpreu i Esclat en la app QuéFalta. Prepara una lista compartida en catalán o castellano, para iPhone y Android.',
     summary:
       'El catálogo de la tienda online del grupo Bon Preu, en catalán y castellano de forma nativa.',
     intro:
-      'QuéFalta incluye el catálogo de la tienda online de Bonpreu i Esclat, en catalán y en castellano, con el precio y el formato de miles de productos. Ideal para compartir la lista de la compra en tiempo real si haces la compra en Catalunya.',
+      'Con QuéFalta puedes consultar productos y precios de referencia de Bonpreu i Esclat en el móvil y añadirlos a una lista de la compra compartida. El catálogo está disponible en catalán y castellano. Tu pareja, familia o compañeros de piso ven los cambios en tiempo real, desde iPhone o Android.',
+    notice: 'El catálogo se consulta dentro de la app QuéFalta. Esta página explica cómo usarlo; no es la tienda online ni el folleto oficial de Bonpreu i Esclat.',
+    guide: {
+      title: 'Cómo preparar tu lista de la compra de Bonpreu',
+      steps: [
+        { title: 'Elige Bonpreu i Esclat', text: 'Instala QuéFalta, inicia sesión y selecciona Bonpreu i Esclat entre tus supermercados para encontrar sus productos en el catálogo.' },
+        { title: 'Busca y revisa los productos', text: 'Busca por nombre o navega por categorías. Comprueba el formato y el precio de referencia antes de añadir cada producto a la lista.' },
+        { title: 'Comparte la lista con tu grupo', text: 'Crea un grupo e invita a tu gente por enlace o por @usuario. Ajustad las cantidades y consultad el total estimado de la cesta.' },
+        { title: 'Marca lo que ya habéis recogido', text: 'En el supermercado, marcad los productos que ya están en el carrito. El resto del grupo verá los cambios en su móvil.' },
+      ],
+    },
+    pricing: {
+      title: 'De dónde salen los precios y qué cobertura tienen',
+      paragraphs: [
+        'Los datos proceden de la tienda online del grupo Bon Preu y se sincronizan semanalmente. QuéFalta agrupa Bonpreu i Esclat en un único supermercado dentro de la app.',
+        'El catálogo online sirve como referencia para preparar la compra. No garantiza que cada producto esté disponible en todos los establecimientos, ni que el precio coincida con el de una tienda concreta. Comprueba siempre el precio y las condiciones de la promoción en el punto de venta.',
+      ],
+    },
     datos: [
       'El catálogo de la tienda online del grupo Bon Preu (Bonpreu i Esclat).',
       'Bilingüe de forma nativa: los productos se muestran en catalán o en castellano según el idioma de la app.',
@@ -166,12 +184,28 @@ export const STORES = [
     ],
     faqs: [
       {
+        q: '¿Dónde consulto el catálogo y los precios de Bonpreu en QuéFalta?',
+        a: 'Dentro de la app para iPhone o Android: selecciona Bonpreu i Esclat y busca los productos en el catálogo. Puedes ver el formato y el precio de referencia y añadirlos a una lista compartida. Esta web presenta la función; no muestra un catálogo de productos navegable.',
+      },
+      {
         q: '¿Puedo ver el catálogo de Bonpreu en catalán?',
         a: 'Sí. El catálogo de Bonpreu i Esclat se muestra en catalán o en castellano según el idioma que tengas configurado en la app; el catalán es el idioma nativo de su tienda online. La interfaz de QuéFalta también está disponible en ambos idiomas.',
       },
       {
         q: '¿Bonpreu y Esclat comparten catálogo en QuéFalta?',
         a: 'Sí. Las dos enseñas del grupo Bon Preu comparten tienda online, y QuéFalta las muestra como un único supermercado: miles de productos con su precio y su formato, actualizados cada semana.',
+      },
+      {
+        q: '¿Es el catálogo de productos lo mismo que el folleto de ofertas?',
+        a: 'No. El catálogo de QuéFalta te permite buscar productos y preparar tu lista. Si buscas el folleto vigente, las ofertas oficiales o un establecimiento concreto, consulta la <a href="https://www.bonpreuesclat.cat/">web oficial de Bonpreu i Esclat</a>. QuéFalta es una app independiente.',
+      },
+      {
+        q: '¿Puedo pagar o pedir la compra de Bonpreu desde QuéFalta?',
+        a: 'QuéFalta sirve para organizar y compartir tu lista, no para tramitar ni pagar pedidos de Bonpreu i Esclat. Para comprar online, utiliza los canales oficiales del supermercado.',
+      },
+      {
+        q: '¿Los precios coinciden con los de mi Bonpreu o Esclat?',
+        a: 'Son precios de referencia de la tienda online, no una garantía del precio de cada establecimiento. Pueden variar según la tienda, la fecha o las condiciones de una oferta. El total de tu lista es una estimación; el importe final lo determina el supermercado.',
       },
     ],
   },

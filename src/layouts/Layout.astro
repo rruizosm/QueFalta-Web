@@ -29,7 +29,15 @@ const {
   lang = 'es',
   alternates,
 } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+// Todas las páginas usan URLs de directorio. Los ficheros conservan su ruta.
+const pageUrl = (path: string) => {
+  const url = new URL(path, Astro.site);
+  if (!url.pathname.endsWith('/') && !/\.[^/]+$/.test(url.pathname)) {
+    url.pathname += '/';
+  }
+  return url.href;
+};
+const canonical = pageUrl(Astro.url.pathname);
 const ogImage = new URL(image, Astro.site).href;
 const ogLocale = lang === 'ca' ? 'ca_ES' : 'es_ES';
 const ogLocaleAlt = alternates ? (lang === 'ca' ? 'es_ES' : 'ca_ES') : null;
@@ -88,9 +96,9 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     <link rel="canonical" href={canonical} />
     {alternates && (
       <>
-        <link rel="alternate" hreflang="es" href={new URL(alternates.es, Astro.site).href} />
-        <link rel="alternate" hreflang="ca" href={new URL(alternates.ca, Astro.site).href} />
-        <link rel="alternate" hreflang="x-default" href={new URL(alternates.es, Astro.site).href} />
+        <link rel="alternate" hreflang="es" href={pageUrl(alternates.es)} />
+        <link rel="alternate" hreflang="ca" href={pageUrl(alternates.ca)} />
+        <link rel="alternate" hreflang="x-default" href={pageUrl(alternates.es)} />
       </>
     )}
     <!-- Smart App Banner de Safari en iOS: banner nativo con enlace a la app. -->

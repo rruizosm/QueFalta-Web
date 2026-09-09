@@ -24,7 +24,7 @@ const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.quefal
 const STEPS = [
   {
     n: '1', title: 'Crea tu grupo',
-    desc: 'Tu familia, compañeros de piso, escapada de casa rural o la cena del finde.',
+    desc: 'Descarga QuéFalta, inicia sesión y crea un grupo para tu pareja, familia o compañeros de piso.',
   },
   {
     n: '2', title: 'Comparte el grupo',
@@ -32,7 +32,7 @@ const STEPS = [
   },
   {
     n: '3', title: 'Añade productos a la cesta',
-    desc: 'Busca entre miles de productos reales de tus supermercados favoritos y añádelos con un toque. Ajusta cantidades y ve el precio en vivo.',
+    desc: 'Busca productos de tu supermercado, ajusta las cantidades y añádelos a la lista. Todos veis los cambios y el total estimado.',
   },
 ];
 
@@ -205,14 +205,11 @@ function Hero() {
         <span className="qf-pill"><span className="qf-dot" />Disponible para iPhone y Android</span>
       </Reveal>
       <Reveal as="h1" className="qf-display qf-hero-title" delay={60}>
-        <span className="qf-em">QuéFalta</span> en tu lista de la compra?
+        Tu lista de la compra, <span className="qf-em">compartida</span>.
       </Reveal>
       <Reveal as="p" className="qf-lead qf-hero-lead" delay={120}>
-        La lista de la compra compartida para tu hogar, tu grupo de amigos o la oficina. Añade los productos de tus supermercados favoritos.
-        Marca lo que ya has cogido. Imágenes y precios reales. Todo en una sola app.
-      </Reveal>
-      <Reveal as="p" className="qf-hero-sub" delay={160}>
-        En la app encontrarás <strong>todos los productos</strong> de los supermercados incluidos, listos para añadir a tu lista.
+        QuéFalta es la app de lista de la compra compartida para tu pareja, familia o compañeros de piso.
+        Añadid productos y marcad lo comprado en tiempo real, desde iPhone o Android.
       </Reveal>
       <Reveal className="qf-hero-logos" delay={170} aria-label="Supermercados incluidos">
         {SUPERS.map((s) => (
@@ -231,6 +228,10 @@ function Hero() {
           </a>
         </div>
       </Reveal>
+      <Reveal as="p" className="qf-hero-sub" delay={160}>
+        Listas gratuitas y sin anuncios. Catálogos de <strong>19 supermercados</strong> con imágenes y precios de referencia.
+        {' '}QuéFalta Plus opcional; <a href="/supermercados/lidl/">Lidl requiere Plus</a>.
+      </Reveal>
       <Reveal className="qf-hero-stage" delay={140}>
         <div className="qf-hero-phone"><PhoneRender f={{ tab: 'home', Screen: HomeScreen, img: '/mock/home.png', alt: 'Pantalla de inicio de QuéFalta con el carrito activo y los grupos', eager: true }} /></div>
       </Reveal>
@@ -244,9 +245,9 @@ function HowItWorks() {
       <div className="qf-wrap">
         <div className="qf-section-head">
           <Reveal as="span" className="qf-eyebrow">Cómo funciona</Reveal>
-          <Reveal as="h2" className="qf-display qf-section-title" delay={60}>Empezar lleva un minuto.</Reveal>
+          <Reveal as="h2" className="qf-display qf-section-title" delay={60}>Cómo compartir tu lista de la compra.</Reveal>
           <Reveal as="p" className="qf-lead qf-section-lead" delay={120}>
-            Tres pasos y ya puedes empezar a compartir tu lista de la compra. Sin manuales, sin configurar nada raro.
+            Cada persona usa la app en su móvil. Invitad al grupo a quien hace la compra y mantened una misma lista al día.
           </Reveal>
         </div>
         <div className="qf-steps">
@@ -599,14 +600,14 @@ function Supermarkets() {
         </div>
         <Reveal className="qf-supers" delay={120}>
           {SUPERS.map((s) => (
-            <a key={s.name} className="qf-super" href={`/supermercados/${s.slug}`}>
+            <a key={s.name} className="qf-super" href={`/supermercados/${s.slug}/`}>
               <img className="qf-super-logo" src={s.logo} alt="" width="24" height="24" loading="lazy" />
               {s.name}
             </a>
           ))}
         </Reveal>
         <Reveal as="p" className="qf-supers-more" delay={140}>
-          <a href="/supermercados">Qué ofrece cada supermercado en QuéFalta →</a>
+          <a href="/supermercados/">Qué ofrece cada supermercado en QuéFalta →</a>
         </Reveal>
         <Reveal as="p" className="qf-disclaimer" delay={160}>
           Los precios son orientativos y pueden variar. QuéFalta no está afiliada, asociada ni patrocinada por
@@ -634,6 +635,46 @@ function Extras() {
             </Reveal>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function SharedListQuestions() {
+  const questions = [
+    {
+      q: '¿Podemos compartir la lista entre iPhone y Android?',
+      a: 'Sí. Cada persona instala QuéFalta en su móvil y se une al mismo grupo. Los productos y los cambios de la lista se comparten en tiempo real, aunque uséis sistemas distintos.',
+    },
+    {
+      q: '¿Cómo invito a mi pareja o a mis compañeros de piso?',
+      a: 'Crea un grupo y comparte su enlace de invitación, por ejemplo por WhatsApp. También puedes invitar a tus amigos por su @usuario. Una vez dentro, todos podéis añadir productos y marcar los que ya habéis recogido.',
+    },
+    {
+      q: '¿La lista de la compra compartida es gratis?',
+      a: 'Sí. Puedes crear grupos y listas compartidas gratis y sin anuncios. QuéFalta Plus es opcional para funciones avanzadas; el acceso al catálogo de Lidl requiere Plus.',
+    },
+    {
+      q: '¿El total de la lista es lo que pagaré en la tienda?',
+      a: 'El total es una estimación basada en los productos, cantidades y precios de referencia de la app. Los precios y el surtido pueden variar por tienda y fecha. El importe final es el que indique el supermercado al comprar.',
+    },
+  ];
+  return (
+    <section className="qf-section" aria-labelledby="lista-compartida-preguntas">
+      <div className="qf-wrap">
+        <div className="qf-section-head">
+          <span className="qf-eyebrow">Antes de empezar</span>
+          <h2 id="lista-compartida-preguntas" className="qf-display qf-section-title">Una lista para todos los móviles de casa.</h2>
+        </div>
+        <div className="qf-questions">
+          {questions.map(({ q, a }) => (
+            <article className="qf-question" key={q}>
+              <h3>{q}</h3>
+              <p>{a}</p>
+            </article>
+          ))}
+        </div>
+        <p className="qf-supers-more"><a href="/preguntas/">Más preguntas sobre listas, supermercados y privacidad →</a></p>
       </div>
     </section>
   );
@@ -688,6 +729,7 @@ export default function Landing() {
         <RealtimeBand />
         <Supermarkets />
         <Extras />
+        <SharedListQuestions />
         <DownloadCTA />
         <Footer />
       </div>
