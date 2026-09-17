@@ -17,7 +17,7 @@ import { GroupDetailScreen } from '../phone/screens/GroupDetail.jsx';
 
 // Storefront /es/: la app se vende en España; con /us/ Apple puede enseñar
 // "no disponible en tu país" a quien entre desde España sin cookie de región.
-const APP_STORE_URL = 'https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373';
+const APP_STORE_URL = 'https://apps.apple.com/es/app/id6777720373';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1';
 
 // ── Datos de la página ─────────────────────────────────────────

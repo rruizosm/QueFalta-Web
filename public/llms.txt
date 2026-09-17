@@ -20,7 +20,7 @@ Mercadona, Lidl, Carrefour, Consum, Dia, Bonpreu i Esclat, bonÀrea, Sorli, Eros
 
 ## Plataformas
 
-- iPhone (iOS): disponible en el App Store de España — https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373
+- iPhone (iOS): disponible en el App Store de España — https://apps.apple.com/es/app/id6777720373
 - Android: disponible en Google Play — https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1
 
 ## Páginas

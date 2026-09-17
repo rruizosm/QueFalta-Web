@@ -23,7 +23,7 @@ import Layout from '../../layouts/Layout.astro';
 
     <div class="join-actions">
       <a id="open-app" class="btn-primary" href="#">Abrir en la app</a>
-      <a id="download-ios" class="btn-secondary" href="#">Descargar en App Store</a>
+      <a id="download-ios" class="btn-secondary" href="https://apps.apple.com/es/app/id6777720373">Descargar en App Store</a>
       <a id="download-android" class="btn-secondary" href="#">Descargar en Google Play</a>
     </div>
 
@@ -45,11 +45,8 @@ import Layout from '../../layouts/Layout.astro';
         openBtn.style.display = 'none';
       }
 
-      const APP_STORE_URL = 'https://apps.apple.com/es/app/qu%C3%A9falta/id6777720373';
       const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1';
-      const iosDownload = document.getElementById('download-ios');
       const androidDownload = document.getElementById('download-android');
-      if (iosDownload) iosDownload.setAttribute('href', APP_STORE_URL);
       if (androidDownload) androidDownload.setAttribute('href', PLAY_STORE_URL);
     })();
   </script>
