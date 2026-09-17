@@ -1,0 +1,56 @@
+---
+const { lang = 'es' } = Astro.props;
+const url = 'https://apps.apple.com/es/app/id6777720373';
+const ca = lang === 'ca';
+---
+<dialog id="app-store-help" aria-labelledby="app-store-help-title">
+  <h2 id="app-store-help-title">{ca ? 'Descarrega QuéFalta' : 'Descarga QuéFalta'}</h2>
+  <p>{ca
+    ? 'Si TikTok no obre l’App Store, toca el menú de TikTok (⋯) i tria «Obrir al navegador». Després torna a tocar el botó de descàrrega.'
+    : 'Si TikTok no abre App Store, toca el menú de TikTok (⋯) y elige «Abrir en el navegador». Después vuelve a tocar el botón de descarga.'}</p>
+  <a class="store-open" href={url} target="_blank" rel="noopener noreferrer">{ca ? 'Obrir App Store' : 'Abrir App Store'}</a>
+  <label for="app-store-copy-url">{ca ? 'També pots copiar aquest enllaç i enganxar-lo a Safari:' : 'También puedes copiar este enlace y pegarlo en Safari:'}</label>
+  <input id="app-store-copy-url" type="url" readonly value={url} />
+  <button id="app-store-copy" type="button">{ca ? 'Copiar enllaç' : 'Copiar enlace'}</button>
+  <p id="app-store-copy-status" role="status"></p>
+  <form method="dialog"><button type="submit">{ca ? 'Tancar' : 'Cerrar'}</button></form>
+</dialog>
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('#app-store-help');
+  const input = document.querySelector<HTMLInputElement>('#app-store-copy-url');
+  const status = document.querySelector<HTMLElement>('#app-store-copy-status');
+  const ca = document.documentElement.lang === 'ca';
+  // Capture the original user gesture, including links rendered by React later.
+  document.addEventListener('click', (event) => {
+    if (!/(tiktok|musical_ly|bytedance|\btrill\b)/i.test(navigator.userAgent)) return;
+    const link = event.target instanceof Element ? event.target.closest('a') : null;
+    if (!link || dialog?.contains(link) || new URL(link.href).hostname !== 'apps.apple.com') return;
+    if (!dialog || typeof dialog.showModal !== 'function') return;
+    event.preventDefault();
+    dialog.showModal();
+  });
+  input?.addEventListener('click', () => input.select());
+  document.querySelector('#app-store-copy')?.addEventListener('click', async () => {
+    if (!input || !status) return;
+    try {
+      await navigator.clipboard.writeText(input.value);
+      status.textContent = ca ? 'Enllaç copiat. Enganxa’l a Safari.' : 'Enlace copiado. Pégalo en Safari.';
+    } catch {
+      input.focus();
+      input.select();
+      status.textContent = ca ? 'Mantén premut l’enllaç i tria «Copiar».' : 'Mantén pulsado el enlace y elige «Copiar».';
+    }
+  });
+</script>
+<style>
+  dialog { margin: auto; width: min(440px, calc(100% - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 24px; border: 1px solid var(--border); border-radius: 20px; background: var(--paper); color: var(--ink); }
+  dialog::backdrop { background: rgb(0 0 0 / 55%); }
+  h2 { font-size: 24px; margin-bottom: 12px; }
+  p, label { font-size: 15px; line-height: 1.5; }
+  label { display: block; margin-top: 20px; }
+  input { width: 100%; margin: 10px 0; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--ink); font-size: 16px; }
+  button, .store-open { display: block; width: 100%; margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; text-align: center; cursor: pointer; }
+  .store-open { background: var(--accent); color: white; }
+  #app-store-copy-status:empty { display: none; }
+  #app-store-copy-status { margin-top: 10px; }
+</style>

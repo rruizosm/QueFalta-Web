@@ -1,5 +1,6 @@
 ---
 import CookieConsent from '../components/CookieConsent.astro';
+import AppStoreHelp from '../components/AppStoreHelp.astro';
 import SiteNav from '../components/SiteNav.astro';
 
 interface Props {
@@ -186,6 +187,7 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     )}
 
     <CookieConsent />
+    <AppStoreHelp lang={lang} />
 
     <style is:global>
       :root {
