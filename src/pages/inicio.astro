@@ -1,0 +1,111 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Destino web del enlace que acompaña a los resultados de Palabra de hoy.
+// Con Universal/App Links configurados, el sistema abre la app antes de cargar
+// esta página. Si no está instalada, esta pantalla ofrece la descarga.
+---
+
+<Layout
+  title="Abre QuéFalta"
+  description="Abre QuéFalta para organizar tu compra o descarga la app gratis."
+  noindex
+>
+  <section class="open-app container">
+    <img
+      class="app-icon"
+      src="/quefalta-blue.png"
+      width="88"
+      height="88"
+      alt=""
+    />
+    <span class="eyebrow">QuéFalta</span>
+    <h1>Continúa en la app</h1>
+    <p class="lead">
+      Abre QuéFalta para ver tu pantalla de inicio. Si todavía no tienes la
+      app, descárgala gratis y crea tu cuenta.
+    </p>
+
+    <div class="actions">
+      <a class="btn-primary" href="quefalta://inicio">Abrir QuéFalta</a>
+      <a class="btn-secondary" href="https://apps.apple.com/es/app/id6777720373">
+        Descargar en App Store
+      </a>
+      <a
+        class="btn-secondary"
+        href="https://play.google.com/store/apps/details?id=com.quefalta.app&amp;pcampaignid=web_share&amp;pli=1"
+      >
+        Descargar en Google Play
+      </a>
+    </div>
+
+    <p class="hint">Si ya la tienes instalada y no se abre, pulsa «Abrir QuéFalta».</p>
+  </section>
+
+  <style>
+    .open-app {
+      max-width: 560px;
+      padding-top: 56px;
+      padding-bottom: 32px;
+      text-align: center;
+    }
+    .app-icon {
+      display: block;
+      margin: 0 auto 18px;
+      border-radius: 20px;
+      box-shadow: 0 14px 34px rgba(25, 52, 86, 0.16);
+    }
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: clamp(30px, 6vw, 44px);
+      letter-spacing: -1.2px;
+      line-height: 1.05;
+    }
+    .lead {
+      margin-top: 16px;
+      color: var(--ink-soft);
+      font-size: 16px;
+    }
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      margin-top: 28px;
+    }
+    .btn-primary,
+    .btn-secondary {
+      display: inline-flex;
+      width: 100%;
+      max-width: 320px;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 22px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--white);
+    }
+    .btn-secondary {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
+    }
+    .hint {
+      margin-top: 20px;
+      color: var(--ink-soft);
+      font-size: 13px;
+    }
+  </style>
+</Layout>

@@ -6,7 +6,9 @@ Sirve para tres cosas:
 1. **Landing de producto** (`/`) — presenta las funcionalidades de la app.
 2. **Puente de invitación** (`/join/:id`) — abre la app si está instalada o
    muestra la descarga si no.
-3. **Universal Links de iOS** — sirve el fichero de asociación de Apple en
+3. **Puente de apertura** (`/inicio`) — destino de los resultados compartidos
+   de Palabra de hoy; abre Inicio en la app o muestra las descargas.
+4. **Universal Links de iOS** — sirve el fichero de asociación de Apple en
    `/.well-known/apple-app-site-association`.
 
 ## Desarrollo
@@ -38,11 +40,17 @@ puente de invitación:
   - Source: `/join/<*>`
   - Target: `/join/index.html`
   - Type: `200 (Rewrite)`
+- **Rewrite del AASA sin redirección**: Amplify convierte actualmente la ruta
+  sin extensión en un `301` con barra final, que Apple no admite. Añadir como
+  primera regla, antes del 404 genérico:
+  - Source: `/.well-known/apple-app-site-association`
+  - Target: `/.well-known/apple-app-site-association.json`
+  - Type: `200 (Rewrite)`
 
 ## Team ID de Apple ✓
 
 El fichero [`public/.well-known/apple-app-site-association`](public/.well-known/apple-app-site-association)
-ya tiene el `appID` real: `LX4BLQDZS4.com.quefalta.app` (Team ID `LX4BLQDZS4` +
+ya tiene el `appID` real y las rutas `/join/*` y `/inicio`: `LX4BLQDZS4.com.quefalta.app` (Team ID `LX4BLQDZS4` +
 bundle `com.quefalta.app`). Para que los Universal Links verifiquen, este fichero
 debe servirse por HTTPS, sin redirecciones, como `application/json` (ya configurado
 en `customHttp.yml`).

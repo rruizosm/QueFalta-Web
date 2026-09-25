@@ -29,7 +29,7 @@ const pages = new Map();
 for (const url of urls) {
   assert.equal(new URL(url).origin, origin, `Host no canónico: ${url}`);
   assert(url.endsWith('/'), `Falta barra final: ${url}`);
-  assert(!/\/(join|404)(\/|$)/.test(new URL(url).pathname), `Página no indexable en sitemap: ${url}`);
+  assert(!/\/(join|inicio|404)(\/|$)/.test(new URL(url).pathname), `Página no indexable en sitemap: ${url}`);
   const html = await read(fileForUrl(url));
   pages.set(url, html);
   const canonical = links(html).filter((l) => l.rel === 'canonical');
@@ -77,8 +77,15 @@ for (const url of [`${origin}/`, `${origin}/supermercados/bonpreu/`]) {
     await access(path.join(dist, pathname.slice(1), 'index.html'));
   }
 }
-for (const file of ['join/index.html', '404.html']) {
+for (const file of ['join/index.html', 'inicio/index.html', '404.html']) {
   assert(/name="robots"[^>]*content="[^"]*noindex/.test(await read(file)), `Falta noindex: ${file}`);
 }
-for (const file of ['.well-known/apple-app-site-association', '.well-known/assetlinks.json']) JSON.parse(await read(file));
+const aasa = JSON.parse(await read('.well-known/apple-app-site-association'));
+const aasaJson = JSON.parse(await read('.well-known/apple-app-site-association.json'));
+assert.deepEqual(aasaJson, aasa, 'Las dos copias del AASA deben ser idénticas');
+const components = aasa.applinks?.details?.flatMap((detail) => detail.components ?? []) ?? [];
+for (const route of ['/join/*', '/inicio', '/inicio/*']) {
+  assert(components.some((component) => component['/'] === route), `Falta la ruta AASA: ${route}`);
+}
+JSON.parse(await read('.well-known/assetlinks.json'));
 console.log(`SEO OK: ${pages.size} URLs de sitemap, ${STORES.length} supermercados, canonicals, hreflang, FAQ visible, enlaces y asociación de apps.`);
