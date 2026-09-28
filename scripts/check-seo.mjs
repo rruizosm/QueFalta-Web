@@ -81,9 +81,11 @@ for (const file of ['join/index.html', 'inicio/index.html', '404.html']) {
   assert(/name="robots"[^>]*content="[^"]*noindex/.test(await read(file)), `Falta noindex: ${file}`);
 }
 const inicio = await read('inicio/index.html');
-assert(inicio.includes('property="og:image" content="https://quefalta.es/quefalta-blue.png?v=word-share-icon-1"'), 'Inicio debe compartir solo el icono de la app');
-assert(inicio.includes('property="og:image:width" content="1024"'), 'Ancho OG incorrecto para el icono');
-assert(inicio.includes('property="og:image:height" content="1024"'), 'Alto OG incorrecto para el icono');
+assert(inicio.includes('property="og:title" content="Palabra de hoy · QuéFalta"'), 'Título social incorrecto para Palabra de hoy');
+assert(inicio.includes('property="og:description" content="Un pequeño reto. Una nueva palabra cada día."'), 'Subtítulo social incorrecto para Palabra de hoy');
+assert(inicio.includes('property="og:image" content="https://quefalta.es/apple-touch-icon.png?v=word-share-compact-1"'), 'Inicio debe compartir solo el icono compacto de la app');
+assert(inicio.includes('property="og:image:width" content="180"'), 'Ancho OG incorrecto para el icono compacto');
+assert(inicio.includes('property="og:image:height" content="180"'), 'Alto OG incorrecto para el icono compacto');
 assert(inicio.includes('name="twitter:card" content="summary"'), 'Inicio debe usar una tarjeta social compacta');
 const aasa = JSON.parse(await read('.well-known/apple-app-site-association'));
 const aasaJson = JSON.parse(await read('.well-known/apple-app-site-association.json'));
