@@ -6,9 +6,13 @@ import Layout from '../../layouts/Layout.astro';
 // el array FAQS alimenta a la vez el HTML y el schema FAQPage).
 // ⚠️ Mantener las DOS versiones sincronizadas: si cambias una respuesta en
 // /preguntas, cámbiala también aquí (y viceversa) y actualiza ambas UPDATED.
-const UPDATED = '2026-09-09';
+const UPDATED = '2026-10-16';
 
 const FAQS = [
+  {
+    q: 'A quins països i en quins idiomes està disponible QuéFalta?',
+    a: "QuéFalta està disponible a Espanya per a iPhone i Android, amb la interfície en castellà i català. Pots compartir la llista entre tots dos sistemes. L'idioma del catàleg depèn del que publiqui cada supermercat; les cadenes i els productes disponibles poden variar segons la teva zona.",
+  },
   {
     q: 'Quina app puc fer servir per compartir la llista de la compra amb la família o els companys de pis?',
     a: "QuéFalta és una app gratuïta per a iPhone i Android pensada exactament per a això: crees un grup, hi convides la teva gent amb un enllaç i tothom veu i edita la mateixa llista de la compra en temps real, amb productes, imatges i preus reals de dinou supermercats d'Espanya.",
@@ -19,7 +23,7 @@ const FAQS = [
   },
   {
     q: 'A quins supermercats funciona QuéFalta?',
-    a: "A dinou supermercats: <a href=\"/supermercados/mercadona\">Mercadona</a>, <a href=\"/supermercados/lidl\">Lidl</a>, <a href=\"/supermercados/carrefour\">Carrefour</a>, <a href=\"/supermercados/consum\">Consum</a>, <a href=\"/supermercados/dia\">Dia</a>, <a href=\"/supermercados/bonpreu\">Bonpreu i Esclat</a>, <a href=\"/supermercados/bonarea\">bonÀrea</a>, <a href=\"/supermercados/sorli\">Sorli</a>, <a href=\"/supermercados/eroski\">Eroski</a>, <a href=\"/supermercados/caprabo\">Caprabo</a>, <a href=\"/supermercados/condis\">Condis</a>, <a href=\"/supermercados/ametller\">Ametller Origen</a>, <a href=\"/supermercados/aldi\">Aldi</a>, <a href=\"/supermercados/hiperdino\">HiperDino</a>, <a href=\"/supermercados/alcampo\">Alcampo</a>, <a href=\"/supermercados/plusfresc\">Plusfresc</a>, <a href=\"/supermercados/gadis\">Gadis</a>, <a href=\"/supermercados/froiz\">Froiz</a> i <a href=\"/supermercados/ahorramas\">Ahorramás</a>. Lidl requereix QuéFalta Plus.",
+    a: "A dinou supermercats: <a href=\"/supermercados/mercadona/\">Mercadona</a>, <a href=\"/supermercados/lidl/\">Lidl</a>, <a href=\"/supermercados/carrefour/\">Carrefour</a>, <a href=\"/supermercados/consum/\">Consum</a>, <a href=\"/supermercados/dia/\">Dia</a>, <a href=\"/supermercados/bonpreu/\">Bonpreu i Esclat</a>, <a href=\"/supermercados/bonarea/\">bonÀrea</a>, <a href=\"/supermercados/sorli/\">Sorli</a>, <a href=\"/supermercados/eroski/\">Eroski</a>, <a href=\"/supermercados/caprabo/\">Caprabo</a>, <a href=\"/supermercados/condis/\">Condis</a>, <a href=\"/supermercados/ametller/\">Ametller Origen</a>, <a href=\"/supermercados/aldi/\">Aldi</a>, <a href=\"/supermercados/hiperdino/\">HiperDino</a>, <a href=\"/supermercados/alcampo/\">Alcampo</a>, <a href=\"/supermercados/plusfresc/\">Plusfresc</a>, <a href=\"/supermercados/gadis/\">Gadis</a>, <a href=\"/supermercados/froiz/\">Froiz</a> i <a href=\"/supermercados/ahorramas/\">Ahorramás</a>. Lidl requereix QuéFalta Plus.",
   },
   {
     q: 'Com funciona la llista de la compra compartida en temps real?',
@@ -27,7 +31,7 @@ const FAQS = [
   },
   {
     q: 'Quina app té els preus reals de Mercadona?',
-    a: "QuéFalta inclou el catàleg de <a href=\"/supermercados/mercadona\">Mercadona</a> amb els seus preus reals: busques qualsevol producte, en veus el preu i el format i l'afegeixes a la teva llista compartida amb un toc. Molts productes inclouen a més la fitxa completa: ingredients, al·lèrgens i valors nutricionals.",
+    a: "QuéFalta inclou el catàleg de <a href=\"/supermercados/mercadona/\">Mercadona</a> amb els seus preus reals: busques qualsevol producte, en veus el preu i el format i l'afegeixes a la teva llista compartida amb un toc. Molts productes inclouen a més la fitxa completa: ingredients, al·lèrgens i valors nutricionals.",
   },
   {
     q: "D'on surten els preus i cada quan s'actualitzen?",
@@ -55,7 +59,7 @@ const FAQS = [
   },
   {
     q: 'Què passa amb les meves dades? Puc eliminar el meu compte?',
-    a: "QuéFalta només guarda el necessari per funcionar (el teu compte, els teus grups i les teves llistes) i no ven les teves dades. Pots <a href=\"/eliminar-cuenta\">eliminar el teu compte</a> i totes les teves dades des de la mateixa app en qualsevol moment. El detall complet és a la <a href=\"/privacidad\">política de privacitat</a>.",
+    a: "QuéFalta només guarda el necessari per funcionar (el teu compte, els teus grups i les teves llistes) i no ven les teves dades. Pots <a href=\"/eliminar-cuenta/\">eliminar el teu compte</a> i totes les teves dades des de la mateixa app en qualsevol moment. El detall complet és a la <a href=\"/privacidad/\">política de privacitat</a>.",
   },
 ];
 
@@ -85,7 +89,7 @@ const fmt = (iso) => {
   title="Preguntes freqüents — QuéFalta"
   description="Respostes directes sobre QuéFalta: quins supermercats inclou, d'on surten els preus, com funciona la llista compartida en temps real, català, Android i privacitat."
   lang="ca"
-  alternates={{ es: '/preguntas', ca: '/ca/preguntes' }}
+  alternates={{ es: '/preguntas/', ca: '/ca/preguntes/' }}
   jsonld={faqSchema}
 >
   <section class="faq container">
@@ -99,7 +103,7 @@ const fmt = (iso) => {
       </p>
       <p class="faq-updated">
         Actualitzat el <time datetime={UPDATED}>{fmt(UPDATED)}</time> ·
-        <a href="/preguntas">también en castellano</a>
+        <a href="/preguntas/">también en castellano</a>
       </p>
     </header>
 

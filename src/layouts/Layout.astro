@@ -57,13 +57,13 @@ const ogLocaleAlt = alternates ? (lang === 'ca' ? 'es_ES' : 'ca_ES') : null;
 const T = lang === 'ca'
   ? {
       novedades: 'Novetats', supermercados: 'Supermercats', preguntas: 'Preguntes',
-      preguntasHref: '/ca/preguntes', apoyar: 'Donar suport', privacidad: 'Privacitat',
+      preguntasHref: '/ca/preguntes/', apoyar: 'Donar suport', privacidad: 'Privacitat',
       condiciones: 'Condicions', cookies: 'Cookies',
       contacto: 'Contacte', copy: 'Fet a Espanya',
     }
   : {
       novedades: 'Novedades', supermercados: 'Supermercados', preguntas: 'Preguntas',
-      preguntasHref: '/preguntas', apoyar: 'Apoyar', privacidad: 'Privacidad',
+      preguntasHref: '/preguntas/', apoyar: 'Apoyar', privacidad: 'Privacidad',
       condiciones: 'Condiciones', cookies: 'Cookies',
       contacto: 'Contacto', copy: 'Hecho en España',
     };
@@ -180,13 +180,13 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
             <span class="footer-word">Qué<span>Falta</span></span>
           </a>
           <nav class="footer-links">
-            <a href="/novedades">{T.novedades}</a>
-            <a href="/supermercados">{T.supermercados}</a>
+            <a href="/novedades/">{T.novedades}</a>
+            <a href="/supermercados/">{T.supermercados}</a>
             <a href={T.preguntasHref}>{T.preguntas}</a>
-            <a href="/apoyar">{T.apoyar}</a>
-            <a href="/privacidad">{T.privacidad}</a>
-            <a href="/condiciones">{T.condiciones}</a>
-            <a href="/cookies">{T.cookies}</a>
+            <a href="/apoyar/">{T.apoyar}</a>
+            <a href="/privacidad/">{T.privacidad}</a>
+            <a href="/condiciones/">{T.condiciones}</a>
+            <a href="/cookies/">{T.cookies}</a>
             <a href="mailto:contacto@quefalta.es">{T.contacto}</a>
           </nav>
           <p class="footer-copy">© {new Date().getFullYear()} QuéFalta · {T.copy}</p>

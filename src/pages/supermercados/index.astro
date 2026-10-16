@@ -51,7 +51,7 @@ const fmt = (iso) => {
 
     <div class="sup-grid">
       {STORES.map((s) => (
-        <a class="sup-card" href={`/supermercados/${s.slug}`}>
+        <a class="sup-card" href={`/supermercados/${s.slug}/`}>
           <span class="sup-card-head">
             <img class="sup-card-logo" src={s.logo} alt="" width="28" height="28" loading="lazy" />
             <span class="sup-card-name">{s.name}</span>
@@ -71,7 +71,7 @@ const fmt = (iso) => {
     <aside class="sup-cta">
       <p>
         ¿Dudas sobre cómo funciona? Están resueltas en las
-        <a href="/preguntas">preguntas frecuentes</a>.
+        <a href="/preguntas/">preguntas frecuentes</a>.
       </p>
       <div class="sup-cta-actions">
         <a class="sup-cta-btn" href="https://apps.apple.com/es/app/id6777720373">Descárgala en el App Store</a>

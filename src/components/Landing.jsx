@@ -202,7 +202,7 @@ function Hero() {
     <header className="qf-hero" id="top">
       <div className="qf-hero-bg" aria-hidden="true" />
       <Reveal>
-        <span className="qf-pill"><span className="qf-dot" />Disponible para iPhone y Android</span>
+        <span className="qf-pill"><span className="qf-dot" />Disponible en España para iPhone y Android</span>
       </Reveal>
       <Reveal as="h1" className="qf-display qf-hero-title" delay={60}>
         Tu lista de la compra, <span className="qf-em">compartida</span>.
@@ -703,13 +703,13 @@ function Footer() {
           <span className="qf-footer-word">Qué<span>Falta</span></span>
         </a>
         <nav className="qf-footer-links">
-          <a href="/novedades">Novedades</a>
-          <a href="/supermercados">Supermercados</a>
-          <a href="/preguntas">Preguntas</a>
-          <a href="/apoyar">Apoyar</a>
-          <a href="/privacidad">Privacidad</a>
-          <a href="/condiciones">Condiciones</a>
-          <a href="/cookies">Cookies</a>
+          <a href="/novedades/">Novedades</a>
+          <a href="/supermercados/">Supermercados</a>
+          <a href="/preguntas/">Preguntas</a>
+          <a href="/apoyar/">Apoyar</a>
+          <a href="/privacidad/">Privacidad</a>
+          <a href="/condiciones/">Condiciones</a>
+          <a href="/cookies/">Cookies</a>
           <a href="mailto:contacto@quefalta.es">Contacto</a>
         </nav>
         <p className="qf-footer-copy">© {new Date().getFullYear()} QuéFalta · Hecho en España</p>

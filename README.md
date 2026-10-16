@@ -60,10 +60,12 @@ en `customHttp.yml`).
 La URL principal es `https://quefalta.es`. Las páginas usan barra final y el
 canonical, los hreflang y el sitemap deben apuntar a esa misma versión.
 
-La regla de [`docs/amplify-www-redirect.json`](docs/amplify-www-redirect.json)
-está **preparada, pendiente de aplicar en Amplify**. Publicar este fichero o
-ejecutar el build no activa la redirección: Amplify gestiona las reglas fuera
-del repositorio.
+La redirección se comprobó en producción el **16 de octubre de 2026**:
+`https://www.quefalta.es/supermercados/bonpreu/?seo_probe=1` respondió `301`
+hacia `https://quefalta.es/supermercados/bonpreu/?seo_probe=1`, conservando
+ruta y parámetros. [`docs/amplify-www-redirect.json`](docs/amplify-www-redirect.json)
+contiene la regla de referencia. Publicar este fichero o ejecutar el build no
+activa la redirección: Amplify gestiona las reglas fuera del repositorio.
 
 En Amplify → Hosting → Rewrites and redirects:
 
@@ -83,6 +85,36 @@ En Amplify → Hosting → Rewrites and redirects:
 El origen de una regla de dominio **no lleva ruta ni `/<*>`**. Amplify conserva
 la ruta automáticamente. Referencia:
 [ejemplos oficiales de AWS](https://docs.aws.amazon.com/amplify/latest/userguide/redirect-rewrite-examples.html).
+
+## Páginas inexistentes: devolver un 404 real
+
+La comprobación pública del **16 de octubre de 2026** detectó que una ruta
+inexistente respondía `302` hacia `/404.html`, que a su vez respondía `200`.
+La página de error ya tiene `noindex`, pero el estado HTTP de la ruta
+inexistente debe ser `404`. El HTML de Astro no puede corregir por sí solo
+esta respuesta del alojamiento.
+
+[`docs/amplify-404-rewrite.json`](docs/amplify-404-rewrite.json) contiene la
+regla propuesta, **pendiente de aplicar y verificar en Amplify**. Es un
+fragmento de referencia, no una lista completa para sustituir la configuración.
+
+En Amplify → Hosting → Rewrites and redirects:
+
+1. Guarda una copia de las reglas actuales para poder revertir.
+2. Revisa la regla de páginas inexistentes. Sustituye la redirección a
+   `/404.html` por la regla del JSON con tipo `404 (Not Found)`.
+3. Coloca esa regla al final, detrás de la redirección del dominio y del
+   rewrite de invitaciones `/join/<*> → /join/index.html` de tipo `200`.
+   Conserva las demás reglas existentes.
+4. Comprueba con una petición GET que una ruta inexistente nueva devuelve
+   `404` directamente, muestra la página de error y mantiene su URL.
+5. Verifica también que la portada, una página de supermercado, el sitemap
+   y los ficheros `/.well-known/` siguen respondiendo correctamente; que
+   `www` sigue redirigiendo con `301`; y que una invitación válida conserva
+   su comportamiento.
+
+Referencias: [regla 404 de AWS Amplify](https://docs.aws.amazon.com/amplify/latest/userguide/redirect-rewrite-examples.html)
+y [estados HTTP de páginas de error en Google](https://developers.google.com/search/docs/crawling-indexing/troubleshoot-crawling-errors).
 
 ## Comprobación de SEO después de compilar
 

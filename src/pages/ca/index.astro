@@ -66,16 +66,16 @@ const FUNCIONS = [
 ---
 
 <Layout
-  title="QuéFalta — L'app de llista de la compra compartida"
-  description="Llista de la compra compartida en temps real, gratuïta per a iPhone i Android. Amb productes i preus reals de dinou supermercats nacionals i regionals."
+  title="Llista de la compra compartida per a iPhone i Android | QuéFalta"
+  description="Comparteix la llista de la compra amb la parella, la família o els companys de pis, en temps real. App gratuïta per a iPhone i Android, disponible a Espanya."
   lang="ca"
   alternates={{ es: '/', ca: '/ca/' }}
   jsonld={appSchema}
 >
   <section class="ca" id="top">
     <header class="ca-hero">
-      <span class="ca-pill"><span class="ca-dot"></span>Disponible per a iPhone i Android</span>
-      <h1 class="ca-title"><span class="ca-em">QuéFalta</span> a la teva llista de la compra?</h1>
+      <span class="ca-pill"><span class="ca-dot"></span>Disponible a Espanya per a iPhone i Android</span>
+      <h1 class="ca-title">La teva llista de la compra, <span class="ca-em">compartida</span>.</h1>
       <p class="ca-lead">
         QuéFalta és l'app gratuïta de llista de la compra compartida: crees un
         grup, hi convides la teva gent i tothom afegeix i marca productes de la
@@ -85,11 +85,11 @@ const FUNCIONS = [
       <div class="ca-actions">
         <a class="ca-btn" href={APP_STORE_URL}>Descarrega-la a l'App Store</a>
         <a class="ca-btn ca-btn-play" href={PLAY_STORE_URL}>Descarrega-la a Google Play</a>
-        <a class="ca-ghost" href="/ca/preguntes">Preguntes freqüents</a>
+        <a class="ca-ghost" href="/ca/preguntes/">Preguntes freqüents</a>
       </div>
       <div class="ca-supers" aria-label="Supermercats inclosos">
         {SUPERS.map((s) => (
-          <a class="ca-super" href={`/supermercados/${s.slug}`}>
+          <a class="ca-super" href={`/supermercados/${s.slug}/`}>
             <img src={s.logo} alt="" width="22" height="22" loading="lazy" />
             {s.name}
           </a>
