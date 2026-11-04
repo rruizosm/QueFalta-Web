@@ -46,7 +46,7 @@ nav.qf-nav .qf-nav-link.is-active,
 
 /* Los logos de los supermercados son PNG pensados para fondo claro: en modo
    oscuro mantenemos su chip con fondo y borde blancos para que se lean. */
-[data-theme="dark"] .qf-hero-logo { background: #fff; border-color: #fff; }
+[data-theme="dark"] .qf-store-chip img { padding: 1px; box-sizing: content-box; }
 [data-theme="dark"] .qf-super-logo { background: #fff; border: 1px solid #fff; border-radius: 6px; padding: 2px; box-sizing: content-box; }
 
 /* Footer: mismo trato que el navbar — texto blanco y separadores visibles. */
@@ -121,22 +121,32 @@ nav.qf-nav .qf-nav-link.is-active,
 /* El navbar global vive en src/components/SiteNav.astro. */
 
 /* ── Hero ──────────────────────────────────────────────────── */
+/* Dos columnas en escritorio (texto | móvil) y franja de logos debajo; en
+   móvil se apila centrado. */
 .qf-hero {
-  position: relative; text-align: center; overflow: hidden;
-  /* El hero ocupa la pantalla completa (menos la barra de navegación) y
-     centra su contenido en vertical. min-height (no height) permite que
-     crezca si el contenido es más alto, sin recortarlo. */
-  min-height: calc(100vh - 61px);
-  min-height: calc(100svh - 61px);
-  display: grid; align-content: space-evenly;;
-  padding: 48px 40px;
+  position: relative; overflow: hidden; isolation: isolate;
+  padding: 56px 40px 0;
 }
 .qf-hero-bg {
   position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background:
-    radial-gradient(60% 50% at 50% -8%, var(--accent-light), transparent 70%),
-    radial-gradient(40% 40% at 85% 8%, rgba(63, 160, 120, 0.07), transparent 70%);
+    radial-gradient(45% 55% at 78% 30%, var(--accent-light), transparent 70%),
+    radial-gradient(35% 40% at 8% 0%, rgba(63, 160, 120, 0.07), transparent 70%);
 }
+/* Rejilla de puntos muy tenue que se desvanece hacia abajo: textura sin ruido. */
+.qf-hero-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(color-mix(in srgb, var(--ink) 9%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 75%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 75%);
+}
+.qf-hero-grid {
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: 56px; align-items: center;
+}
+.qf-hero-copy { max-width: 600px; }
 .qf-pill {
   display: inline-flex; align-items: center; gap: 9px;
   font-size: 13px; font-weight: 600; color: var(--ink-soft);
@@ -145,44 +155,99 @@ nav.qf-nav .qf-nav-link.is-active,
 }
 .qf-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 4px rgba(47, 170, 79, 0.16); }
 
-.qf-hero-title { font-size: clamp(44px, 7.2vw, 88px); margin: 26px auto 0; max-width: 14ch; }
-.qf-hero-lead { font-size: clamp(17px, 2vw, 21px); max-width: 720px; margin: 24px auto 0; text-align: center; }
-.qf-hero-sub { font-size: clamp(15px, 1.7vw, 18px); max-width: 600px; margin: 16px auto 0; text-align: center; color: var(--ink-soft); line-height: 1.5; }
-.qf-hero-sub strong { color: var(--ink); font-weight: 700; }
-.qf-hero-logos { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; margin: 22px auto 0; max-width: 560px; }
-.qf-hero-logo {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 42px; height: 42px; background: var(--surface);
-  border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-sm);
-  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
+.qf-hero-title { font-size: clamp(42px, 5.6vw, 76px); margin-top: 24px; max-width: 13ch; line-height: 0.98; }
+.qf-hero-lead { font-size: clamp(17px, 1.6vw, 20px); max-width: 540px; margin-top: 24px; }
+.qf-hero-actions { display: flex; align-items: center; gap: 12px; margin-top: 34px; flex-wrap: wrap; }
+.qf-hero-trust {
+  list-style: none; display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 26px;
+  font-size: 14px; font-weight: 600; color: var(--ink-soft);
 }
-.qf-hero-logo:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.qf-hero-logo img { width: 24px; height: 24px; object-fit: contain; }
-.qf-hero-actions { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 34px; flex-wrap: wrap; }
-.qf-hero-meta { font-size: 13.5px; font-weight: 500; color: var(--ink-faint); margin-top: 16px; }
+.qf-hero-trust li { display: inline-flex; align-items: center; gap: 7px; }
+.qf-hero-sub { font-size: 13px; margin-top: 14px; color: var(--ink-faint); line-height: 1.5; }
 
-.qf-hero-stage { position: relative; margin: 56px auto 0; width: max-content; max-width: 100%; }
-.qf-hero-stage::before {
-  content: ''; position: absolute; left: 50%; top: 14%; transform: translateX(-50%);
-  width: 560px; max-width: 120%; height: 560px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(47, 108, 181, 0.16), rgba(47, 108, 181, 0) 66%);
-  z-index: -1; filter: blur(6px);
+/* Columna visual: móvil con halo y dos tarjetas flotantes ilustrativas. */
+.qf-hero-visual { position: relative; display: flex; justify-content: center; padding: 8px 0 36px; }
+.qf-hero-visual::before,
+.qf-stage::before {
+  /* Halo visible alrededor del teléfono, con espacio para desvanecerse
+     gradualmente hasta transparente antes de alcanzar sus límites. */
+  content: ''; position: absolute; inset: -72px -112px;
+  z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse closest-side at 50% 50%,
+    color-mix(in srgb, var(--accent) 16%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 14%, transparent) 30%,
+    color-mix(in srgb, var(--accent) 10%, transparent) 55%,
+    color-mix(in srgb, var(--accent) 5%, transparent) 75%,
+    color-mix(in srgb, var(--accent) 1.5%, transparent) 90%,
+    transparent 100%);
+  filter: blur(18px);
 }
-.qf-hero-phone { transform: translateZ(0); }
+/* zoom (no transform) para que el hueco de layout encoja con el móvil y la
+   franja de logos quepa en el primer pantallazo de un portátil. */
+.qf-hero-phone { transform: translateZ(0); zoom: 0.88; }
+.qf-phone-scale { width: 320px; max-width: 100%; }
 
-/* En pantallas anchas el primer móvil flota a la derecha y el texto sigue
-   centrado, exactamente donde está. Por debajo de 1360px se mantiene el
-   apilado centrado (móvil debajo) para que nunca se solape con el texto. */
-@media (min-width: 1360px) {
-  .qf-hero-stage {
-    position: absolute;
-    top: 0; bottom: 0; margin: auto 0;   /* centra el móvil en vertical */
-    height: 662px;                        /* alto real del marco del móvil */
-    right: max(40px, calc((100% - 1440px) / 2));
-    width: auto;
-  }
-  .qf-hero-phone { transform: scale(0.88); transform-origin: center right; }
+.qf-float {
+  position: absolute; z-index: 2;
+  display: flex; align-items: center; gap: 11px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border); border-radius: 16px;
+  padding: 12px 14px; box-shadow: var(--shadow-md);
+  animation: qf-float 6s ease-in-out infinite;
 }
+.qf-float-a { top: 22%; left: max(0px, calc(50% - 290px)); }
+.qf-float-b {
+  bottom: 120px; right: max(0px, calc(50% - 300px));
+  flex-direction: column; align-items: stretch; gap: 10px; min-width: 210px;
+  animation-delay: -3s;
+}
+.qf-float-row { display: flex; align-items: center; gap: 11px; }
+.qf-float-av {
+  flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 14px; font-weight: 700;
+}
+.qf-float-ic {
+  flex: 0 0 auto; width: 34px; height: 34px; border-radius: 11px; background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+}
+.qf-float-txt { display: flex; flex-direction: column; line-height: 1.3; }
+.qf-float-txt strong { font-size: 13px; font-weight: 700; color: var(--ink); }
+.qf-float-txt span { font-size: 12px; color: var(--ink-soft); }
+.qf-float-time { font-size: 11px; font-weight: 600; color: var(--ink-faint); margin-left: 6px; align-self: flex-start; }
+.qf-float-bar { display: block; height: 6px; border-radius: 6px; background: var(--paper-2); overflow: hidden; }
+.qf-float-bar span { display: block; height: 100%; border-radius: 6px; background: var(--accent); }
+@keyframes qf-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* Franja de supermercados: carrusel continuo con los bordes desvanecidos. */
+.qf-hero-stores {
+  max-width: 1200px; margin: 0 auto; padding: 28px 0 40px;
+  border-top: 1px solid var(--border); text-align: center;
+}
+.qf-hero-stores-label { font-size: 13.5px; color: var(--ink-faint); }
+.qf-hero-stores-label strong { color: var(--ink); font-weight: 700; }
+.qf-marquee {
+  margin-top: 18px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.qf-marquee-track {
+  display: flex; gap: 10px; width: max-content;
+  animation: qf-marquee 60s linear infinite;
+}
+.qf-marquee:hover .qf-marquee-track,
+.qf-marquee:focus-within .qf-marquee-track { animation-play-state: paused; }
+@keyframes qf-marquee { to { transform: translateX(calc(-50% - 5px)); } }
+.qf-store-chip {
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 9px;
+  padding: 8px 15px 8px 9px; border-radius: 980px;
+  background: var(--surface); border: 1px solid var(--border);
+  font-size: 14px; font-weight: 600; color: var(--ink-soft); white-space: nowrap;
+  transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+.qf-store-chip:hover { color: var(--ink); border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
+.qf-store-chip img { width: 22px; height: 22px; object-fit: contain; border-radius: 6px; background: #fff; }
 
 /* ── Section scaffolding ───────────────────────────────────── */
 .qf-section { padding: 96px 0; }
@@ -234,11 +299,8 @@ nav.qf-nav .qf-nav-link.is-active,
 .qf-row-media { display: flex; justify-content: center; position: relative; }
 .qf-stage {
   position: relative; display: flex; justify-content: center;
+  max-width: 100%; min-width: 0;
   padding: 18px; border-radius: 36px;
-}
-.qf-stage::before {
-  content: ''; position: absolute; inset: 0; border-radius: 40px; z-index: -1;
-  background: radial-gradient(circle at 50% 30%, var(--accent-light), transparent 68%);
 }
 
 /* ── Secciones extra: ilustraciones (notificaciones / amigos / preferencias) ── */
@@ -391,13 +453,10 @@ nav.qf-nav .qf-nav-link.is-active,
 .qf-stat-k { font-family: var(--geo); font-weight: 800; font-size: 26px; letter-spacing: -0.02em; color: #fff; }
 .qf-stat-l { font-size: 12.5px; color: rgba(255, 255, 255, 0.62); margin-top: 3px; }
 .qf-band-media { display: flex; justify-content: center; }
-/* Contorno azul de marca solo en el mockup de "En equipo". El marco del teléfono
-   (frame.jsx) usa estilos inline y no tiene clase, así que pintamos el borde con un
-   ::after sobre su div raíz (.qf-phone-scale > div), respetando el border-radius. */
-.qf-band .qf-phone-scale > div::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  border: 2px solid var(--accent); border-radius: 38px;
-  box-shadow: 0 0 22px rgba(47, 108, 181, 0.35);
+/* Halo de marca que sigue la silueta real del iPhone. */
+.qf-band .qf-phone {
+  filter: drop-shadow(0 0 11px rgba(47, 108, 181, 0.35))
+          drop-shadow(0 24px 30px rgba(20, 16, 12, 0.24));
 }
 
 /* ── Supermarkets ──────────────────────────────────────────── */
@@ -462,13 +521,17 @@ nav.qf-nav .qf-nav-link.is-active,
   .qf-wrap, .qf-row, .qf-band-grid, .qf-footer-inner { padding-left: 24px; padding-right: 24px; }
   .qf-section { padding: 72px 0; }
   /* Hero y CTA recuperan ancho: antes conservaban 40px de margen lateral. */
-  .qf-hero { padding: 40px 24px; }
+  .qf-hero { padding: 48px 24px 0; }
+  .qf-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; text-align: center; }
+  .qf-hero-copy { margin: 0 auto; }
+  .qf-hero-title, .qf-hero-lead { margin-left: auto; margin-right: auto; }
+  .qf-hero-actions, .qf-hero-trust { justify-content: center; }
+  .qf-hero-visual { padding-bottom: 40px; }
   /* Prosa justificada también en móvil, sin partir palabras (sin hyphens). */
-  .qf-hero-lead, .qf-section-lead, .qf-row-desc, .qf-band-desc, .qf-cta-lead,
+  .qf-section-lead, .qf-row-desc, .qf-band-desc, .qf-cta-lead,
   .qf-step-desc, .qf-extra-desc {
     text-align: justify;
   }
-  .qf-hero-stage { margin-top: 40px; }
   .qf-cta { padding: 80px 24px; }
   .qf-band { padding: 76px 0; }
   .qf-steps { grid-template-columns: 1fr; gap: 16px; }
@@ -493,15 +556,20 @@ nav.qf-nav .qf-nav-link.is-active,
 }
 
 @media (max-width: 560px) {
-  .qf-hero { padding: 36px 20px 44px; }
+  .qf-hero { padding: 36px 20px 0; }
+  .qf-hero-stores { padding: 24px 0 32px; }
+  .qf-hero-stores-label { padding: 0 8px; }
+  .qf-float { transform-origin: center; padding: 10px 12px; }
+  .qf-float-a { top: 14%; left: -6px; }
+  .qf-float-b { bottom: 110px; right: -6px; min-width: 190px; }
   .qf-hero-title { font-size: clamp(33px, 8.6vw, 46px); max-width: 18ch; margin-top: 20px; }
-  .qf-hero-sub { font-size: 14px; } /* Incluye condiciones de Plus también en móvil. */
+  .qf-hero-sub { font-size: 12.5px; }
+  .qf-hero-actions .qf-badge { min-width: 200px; justify-content: center; }
   .qf-hero-lead { text-align: center; }
-  .qf-hero-logos { margin-top: 18px; }
   .qf-section { padding: 60px 0; }
   .qf-cta { padding: 64px 20px; }
   .qf-extras { grid-template-columns: 1fr; }
-  .qf-hero-phone, .qf-row-media .qf-phone-scale { transform: scale(0.88); transform-origin: top center; }
+  .qf-row-media .qf-phone-scale { transform: scale(0.88); transform-origin: top center; }
   .qf-footer-inner { flex-direction: column; align-items: flex-start; }
 }
 
@@ -510,4 +578,8 @@ nav.qf-nav .qf-nav-link.is-active,
   .qf-reveal { opacity: 1; transform: none; transition: none; }
   html { scroll-behavior: auto; }
   .qf-ghost svg { animation: none; }
+  .qf-float, .qf-marquee-track { animation: none; }
+  .qf-marquee { -webkit-mask-image: none; mask-image: none; }
+  .qf-marquee-track { width: auto; flex-wrap: wrap; justify-content: center; }
+  .qf-marquee-track > [aria-hidden] { display: none; }
 }

@@ -1,10 +1,43 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// Novedades de QuéFalta, en orden de publicación: la más reciente arriba y la
-// más antigua al final. Para añadir una actualización, suma un objeto al
-// PRINCIPIO de la lista. `tag` es opcional (Nuevo / Mejora / Corrección).
+// Solo versiones publicadas de la app QuéFalta, en orden de publicación:
+// la más reciente arriba y la más antigua al final. No incluir cambios de la web.
+// Para añadir una versión, suma un objeto con `version` al PRINCIPIO de la lista.
+// `tag` es opcional (Nuevo / Mejora / Corrección).
 const UPDATES = [
+  {
+    date: '2026-10-05', version: 'v1.3.3', tag: 'Mejora',
+    title: 'QuéFalta 1.3.3: tu supermercado favorito y un Radar más completo',
+    desc: 'Personaliza el supermercado que se abre al entrar y encuentra alternativas en más cadenas con el Radar de ahorro.',
+    items: [
+      'Marca un supermercado como favorito para abrirlo por defecto en Catálogo, Ofertas, Novedades, Cambios de precio y Favoritos.',
+      'BM y El Jamón se incorporan al Radar de ahorro para buscar alternativas desde sus productos y encontrarlas en sus catálogos.',
+      'Palabra de hoy mejora la legibilidad con casillas y teclas más grandes, mayor contraste y un nuevo aviso de racha.',
+      'Mejoras para conservar la sesión iniciada al renovar el acceso y recuperarla tras errores temporales.',
+      'Carga de imágenes del catálogo más fluida, con menos parpadeos al abrir los productos.',
+      'Ajustes en la navegación y la cesta, con mejoras de accesibilidad y estabilidad.',
+    ],
+  },
+  {
+    date: '2026-09-29', version: 'v1.3.2', tag: 'Nuevo',
+    title: 'QuéFalta 1.3.2: Palabra de hoy, BM y El Jamón',
+    desc: 'Estrenamos un reto diario de palabras y ampliamos el catálogo a 21 supermercados, junto con nuevas opciones para organizar la compra y cuidar tu privacidad.',
+    items: [
+      'Nuevo juego Palabra de hoy: adivina una palabra de cuatro a seis letras en seis intentos, comparte el resultado y sigue tu racha.',
+      'Clasificaciones general y de tu grupo para seguir los resultados del reto diario.',
+      'BM llega a las zonas compatibles y El Jamón a Andalucía, con catálogo, ofertas, novedades, favoritos y productos para añadir a la cesta.',
+      'Mejoras de búsqueda y ordenación en Ofertas, Novedades, Cambios de precio y Favoritos.',
+      'Conserva para la próxima compra los productos que no hayas encontrado en la tienda.',
+      'Grupos con varios administradores y acceso gratuito a las cestas de hasta tres grupos; QuéFalta Plus desbloquea todas.',
+      'Nueva opción de privacidad para que solo tus amigos puedan ver tu foto de perfil.',
+      'Información nutricional más clara en las fichas, navegación más fluida y mejoras de accesibilidad y estabilidad.',
+    ],
+    link: {
+      href: '/supermercados/',
+      label: 'Ver los 21 supermercados',
+    },
+  },
   {
     date: '2026-09-08', version: 'v1.3.1', tag: 'Nuevo',
     title: 'QuéFalta 1.3.1: Lidl llega a QuéFalta',
@@ -18,7 +51,7 @@ const UPDATES = [
       'Mejoras visuales, de estabilidad y de rendimiento.',
     ],
     link: {
-      href: '/supermercados/lidl',
+      href: '/supermercados/lidl/',
       label: 'Ver Lidl en QuéFalta',
     },
   },

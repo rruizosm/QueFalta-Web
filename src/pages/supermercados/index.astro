@@ -30,16 +30,16 @@ const fmt = (iso) => {
 ---
 
 <Layout
-  title="19 supermercados en QuéFalta — catálogos, precios y fichas"
-  description="Los 19 supermercados incluidos en QuéFalta y qué ofrece cada uno: catálogo con precios, ofertas, ficha de producto, idiomas y disponibilidad regional."
+  title="21 supermercados en QuéFalta — catálogos, precios y fichas"
+  description="Los 21 supermercados incluidos en QuéFalta y qué ofrece cada uno: catálogo con precios, ofertas, ficha de producto, idiomas y disponibilidad regional."
   jsonld={itemListSchema}
 >
   <section class="sup container">
     <header class="sup-head">
       <span class="sup-eyebrow">Supermercados</span>
-      <h1 class="sup-title">Diecinueve supermercados, una sola app</h1>
+      <h1 class="sup-title">Veintiún supermercados, una sola app</h1>
       <p class="sup-lead">
-        QuéFalta incluye el catálogo y los precios de diecinueve supermercados de
+        QuéFalta incluye el catálogo y los precios de veintiún supermercados de
         España, entre cadenas nacionales y regionales. La app te muestra los
         disponibles en tu zona: elige cuáles quieres ver y añade sus productos
         a una lista de la compra compartida en tiempo real.
@@ -51,7 +51,7 @@ const fmt = (iso) => {
 
     <div class="sup-grid">
       {STORES.map((s) => (
-        <a class="sup-card" href={`/supermercados/${s.slug}`}>
+        <a class="sup-card" href={`/supermercados/${s.slug}/`}>
           <span class="sup-card-head">
             <img class="sup-card-logo" src={s.logo} alt="" width="28" height="28" loading="lazy" />
             <span class="sup-card-name">{s.name}</span>
@@ -71,7 +71,7 @@ const fmt = (iso) => {
     <aside class="sup-cta">
       <p>
         ¿Dudas sobre cómo funciona? Están resueltas en las
-        <a href="/preguntas">preguntas frecuentes</a>.
+        <a href="/preguntas/">preguntas frecuentes</a>.
       </p>
       <div class="sup-cta-actions">
         <a class="sup-cta-btn" href="https://apps.apple.com/es/app/id6777720373">Descárgala en el App Store</a>

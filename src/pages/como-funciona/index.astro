@@ -1,0 +1,45 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import Landing from '../../components/Landing.jsx';
+import '../../styles/landing.css';
+
+const APP_STORE_URL = 'https://apps.apple.com/es/app/id6777720373';
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1';
+
+// Datos estructurados de la app: QuéFalta es una app gratuita para iOS y Android. Sin
+// `aggregateRating` a propósito: solo se añadirá cuando haya valoraciones
+// reales (inventarlas va contra las directrices de Google).
+const appSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'QuéFalta',
+  operatingSystem: ['iOS', 'Android'],
+  applicationCategory: 'ShoppingApplication',
+  softwareVersion: '1.3.1',
+  description:
+    'QuéFalta es una app de lista de la compra compartida para iPhone y Android. Crea un grupo con tu pareja, familia o compañeros de piso y añadid o marcad productos en tiempo real. Listas gratuitas y QuéFalta Plus opcional.',
+  url: 'https://quefalta.es/como-funciona/',
+  image: 'https://quefalta.es/og.png',
+  inLanguage: ['es', 'ca'],
+  installUrl: [APP_STORE_URL, PLAY_STORE_URL],
+  downloadUrl: [APP_STORE_URL, PLAY_STORE_URL],
+  author: { '@type': 'Organization', name: 'QuéFalta', url: 'https://quefalta.es/' },
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+};
+---
+
+<Layout
+  title="Lista de la compra compartida para iPhone y Android | QuéFalta"
+  description="Comparte la lista de la compra con tu pareja, familia o compañeros de piso. Sincronización en tiempo real entre iPhone y Android. Descarga QuéFalta gratis."
+  bare
+  alternates={{ es: '/como-funciona/', ca: '/ca/' }}
+  jsonld={appSchema}
+>
+  <!-- El mockup del hero es el elemento LCP de la página: se descarga desde el
+       primer byte de HTML en vez de esperar al render de la isla React. -->
+  <link slot="head" rel="preload" as="image" href="/mock/home.png" fetchpriority="high" />
+  <link slot="head" rel="preload" as="image" href="/devices/iphone-17-black-portrait.png" fetchpriority="high" />
+  <SiteNav alternates={{ es: '/como-funciona/', ca: '/ca/' }} />
+  <Landing client:load />
+</Layout>

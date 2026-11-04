@@ -22,7 +22,7 @@ interface Props {
 }
 const {
   title = 'QuéFalta — La compra compartida, sin líos',
-  description = 'Organiza la compra en grupo: lista compartida en tiempo real, carrito por grupos y catálogo de diecinueve supermercados. ¿Qué falta?',
+  description = 'Organiza la compra en grupo: lista compartida en tiempo real, carrito por grupos y catálogo de veintiún supermercados. ¿Qué falta?',
   bare = false,
   image = '/og.png',
   noindex = false,
@@ -48,14 +48,14 @@ const ogLocaleAlt = alternates ? (lang === 'ca' ? 'es_ES' : 'ca_ES') : null;
 // castellano (mejor un enlace cruzado que ninguno).
 const T = lang === 'ca'
   ? {
-      novedades: 'Novetats', supermercados: 'Supermercats', preguntas: 'Preguntes',
-      preguntasHref: '/ca/preguntes', apoyar: 'Donar suport', privacidad: 'Privacitat',
+      precios: 'Preus', novedades: 'Novetats', supermercados: 'Supermercats', preguntas: 'Preguntes',
+      preguntasHref: '/ca/preguntes/', apoyar: 'Donar suport', privacidad: 'Privacitat',
       condiciones: 'Condicions', cookies: 'Cookies',
       contacto: 'Contacte', copy: 'Fet a Espanya',
     }
   : {
-      novedades: 'Novedades', supermercados: 'Supermercados', preguntas: 'Preguntas',
-      preguntasHref: '/preguntas', apoyar: 'Apoyar', privacidad: 'Privacidad',
+      precios: 'Precios', novedades: 'Novedades', supermercados: 'Supermercados', preguntas: 'Preguntas',
+      preguntasHref: '/preguntas/', apoyar: 'Apoyar', privacidad: 'Privacidad',
       condiciones: 'Condiciones', cookies: 'Cookies',
       contacto: 'Contacto', copy: 'Hecho en España',
     };
@@ -158,7 +158,7 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     </script>
   </head>
   <body>
-    {!bare && <SiteNav lang={lang} />}
+    {!bare && <SiteNav lang={lang} alternates={alternates} />}
 
     <main>
       <slot />
@@ -167,18 +167,19 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     {!bare && (
       <footer class="site-footer">
         <div class="footer-inner">
-          <a href={lang === 'ca' ? '/ca/' : '/'} class="footer-brand">
+          <a href={lang === 'ca' ? '/ca/comparador/' : '/'} class="footer-brand">
             <img src="/quefalta-logo-blue.png" alt="" class="footer-logo" width="24" height="24" />
             <span class="footer-word">Qué<span>Falta</span></span>
           </a>
           <nav class="footer-links">
-            <a href="/novedades">{T.novedades}</a>
-            <a href="/supermercados">{T.supermercados}</a>
+            <a href="/precios/">{T.precios}</a>
+            <a href="/novedades/">{T.novedades}</a>
+            <a href="/supermercados/">{T.supermercados}</a>
             <a href={T.preguntasHref}>{T.preguntas}</a>
-            <a href="/apoyar">{T.apoyar}</a>
-            <a href="/privacidad">{T.privacidad}</a>
-            <a href="/condiciones">{T.condiciones}</a>
-            <a href="/cookies">{T.cookies}</a>
+            <a href="/apoyar/">{T.apoyar}</a>
+            <a href="/privacidad/">{T.privacidad}</a>
+            <a href="/condiciones/">{T.condiciones}</a>
+            <a href="/cookies/">{T.cookies}</a>
             <a href="mailto:contacto@quefalta.es">{T.contacto}</a>
           </nav>
           <p class="footer-copy">© {new Date().getFullYear()} QuéFalta · {T.copy}</p>

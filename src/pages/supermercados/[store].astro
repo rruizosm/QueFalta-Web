@@ -155,6 +155,11 @@ const fmt = (iso) => {
       </div>
     </section>
 
+    <p class="st-compare">
+      ¿Sale más barato en {store.name}? Mira la <a href="/precios/">comparativa de precios
+      por producto</a> o usa el <a href="/">comparador de supermercados</a> con tu código postal.
+    </p>
+
     <aside class="st-cta">
       <p>Gratis, sin anuncios y con la lista compartida en tiempo real.</p>
       <div class="st-cta-actions">
@@ -165,6 +170,9 @@ const fmt = (iso) => {
   </section>
 
   <style>
+    .st-compare { margin-top: 32px; font-size: 15.5px; line-height: 1.6; color: var(--ink-soft); }
+    .st-compare a { color: var(--accent); font-weight: 600; }
+
     .st { max-width: 760px; padding-top: 36px; }
     .st-breadcrumbs ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; font-size: 13px; color: var(--ink-soft); }
     .st-breadcrumbs li + li::before { content: '/'; margin-right: 8px; color: var(--ink-faint); }

@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Comparador from '../../components/comparador/Comparador.jsx';
+import '../../styles/comparador.css';
+
+// Comparador en català (equivalente de la home /).
+---
+
+<Layout
+  title="Comparador de preus de supermercats | QuéFalta"
+  description="Busca un producte i compara'n el preu als supermercats del teu codi postal: Mercadona, Carrefour, Dia, Lidl, Aldi, Consum i més. Gratis i sense registrar-te."
+  lang="ca"
+  alternates={{ es: '/', ca: '/ca/comparador/' }}
+>
+  <Comparador client:load lang="ca" />
+</Layout>

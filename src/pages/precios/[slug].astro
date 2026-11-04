@@ -1,0 +1,169 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { STORE_BY_KEY } from '../../data/comparadorZonas.js';
+import { loadPrecios } from '../../lib/preciosSeo.js';
+import { CATEGORIES } from '../../data/preciosProductos.js';
+import { euro, fechaLarga, mesAnio, UNIT_NAME } from '../../lib/preciosFormato.js';
+import '../../styles/precios.css';
+
+// Una página por producto, con los precios escritos en el HTML en cada
+// compilación (ver preciosSeo.js). Respuesta directa primero; los precios
+// cambian cada semana, así que el texto sale de los datos, nunca a mano.
+
+export async function getStaticPaths() {
+  const { products, updated } = await loadPrecios();
+  return products.map((product) => ({
+    params: { slug: product.slug },
+    props: { product, updated, related: products.filter((p) => p.category === product.category && p.slug !== product.slug) },
+  }));
+}
+
+const { product: p, updated, related } = Astro.props;
+const best = STORE_BY_KEY[p.best.store];
+const worst = STORE_BY_KEY[p.worst.store];
+const unit = UNIT_NAME[p.unit];
+const isCheapest = (r) => r.ppu <= p.best.ppu + 0.0001;
+const ties = p.rows.filter(isCheapest).length;
+const category = CATEGORIES.find((c) => c.id === p.category);
+
+const faqs = [
+  {
+    q: `¿Dónde comprar ${p.name.toLowerCase()} más barato?`,
+    a: `Con los precios de referencia de esta semana, la opción más barata es ${p.best.name} de ${best.name}, a ${euro(p.best.ppu)} por ${unit}${ties > 1 ? `, empatada con otras ${ties - 1} cadenas` : ''}.`,
+  },
+  {
+    q: `¿Cuánto cuesta de media ${p.name.toLowerCase()} en el supermercado?`,
+    a: `La media de la opción más barata de cada una de las ${p.rows.length} cadenas comparadas es de ${euro(p.average)} por ${unit}. El precio varía entre ${euro(p.best.ppu)} y ${euro(p.worst.ppu)} por ${unit}.`,
+  },
+  {
+    q: '¿Estos precios son los de mi supermercado?',
+    a: 'Son precios de referencia de la tienda online de cada cadena en una zona donde opera. Algunas cadenas cambian precios y surtido según la zona: para verlos con tu código postal, usa el comparador.',
+  },
+];
+
+const breadcrumbs = [
+  { name: 'Comparador', url: '/' },
+  { name: 'Precios', url: '/precios/' },
+  { name: p.name, url: `/precios/${p.slug}/` },
+];
+
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((c, i) => ({
+      '@type': 'ListItem', position: i + 1, name: c.name, item: new URL(c.url, Astro.site).href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    inLanguage: 'es',
+    dateModified: updated,
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
+---
+
+<Layout
+  title={`Precio de ${p.name.toLowerCase()} en ${p.rows.length} supermercados (${mesAnio(updated)}) | QuéFalta`}
+  description={`Compara el precio de ${p.name.toLowerCase()} en ${p.rows.length} supermercados. Desde ${euro(p.best.ppu)}/${p.unit} en ${best.name}. Hasta un ${p.spreadPct} % de diferencia entre cadenas.`}
+  jsonld={schemas}
+>
+  <article class="pr container">
+    <nav class="pr-crumbs" aria-label="Ruta de navegación">
+      <ol>
+        {breadcrumbs.map((c, i) => (
+          <li>{i === breadcrumbs.length - 1 ? <span aria-current="page">{c.name}</span> : <a href={c.url}>{c.name}</a>}</li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="pr-head">
+      <span class="pr-eyebrow">{category.name}</span>
+      <h1>Precio de {p.name.toLowerCase()} en supermercados</h1>
+      <p class="pr-answer">
+        La opción más barata es <strong>{p.best.name}</strong> de <strong>{best.name}</strong>,
+        a <strong>{euro(p.best.ppu)} por {unit}</strong>. La opción más económica de {worst.name} sale
+        a {euro(p.worst.ppu)}: <strong>un {p.spreadPct} % de diferencia</strong> entre
+        las {p.rows.length} cadenas comparadas.
+      </p>
+      <p class="pr-updated">Actualizado el <time datetime={updated}>{fechaLarga(updated)}</time></p>
+    </header>
+
+    <div class="pr-stats">
+      <div><span>Más barato</span><strong>{euro(p.best.ppu)}/{p.unit}</strong><em>{best.name}</em></div>
+      <div><span>Precio medio</span><strong>{euro(p.average)}/{p.unit}</strong><em>{p.rows.length} cadenas</em></div>
+      <div><span>Más caro</span><strong>{euro(p.worst.ppu)}/{p.unit}</strong><em>{worst.name}</em></div>
+    </div>
+
+    <a class="pr-cta" href={`/?q=${encodeURIComponent(p.query)}`}>
+      <strong>Compara con los precios de tu zona</strong>
+      <span>Introduce tu código postal y mira qué tienes cerca →</span>
+    </a>
+
+    <section>
+      <h2>Comparativa por supermercado</h2>
+      <p class="pr-note">{p.note} Mostramos la opción más barata por {unit} de cada cadena.</p>
+      <div class="pr-table-wrap">
+        <table class="pr-table">
+          <thead>
+            <tr><th scope="col">Supermercado</th><th scope="col">Producto</th><th scope="col">Precio</th><th scope="col">Por {unit}</th></tr>
+          </thead>
+          <tbody>
+            {p.rows.map((r, i) => {
+              const s = STORE_BY_KEY[r.store];
+              const cheapest = isCheapest(r);
+              return (
+                <tr class={cheapest ? 'is-best' : ''}>
+                  <th scope="row">
+                    <span class="pr-store">
+                      <span class="pr-rank">{i + 1}</span>
+                      <img class="pr-logo" src={s.logo} alt="" width="28" height="28" loading="lazy" />
+                      {s.name}
+                    </span>
+                  </th>
+                  <td>
+                    <span class="pr-product">
+                      {r.image && <img src={r.image} alt={r.name} width="44" height="44" loading="lazy" />}
+                      <span>{r.name}{r.format && <small>{r.format}</small>}</span>
+                    </span>
+                  </td>
+                  <td class="pr-num">{euro(r.price)}</td>
+                  <td class="pr-num"><strong>{euro(r.ppu)}</strong></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Preguntas frecuentes</h2>
+      <div class="pr-faqs">
+        {faqs.map((f) => (
+          <div class="pr-faq"><h3>{f.q}</h3><p>{f.a}</p></div>
+        ))}
+      </div>
+    </section>
+
+    {related.length > 0 && (
+      <section>
+        <h2>Más precios de {category.name.toLowerCase()}</h2>
+        <div class="pr-links">
+          {related.map((r) => <a href={`/precios/${r.slug}/`}>{r.name}<span>desde {euro(r.best.ppu)}/{r.unit}</span></a>)}
+        </div>
+      </section>
+    )}
+
+    <p class="pr-disclaimer">
+      Precios de referencia de las tiendas online de cada cadena, que pueden variar según
+      la zona y la fecha. La comparación se hace por nombre y tipo de producto: pueden diferir
+      en marca, calidad o formato. Comprueba siempre el precio en tu supermercado. QuéFalta
+      no está afiliada a ninguna de estas cadenas.
+    </p>
+  </article>
+</Layout>

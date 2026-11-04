@@ -1,10 +1,13 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+// El hero reutiliza los estilos de la landing es (qf-hero, qf-badge, marco del móvil).
+import '../../styles/landing.css';
+import '../../phone/frame.css';
 
 // Home en català (plan AEO F3). Versión estática y "citable" de la landing:
 // Astro puro, sin la isla React. Para consultes en català ("app llista de la
 // compra compartida") gairebé no hi ha competència → respuesta directa primero.
-// ⚠️ Regla de oro: solo afirmar lo que la app publicada tiene (19 supers).
+// ⚠️ Regla de oro: solo afirmar lo que la app publicada tiene (21 supers).
 
 const APP_STORE_URL = 'https://apps.apple.com/es/app/id6777720373';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1';
@@ -17,7 +20,7 @@ const appSchema = {
   applicationCategory: 'ShoppingApplication',
   softwareVersion: '1.3.1',
   description:
-    "La llista de la compra compartida per a iPhone i Android. Afegeix, reparteix i marca el que ja tens, tots alhora i en temps real, amb el catàleg real de dinou supermercats.",
+    "La llista de la compra compartida per a iPhone i Android. Afegeix, reparteix i marca el que ja tens, tots alhora i en temps real, amb el catàleg real de vint-i-un supermercats.",
   url: 'https://quefalta.es/ca/',
   image: 'https://quefalta.es/og.png',
   inLanguage: ['es', 'ca'],
@@ -47,6 +50,8 @@ const SUPERS = [
   { name: 'Gadis', logo: '/stores/gadis.png', slug: 'gadis' },
   { name: 'Froiz', logo: '/stores/froiz.jpg', slug: 'froiz' },
   { name: 'Ahorramás', logo: '/stores/ahorramas.jpg', slug: 'ahorramas' },
+  { name: 'BM', logo: '/stores/bm.png', slug: 'bm' },
+  { name: 'El Jamón', logo: '/stores/eljamon.png', slug: 'eljamon' },
 ];
 
 const PASSOS = [
@@ -55,8 +60,11 @@ const PASSOS = [
   { n: '3', title: 'Afegeix productes a la cistella', desc: 'Busca entre milers de productes reals dels teus supermercats preferits i afegeix-los amb un toc. Ajusta quantitats i veu el preu en viu.' },
 ];
 
+// Punts de confiança sota els botons de descàrrega del hero.
+const HERO_TRUST = ['Gratuïta i sense anuncis', 'iPhone i Android', 'Sincronitzada en temps real'];
+
 const FUNCIONS = [
-  { title: 'Catàleg real', desc: 'Milers de productes de dinou supermercats amb la imatge, el format i el preu reals. Res d’escriure la llista a mà.' },
+  { title: 'Catàleg real', desc: 'Milers de productes de vint-i-un supermercats amb la imatge, el format i el preu reals. Res d’escriure la llista a mà.' },
   { title: 'En temps real', desc: 'Quan algú afegeix o recull un producte, tot el grup ho veu a l’instant. S’han acabat els xats de «has comprat el pa?».' },
   { title: 'Fitxa de producte', desc: 'Ingredients, al·lèrgens, valors nutricionals i origen quan el supermercat els publica.' },
   { title: 'Ordenada pel súper', desc: 'La cistella s’agrupa per zones del supermercat (fruita i verdura, frescos, congelats…) per recórrer la botiga una sola vegada.' },
@@ -66,37 +74,106 @@ const FUNCIONS = [
 ---
 
 <Layout
-  title="QuéFalta — L'app de llista de la compra compartida"
-  description="Llista de la compra compartida en temps real, gratuïta per a iPhone i Android. Amb productes i preus reals de dinou supermercats nacionals i regionals."
+  title="Llista de la compra compartida per a iPhone i Android | QuéFalta"
+  description="Comparteix la llista de la compra amb la parella, la família o els companys de pis, en temps real. App gratuïta per a iPhone i Android, disponible a Espanya."
   lang="ca"
-  alternates={{ es: '/', ca: '/ca/' }}
+  alternates={{ es: '/como-funciona/', ca: '/ca/' }}
   jsonld={appSchema}
 >
-  <section class="ca" id="top">
-    <header class="ca-hero">
-      <span class="ca-pill"><span class="ca-dot"></span>Disponible per a iPhone i Android</span>
-      <h1 class="ca-title"><span class="ca-em">QuéFalta</span> a la teva llista de la compra?</h1>
-      <p class="ca-lead">
-        QuéFalta és l'app gratuïta de llista de la compra compartida: crees un
-        grup, hi convides la teva gent i tothom afegeix i marca productes de la
-        mateixa cistella en temps real, amb el catàleg i els preus reals de dinou
-        supermercats d'Espanya.
-      </p>
-      <div class="ca-actions">
-        <a class="ca-btn" href={APP_STORE_URL}>Descarrega-la a l'App Store</a>
-        <a class="ca-btn ca-btn-play" href={PLAY_STORE_URL}>Descarrega-la a Google Play</a>
-        <a class="ca-ghost" href="/ca/preguntes">Preguntes freqüents</a>
-      </div>
-      <div class="ca-supers" aria-label="Supermercats inclosos">
-        {SUPERS.map((s) => (
-          <a class="ca-super" href={`/supermercados/${s.slug}`}>
-            <img src={s.logo} alt="" width="22" height="22" loading="lazy" />
-            {s.name}
+  <!-- Mismo hero que la home es (clases qf-* de landing.css), en HTML estático:
+       sin isla React, así que sin animación de entrada. -->
+  <link slot="head" rel="preload" as="image" href="/mock/home.png" fetchpriority="high" />
+  <header class="qf-hero" id="top">
+    <div class="qf-hero-bg" aria-hidden="true"></div>
+    <div class="qf-hero-grid">
+      <div class="qf-hero-copy">
+        <span class="qf-pill"><span class="qf-dot"></span>Disponible a Espanya per a iPhone i Android</span>
+        <h1 class="qf-display qf-hero-title">La teva llista de la compra, <span class="qf-em">compartida</span>.</h1>
+        <p class="qf-lead qf-hero-lead">
+          QuéFalta és l'app gratuïta de llista de la compra compartida: crees un
+          grup, hi convides la teva gent i tothom afegeix i marca productes de la
+          mateixa cistella en temps real, amb el catàleg i els preus reals de vint-i-un
+          supermercats d'Espanya.
+        </p>
+        <div class="qf-hero-actions">
+          <a href={APP_STORE_URL} aria-label="Descarrega-la a l'App Store" class="qf-badge">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+              <path d="M17.05 12.04c-.03-2.6 2.12-3.85 2.22-3.91-1.21-1.77-3.09-2.01-3.76-2.04-1.6-.16-3.12.94-3.93.94-.81 0-2.06-.92-3.39-.89-1.74.03-3.35 1.01-4.25 2.57-1.81 3.14-.46 7.78 1.3 10.33.86 1.25 1.88 2.65 3.22 2.6 1.29-.05 1.78-.83 3.34-.83 1.56 0 2 .83 3.37.81 1.39-.03 2.27-1.27 3.12-2.53.98-1.45 1.39-2.85 1.41-2.93-.03-.01-2.7-1.04-2.73-4.09z M14.7 4.7c.71-.86 1.19-2.06 1.06-3.25-1.02.04-2.26.68-2.99 1.54-.66.76-1.23 1.98-1.08 3.15 1.14.09 2.3-.58 3.01-1.44z" />
+            </svg>
+            <span class="qf-badge-txt"><small>Descarrega-la a l'</small><strong>App Store</strong></span>
           </a>
-        ))}
+          <a href={PLAY_STORE_URL} aria-label="Descarrega-la a Google Play" class="qf-badge">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true">
+              <path d="M4.1 2.6A2.3 2.3 0 0 0 3 4.6v14.8a2.3 2.3 0 0 0 1.1 2l10-9.4-10-9.4Zm11.7 10.9 2.5-2.3-2.4-1.4-1.1 1.1 1 2.6Zm-1 1.5-1 2.6 1.1 1.1 2.4-1.4-2.5-2.3Zm4.7-1.8-1.4-.8-2.7 2.5 2.7 2.5 1.5-.9c1.3-.7 1.3-2.5-.1-3.2Z" />
+            </svg>
+            <span class="qf-badge-txt"><small>Disponible a</small><strong>Google Play</strong></span>
+          </a>
+        </div>
+        <ul class="qf-hero-trust">
+          {HERO_TRUST.map((t) => (
+            <li><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="var(--ok)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 6.5" /></svg>{t}</li>
+          ))}
+        </ul>
+        <p class="qf-hero-sub">
+          QuéFalta Plus és opcional; <a href="/supermercados/lidl/">el catàleg de Lidl requereix Plus</a>.
+          {' '}<a href="/ca/preguntes/">Preguntes freqüents</a>.
+        </p>
       </div>
-    </header>
+      <div class="qf-hero-visual">
+        <div class="qf-hero-phone">
+          <div class="qf-phone-scale">
+            <div class="qf-phone" style="width: 320px">
+              <div class="qf-phone-screen" style="background: #ffffff">
+                <img class="qf-phone-capture" src="/mock/home.png" alt="Pantalla d'inici de QuéFalta amb la cistella activa i els grups" loading="eager" decoding="async" fetchpriority="high" />
+              </div>
+              <img class="qf-phone-bezel" src="/devices/iphone-17-black-portrait.png" alt="" aria-hidden="true" width="1350" height="2760" loading="eager" decoding="async" fetchpriority="high" draggable="false" />
+            </div>
+          </div>
+        </div>
+        <!-- Targetes flotants il·lustratives: donen context d'ús compartit. -->
+        <div class="qf-float qf-float-a" aria-hidden="true">
+          <span class="qf-float-av" style="background: #df4b2e">M</span>
+          <span class="qf-float-txt">
+            <strong>La Marta ha afegit</strong>
+            <span>Llet sencera ×2</span>
+          </span>
+          <span class="qf-float-time">ara</span>
+        </div>
+        <div class="qf-float qf-float-b" aria-hidden="true">
+          <span class="qf-float-row">
+            <span class="qf-float-ic">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--accent)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4" /><circle cx="17" cy="20" r="1.4" /><path d="M2 3h2.2l2.3 12.2a1.6 1.6 0 0 0 1.6 1.3h8.4a1.6 1.6 0 0 0 1.6-1.3L20 7H5.4" /></svg>
+            </span>
+            <span class="qf-float-txt">
+              <strong>32 de 47 a la cistella</strong>
+              <span>Total estimat 86,40 €</span>
+            </span>
+          </span>
+          <span class="qf-float-bar"><span style="width: 68%"></span></span>
+        </div>
+      </div>
+    </div>
+    <div class="qf-hero-stores">
+      <p class="qf-hero-stores-label">
+        Catàlegs de <strong>{SUPERS.length} supermercats</strong> amb imatges i preus de referència
+      </p>
+      <div class="qf-marquee">
+        <div class="qf-marquee-track">
+          {[0, 1].map((copy) => SUPERS.map((s) => (
+            <a
+              class="qf-store-chip" href={`/supermercados/${s.slug}/`}
+              aria-hidden={copy ? 'true' : undefined} tabindex={copy ? -1 : undefined}
+            >
+              <img src={s.logo} alt="" width="22" height="22" loading="lazy" />
+              {s.name}
+            </a>
+          )))}
+        </div>
+      </div>
+    </div>
+  </header>
 
+  <section class="ca">
     <section class="ca-block" id="com-funciona">
       <h2 class="ca-h2">Com funciona</h2>
       <p class="ca-sub">Tres passos i ja pots començar a compartir la llista. Sense manuals ni configuracions rares.</p>
@@ -143,54 +220,14 @@ const FUNCIONS = [
   </section>
 
   <style>
-    .ca { max-width: 880px; margin: 0 auto; padding: 48px 24px 0; }
-
-    .ca-hero { text-align: center; max-width: 680px; margin: 0 auto; }
-    .ca-pill {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 13px; font-weight: 600; color: var(--ink-soft);
-      background: var(--paper-2); border: 1px solid var(--border);
-      border-radius: 980px; padding: 7px 14px;
-    }
-    .ca-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
-    .ca-title {
-      font-family: var(--geo); font-weight: 800; letter-spacing: -0.035em;
-      line-height: 1.05; font-size: clamp(34px, 6vw, 56px);
-      margin-top: 18px; color: var(--ink);
-    }
+    .ca { max-width: 880px; margin: 0 auto; padding: 0 24px; }
     .ca-em { color: var(--accent); }
-    .ca-lead {
-      color: var(--ink-soft); font-size: clamp(16px, 1.7vw, 18.5px);
-      line-height: 1.6; margin: 18px auto 0; max-width: 600px;
-    }
-    .ca-actions { margin-top: 26px; display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
     .ca-btn {
       display: inline-block; background: var(--accent); color: #fff !important;
       font-weight: 700; font-size: 15px; padding: 13px 24px; border-radius: 12px;
       transition: opacity 0.15s;
     }
     .ca-btn:hover { opacity: 0.9; }
-    .ca-ghost {
-      display: inline-block; color: var(--accent); font-weight: 600; font-size: 15px;
-      padding: 13px 18px; border: 1px solid var(--border); border-radius: 12px;
-      background: var(--surface); transition: border-color 0.15s;
-    }
-    .ca-ghost:hover { border-color: var(--accent); }
-
-    .ca-supers { margin-top: 34px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-    .ca-super {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 980px; padding: 9px 16px 9px 11px;
-      font-size: 14px; font-weight: 600; color: var(--ink);
-      transition: transform 0.18s cubic-bezier(0.22, 0.61, 0.36, 1);
-    }
-    .ca-super:hover { transform: translateY(-2px); }
-    .ca-super img { width: 22px; height: 22px; object-fit: contain; }
-    :global([data-theme="dark"]) .ca-super img {
-      background: #fff; border-radius: 5px; padding: 2px; box-sizing: content-box;
-    }
-
     .ca-block { margin-top: 72px; text-align: center; }
     .ca-h2 {
       font-family: var(--geo); font-weight: 800; letter-spacing: -0.03em;

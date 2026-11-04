@@ -8,7 +8,7 @@
 // El texto de `faqs[].a` alimenta a la vez el HTML visible y el schema
 // FAQPage (deben coincidir); admite el HTML que Google permite (a, ul, li…).
 
-export const UPDATED = '2026-09-09';
+export const UPDATED = '2026-10-16';
 
 export const STORES = [
   {
@@ -569,6 +569,62 @@ export const STORES = [
       {
         q: '¿Qué ofertas de Ahorramás aparecen en QuéFalta?',
         a: 'QuéFalta incorpora las promociones que Ahorramás publica en su catálogo online, junto con el precio actual y el precio por unidad de medida cuando están disponibles. Las condiciones y fechas pueden cambiar, por lo que el precio final es siempre el que indique la cadena al comprar.',
+      },
+    ],
+  },
+  {
+    slug: 'bm',
+    name: 'BM',
+    logo: '/stores/bm.png',
+    title: 'BM en QuéFalta — catálogo, precios y ofertas por zona',
+    description:
+      'Consulta el catálogo de BM en QuéFalta: productos, precios y ofertas de la zona de referencia de tu código postal. Prepara tu lista de la compra compartida.',
+    summary:
+      'Catálogo y promociones por zona, con precios de referencia según la provincia de tu código postal.',
+    intro:
+      'QuéFalta te permite consultar los productos de BM con su imagen, formato y precio, y añadirlos a una lista de la compra compartida. La app utiliza tu código postal para mostrar el catálogo y las promociones de la zona de referencia de tu provincia, dentro de la cobertura disponible.',
+    datos: [
+      'Catálogo con imágenes, formatos, precios y precio por unidad de medida cuando está disponible.',
+      'Surtido y promociones de la zona de referencia asociada a la provincia de tu código postal.',
+      'Disponible para códigos postales de Araba/Álava, Bizkaia, Gipuzkoa, Cantabria, Navarra, La Rioja y Madrid.',
+      'Ofertas con sus condiciones cuando BM las publica; el precio final puede variar en el establecimiento.',
+    ],
+    faqs: [
+      {
+        q: '¿Dónde está disponible BM en QuéFalta?',
+        a: 'BM está disponible para códigos postales de Araba/Álava, Bizkaia, Gipuzkoa, Cantabria, Navarra, La Rioja y Madrid. La app muestra el catálogo de una zona de referencia de cada provincia; esto no garantiza que BM ofrezca entrega a domicilio en todos esos códigos postales.',
+      },
+      {
+        q: '¿Los precios de BM corresponden a mi tienda?',
+        a: 'QuéFalta utiliza el código postal de tu perfil para seleccionar la zona de referencia de tu provincia. Los productos, precios y ofertas corresponden a esa zona y pueden variar respecto a tu tienda concreta. Puedes usarlos para estimar el total de tu lista compartida antes de comprar.',
+      },
+    ],
+  },
+  {
+    slug: 'eljamon',
+    name: 'El Jamón',
+    logo: '/stores/eljamon.png',
+    title: 'El Jamón en QuéFalta — catálogo, precios y promociones',
+    description:
+      'Consulta productos, precios y promociones de Supermercados El Jamón en QuéFalta. Catálogo de referencia para Andalucía y lista de la compra compartida.',
+    summary:
+      'Catálogo común de referencia para Andalucía, con precios, formatos y promociones de la tienda online.',
+    intro:
+      'QuéFalta incluye el catálogo de Supermercados El Jamón para los usuarios de Andalucía. Consulta productos con su imagen, marca, formato y precio, revisa las promociones publicadas por la cadena y añádelos a una lista compartida para organizar la compra con tu grupo.',
+    datos: [
+      'Productos organizados por categorías, con imagen, marca, formato y precio.',
+      'Precio por kilo, litro o unidad cuando la cadena lo publica.',
+      'Promociones y novedades identificadas a partir del catálogo online de El Jamón.',
+      'Catálogo común de referencia de recogida en tienda para Andalucía; el surtido y el precio final pueden variar en cada establecimiento.',
+    ],
+    faqs: [
+      {
+        q: '¿Dónde aparece El Jamón en QuéFalta?',
+        a: 'El Jamón aparece para los usuarios de Andalucía. QuéFalta muestra un catálogo común de referencia procedente de la modalidad de recogida en tienda de su supermercado online. Puedes consultar sus productos y preparar una lista compartida, teniendo en cuenta que el surtido y los precios pueden variar en tu establecimiento.',
+      },
+      {
+        q: '¿Qué información puedo consultar de los productos de El Jamón?',
+        a: 'Puedes consultar el nombre, la marca, la imagen, el formato y el precio, además del precio por kilo, litro o unidad y las promociones cuando están disponibles. La ficha depende de la información que publique El Jamón; no todos los productos incluyen ingredientes, alérgenos o valores nutricionales.',
       },
     ],
   },

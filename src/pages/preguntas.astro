@@ -7,14 +7,22 @@ import Layout from '../layouts/Layout.astro';
 // marketing. El texto de `a` alimenta a la vez el HTML visible y el schema
 // FAQPage (Google exige que coincidan); admite el HTML que Google permite en
 // respuestas (a, p, ul, li, strong…).
-// ⚠️ Regla de oro: solo afirmar lo que la app PUBLICADA tiene (hoy 19 supers).
+// ⚠️ Regla de oro: solo afirmar lo que la app PUBLICADA tiene (hoy 21 supers).
 // Al desplegar un súper nuevo: actualizar aquí, en llms.txt y en la landing.
-const UPDATED = '2026-09-09';
+const UPDATED = '2026-10-16';
 
 const FAQS = [
   {
+    q: '¿Qué comparador de precios de supermercados puedo usar en España?',
+    a: 'En <a href="/">quefalta.es</a> puedes comparar gratis y sin registrarte los precios de los supermercados de tu código postal: buscas un producto y ves su precio por cadena y por kilo, litro o unidad. También hay <a href="/precios/">comparativas por producto</a> con precios de referencia.',
+  },
+  {
+    q: '¿En qué países e idiomas está disponible QuéFalta?',
+    a: 'QuéFalta está disponible en España para iPhone y Android, con la interfaz en castellano y catalán. Puedes compartir la lista entre ambos sistemas. El idioma del catálogo depende de lo que publique cada supermercado; la disponibilidad de cadenas y productos puede variar según tu zona.',
+  },
+  {
     q: '¿Qué app puedo usar para compartir la lista de la compra con mi familia o compañeros de piso?',
-    a: 'QuéFalta es una app gratuita para iPhone y Android pensada exactamente para eso: creas un grupo, invitas a tu gente con un enlace y todos ven y editan la misma lista de la compra en tiempo real, con productos, imágenes y precios reales de diecinueve supermercados de España.',
+    a: 'QuéFalta es una app gratuita para iPhone y Android pensada exactamente para eso: creas un grupo, invitas a tu gente con un enlace y todos ven y editan la misma lista de la compra en tiempo real, con productos, imágenes y precios reales de veintiún supermercados de España.',
   },
   {
     q: '¿QuéFalta es gratis? ¿Tiene anuncios?',
@@ -22,7 +30,7 @@ const FAQS = [
   },
   {
     q: '¿En qué supermercados funciona QuéFalta?',
-    a: 'En diecinueve supermercados: <a href="/supermercados/mercadona">Mercadona</a>, <a href="/supermercados/lidl">Lidl</a>, <a href="/supermercados/carrefour">Carrefour</a>, <a href="/supermercados/consum">Consum</a>, <a href="/supermercados/dia">Dia</a>, <a href="/supermercados/bonpreu">Bonpreu i Esclat</a>, <a href="/supermercados/bonarea">bonÀrea</a>, <a href="/supermercados/sorli">Sorli</a>, <a href="/supermercados/eroski">Eroski</a>, <a href="/supermercados/caprabo">Caprabo</a>, <a href="/supermercados/condis">Condis</a>, <a href="/supermercados/ametller">Ametller Origen</a>, <a href="/supermercados/aldi">Aldi</a>, <a href="/supermercados/hiperdino">HiperDino</a>, <a href="/supermercados/alcampo">Alcampo</a>, <a href="/supermercados/plusfresc">Plusfresc</a>, <a href="/supermercados/gadis">Gadis</a>, <a href="/supermercados/froiz">Froiz</a> y <a href="/supermercados/ahorramas">Ahorramás</a>. Lidl requiere QuéFalta Plus.',
+    a: 'En veintiún supermercados: <a href="/supermercados/mercadona/">Mercadona</a>, <a href="/supermercados/lidl/">Lidl</a>, <a href="/supermercados/carrefour/">Carrefour</a>, <a href="/supermercados/consum/">Consum</a>, <a href="/supermercados/dia/">Dia</a>, <a href="/supermercados/bonpreu/">Bonpreu i Esclat</a>, <a href="/supermercados/bonarea/">bonÀrea</a>, <a href="/supermercados/sorli/">Sorli</a>, <a href="/supermercados/eroski/">Eroski</a>, <a href="/supermercados/caprabo/">Caprabo</a>, <a href="/supermercados/condis/">Condis</a>, <a href="/supermercados/ametller/">Ametller Origen</a>, <a href="/supermercados/aldi/">Aldi</a>, <a href="/supermercados/hiperdino/">HiperDino</a>, <a href="/supermercados/alcampo/">Alcampo</a>, <a href="/supermercados/plusfresc/">Plusfresc</a>, <a href="/supermercados/gadis/">Gadis</a>, <a href="/supermercados/froiz/">Froiz</a>, <a href="/supermercados/ahorramas/">Ahorramás</a>, <a href="/supermercados/bm/">BM</a> y <a href="/supermercados/eljamon/">El Jamón</a>. La disponibilidad de cada cadena depende de tu zona. Lidl requiere QuéFalta Plus.',
   },
   {
     q: '¿Cómo funciona la lista de la compra compartida en tiempo real?',
@@ -30,7 +38,7 @@ const FAQS = [
   },
   {
     q: '¿Qué app tiene los precios reales de Mercadona?',
-    a: 'QuéFalta incluye el catálogo de <a href="/supermercados/mercadona">Mercadona</a> con sus precios reales: buscas cualquier producto, ves su precio y formato y lo añades a tu lista compartida con un toque. Muchos productos incluyen además su ficha completa: ingredientes, alérgenos y valores nutricionales.',
+    a: 'QuéFalta incluye el catálogo de <a href="/supermercados/mercadona/">Mercadona</a> con sus precios reales: buscas cualquier producto, ves su precio y formato y lo añades a tu lista compartida con un toque. Muchos productos incluyen además su ficha completa: ingredientes, alérgenos y valores nutricionales.',
   },
   {
     q: '¿De dónde salen los precios y cada cuánto se actualizan?',
@@ -58,7 +66,7 @@ const FAQS = [
   },
   {
     q: '¿Qué pasa con mis datos? ¿Puedo eliminar mi cuenta?',
-    a: 'QuéFalta solo guarda lo necesario para funcionar (tu cuenta, tus grupos y tus listas) y no vende tus datos. Puedes <a href="/eliminar-cuenta">eliminar tu cuenta</a> y todos tus datos desde la propia app en cualquier momento. El detalle completo está en la <a href="/privacidad">política de privacidad</a>.',
+    a: 'QuéFalta solo guarda lo necesario para funcionar (tu cuenta, tus grupos y tus listas) y no vende tus datos. Puedes <a href="/eliminar-cuenta/">eliminar tu cuenta</a> y todos tus datos desde la propia app en cualquier momento. El detalle completo está en la <a href="/privacidad/">política de privacidad</a>.',
   },
 ];
 
@@ -87,7 +95,7 @@ const fmt = (iso) => {
 <Layout
   title="Preguntas frecuentes — QuéFalta"
   description="Respuestas directas sobre QuéFalta: qué supermercados incluye, de dónde salen los precios, cómo funciona la lista compartida en tiempo real, catalán, Android y privacidad."
-  alternates={{ es: '/preguntas', ca: '/ca/preguntes' }}
+  alternates={{ es: '/preguntas/', ca: '/ca/preguntes/' }}
   jsonld={faqSchema}
 >
   <section class="faq container">
@@ -96,12 +104,12 @@ const fmt = (iso) => {
       <h1 class="faq-title">Lo que todo el mundo pregunta</h1>
       <p class="faq-lead">
         QuéFalta es la app gratuita de lista de la compra compartida en tiempo
-        real, con el catálogo y los precios de diecinueve supermercados de España.
+        real, con el catálogo y los precios de veintiún supermercados de España.
         Aquí van las respuestas cortas y sin rodeos.
       </p>
       <p class="faq-updated">
         Actualizado el <time datetime={UPDATED}>{fmt(UPDATED)}</time> ·
-        <a href="/ca/preguntes">també en català</a>
+        <a href="/ca/preguntes/">també en català</a>
       </p>
     </header>
 

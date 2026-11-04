@@ -1,8 +1,10 @@
 // frame.jsx — marco del teléfono, status bar, bottom nav y primitivas compartidas.
 import React from 'react';
 import { useTk, Icon } from './theme.jsx';
+import './frame.css';
 
-export const SCREEN_W = 320, SCREEN_H = 644;
+// Apple: iPhone 17 - Black - Portrait.png (1350 × 2760).
+export const SCREEN_W = 320, SCREEN_H = SCREEN_W * 2760 / 1350;
 
 function StatusBar() {
   const t = useTk();
@@ -25,21 +27,15 @@ function StatusBar() {
 export function Phone({ children, tab, noNav, image, alt = '', eager }) {
   const t = useTk();
   return (
-    <div style={{
-      width: SCREEN_W, height: SCREEN_H, background: '#0c0b09', borderRadius: 38,
-      padding: 9, boxShadow: '0 24px 60px rgba(20,16,12,0.28), 0 0 0 1px rgba(0,0,0,0.4)',
-      position: 'relative',
-    }}>
-      <div style={{
-        width: '100%', height: '100%', borderRadius: 30, overflow: 'hidden',
-        background: t.bg, display: 'flex', flexDirection: 'column', position: 'relative',
+    <div className="qf-phone" style={{ width: SCREEN_W }}>
+      <div className="qf-phone-screen" style={{
+        background: t.bg,
         fontFamily: t.fontBody, color: t.ink,
       }}>
-        {/* camera punch-hole */}
-        <div style={{ position: 'absolute', top: 11, left: '50%', transform: 'translateX(-50%)', width: 9, height: 9, borderRadius: '50%', background: '#0c0b09', zIndex: 30 }} />
         {image ? (
           // Captura real a pantalla completa (ya trae status bar y nav propias).
           <img
+            className="qf-phone-capture"
             src={image}
             alt={alt}
             loading={eager ? 'eager' : 'lazy'}
@@ -47,7 +43,6 @@ export function Phone({ children, tab, noNav, image, alt = '', eager }) {
             // Minúsculas a propósito: React 18 no conoce fetchPriority (llega en
             // el 19) y los atributos desconocidos en minúscula sí se emiten.
             fetchpriority={eager ? 'high' : undefined}
-            style={{ width: '100%', height: '100%', display: 'block' }}
           />
         ) : (
           <>
@@ -57,6 +52,18 @@ export function Phone({ children, tab, noNav, image, alt = '', eager }) {
           </>
         )}
       </div>
+      <img
+        className="qf-phone-bezel"
+        src="/devices/iphone-17-black-portrait.png"
+        alt=""
+        aria-hidden="true"
+        width="1350"
+        height="2760"
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchpriority={eager ? 'high' : undefined}
+        draggable="false"
+      />
     </div>
   );
 }

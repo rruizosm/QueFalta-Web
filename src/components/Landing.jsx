@@ -42,7 +42,7 @@ const ROWS = [
     img: '/mock/catalog.png', alt: 'Catálogo de productos de Mercadona en QuéFalta',
     title: 'Un catálogo de verdad, no una hoja en blanco',
     desc: 'Olvídate de escribir la lista a mano. Busca entre miles de productos reales de tu supermercado y añádelos con un toque.',
-    bullets: ['19 supermercados dentro de la app', 'Busca entre miles de productos por supermercado', 'Categorías claras y ordenadas'],
+    bullets: ['21 supermercados dentro de la app', 'Busca entre miles de productos por supermercado', 'Categorías claras y ordenadas'],
   },
   {
     eyebrow: 'Productos', tab: 'catalog', Screen: ProductsScreen,
@@ -88,6 +88,8 @@ const SUPERS = [
   { name: 'Gadis', logo: '/stores/gadis.png', slug: 'gadis' },
   { name: 'Froiz', logo: '/stores/froiz.jpg', slug: 'froiz' },
   { name: 'Ahorramás', logo: '/stores/ahorramas.jpg', slug: 'ahorramas' },
+  { name: 'BM', logo: '/stores/bm.png', slug: 'bm' },
+  { name: 'El Jamón', logo: '/stores/eljamon.png', slug: 'eljamon' },
 ];
 
 const EXTRAS = [
@@ -197,44 +199,89 @@ function PhoneRender({ f }) {
 }
 
 // ── Secciones ──────────────────────────────────────────────────
+// Puntos de confianza bajo los botones de descarga del hero.
+const HERO_TRUST = ['Gratis y sin anuncios', 'iPhone y Android', 'Sincronizada en tiempo real'];
+
+// Franja de logos bajo el hero: la lista va duplicada para que el carrusel
+// sea continuo (la segunda copia es decorativa y no se anuncia ni se tabula).
+function HeroStores() {
+  return (
+    <Reveal className="qf-hero-stores" delay={220}>
+      <p className="qf-hero-stores-label">
+        Catálogos de <strong>{SUPERS.length} supermercados</strong> con imágenes y precios de referencia
+      </p>
+      <div className="qf-marquee">
+        <div className="qf-marquee-track">
+          {[0, 1].map((copy) => SUPERS.map((s) => (
+            <a
+              key={`${copy}-${s.slug}`} className="qf-store-chip" href={`/supermercados/${s.slug}/`}
+              aria-hidden={copy ? 'true' : undefined} tabIndex={copy ? -1 : undefined}
+            >
+              <img src={s.logo} alt="" width="22" height="22" loading="lazy" />
+              {s.name}
+            </a>
+          )))}
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
 function Hero() {
   return (
     <header className="qf-hero" id="top">
       <div className="qf-hero-bg" aria-hidden="true" />
-      <Reveal>
-        <span className="qf-pill"><span className="qf-dot" />Disponible para iPhone y Android</span>
-      </Reveal>
-      <Reveal as="h1" className="qf-display qf-hero-title" delay={60}>
-        Tu lista de la compra, <span className="qf-em">compartida</span>.
-      </Reveal>
-      <Reveal as="p" className="qf-lead qf-hero-lead" delay={120}>
-        QuéFalta es la app de lista de la compra compartida para tu pareja, familia o compañeros de piso.
-        Añadid productos y marcad lo comprado en tiempo real, desde iPhone o Android.
-      </Reveal>
-      <Reveal className="qf-hero-logos" delay={170} aria-label="Supermercados incluidos">
-        {SUPERS.map((s) => (
-          <span key={s.name} className="qf-hero-logo" title={s.name}>
-            <img src={s.logo} alt={s.name} width="24" height="24" loading="lazy" />
-          </span>
-        ))}
-      </Reveal>
-      <Reveal delay={180}>
-        <div className="qf-hero-actions">
-          <AppleBadge />
-          <GooglePlayBadge />
-          <a href="#como-funciona" className="qf-ghost">
-            Cómo funciona
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M6 13l6 6 6-6" /></svg>
-          </a>
+      <div className="qf-hero-grid">
+        <div className="qf-hero-copy">
+          <Reveal>
+            <span className="qf-pill"><span className="qf-dot" />Disponible en España para iPhone y Android</span>
+          </Reveal>
+          <Reveal as="h1" className="qf-display qf-hero-title" delay={60}>
+            Tu lista de la compra, <span className="qf-em">compartida</span>.
+          </Reveal>
+          <Reveal as="p" className="qf-lead qf-hero-lead" delay={120}>
+            QuéFalta es la app de lista de la compra compartida para tu pareja, familia o compañeros de piso.
+            Añadid productos y marcad lo comprado en tiempo real, desde iPhone o Android.
+          </Reveal>
+          <Reveal delay={170}>
+            <div className="qf-hero-actions">
+              <AppleBadge />
+              <GooglePlayBadge />
+            </div>
+          </Reveal>
+          <Reveal as="ul" className="qf-hero-trust" delay={210}>
+            {HERO_TRUST.map((t) => (
+              <li key={t}><Icon name="check" size={15} color="var(--ok)" stroke={2.6} />{t}</li>
+            ))}
+          </Reveal>
+          <Reveal as="p" className="qf-hero-sub" delay={240}>
+            QuéFalta Plus es opcional; <a href="/supermercados/lidl/">el catálogo de Lidl requiere Plus</a>.
+          </Reveal>
         </div>
-      </Reveal>
-      <Reveal as="p" className="qf-hero-sub" delay={160}>
-        Listas gratuitas y sin anuncios. Catálogos de <strong>19 supermercados</strong> con imágenes y precios de referencia.
-        {' '}QuéFalta Plus opcional; <a href="/supermercados/lidl/">Lidl requiere Plus</a>.
-      </Reveal>
-      <Reveal className="qf-hero-stage" delay={140}>
-        <div className="qf-hero-phone"><PhoneRender f={{ tab: 'home', Screen: HomeScreen, img: '/mock/home.png', alt: 'Pantalla de inicio de QuéFalta con el carrito activo y los grupos', eager: true }} /></div>
-      </Reveal>
+        <Reveal className="qf-hero-visual" delay={140}>
+          <div className="qf-hero-phone"><PhoneRender f={{ tab: 'home', Screen: HomeScreen, img: '/mock/home.png', alt: 'Pantalla de inicio de QuéFalta con el carrito activo y los grupos', eager: true }} /></div>
+          {/* Tarjetas flotantes ilustrativas: dan contexto de uso compartido. */}
+          <div className="qf-float qf-float-a" aria-hidden="true">
+            <span className="qf-float-av" style={{ background: '#df4b2e' }}>M</span>
+            <span className="qf-float-txt">
+              <strong>Marta ha añadido</strong>
+              <span>Leche entera ×2</span>
+            </span>
+            <span className="qf-float-time">ahora</span>
+          </div>
+          <div className="qf-float qf-float-b" aria-hidden="true">
+            <span className="qf-float-row">
+              <span className="qf-float-ic"><Icon name="cart" size={16} color="var(--accent)" /></span>
+              <span className="qf-float-txt">
+                <strong>32 de 47 en la cesta</strong>
+                <span>Total estimado 86,40 €</span>
+              </span>
+            </span>
+            <span className="qf-float-bar"><span style={{ width: '68%' }} /></span>
+          </div>
+        </Reveal>
+      </div>
+      <HeroStores />
     </header>
   );
 }
@@ -703,13 +750,14 @@ function Footer() {
           <span className="qf-footer-word">Qué<span>Falta</span></span>
         </a>
         <nav className="qf-footer-links">
-          <a href="/novedades">Novedades</a>
-          <a href="/supermercados">Supermercados</a>
-          <a href="/preguntas">Preguntas</a>
-          <a href="/apoyar">Apoyar</a>
-          <a href="/privacidad">Privacidad</a>
-          <a href="/condiciones">Condiciones</a>
-          <a href="/cookies">Cookies</a>
+          <a href="/precios/">Precios</a>
+          <a href="/novedades/">Novedades</a>
+          <a href="/supermercados/">Supermercados</a>
+          <a href="/preguntas/">Preguntas</a>
+          <a href="/apoyar/">Apoyar</a>
+          <a href="/privacidad/">Privacidad</a>
+          <a href="/condiciones/">Condiciones</a>
+          <a href="/cookies/">Cookies</a>
           <a href="mailto:contacto@quefalta.es">Contacto</a>
         </nav>
         <p className="qf-footer-copy">© {new Date().getFullYear()} QuéFalta · Hecho en España</p>

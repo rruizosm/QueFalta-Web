@@ -1,44 +1,117 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import SiteNav from '../components/SiteNav.astro';
-import Landing from '../components/Landing.jsx';
-import '../styles/landing.css';
+import Comparador from '../components/comparador/Comparador.jsx';
+import { STORES } from '../data/supermercados.js';
+import { loadPrecios } from '../lib/preciosSeo.js';
+import { euro } from '../lib/preciosFormato.js';
+import '../styles/comparador.css';
+import '../styles/precios.css';
 
-const APP_STORE_URL = 'https://apps.apple.com/es/app/id6777720373';
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1';
+// Home: comparador de precios entre supermercados (catálogos reales de
+// Supabase). Casi todo lo interactivo se pinta en el navegador, así que el
+// texto y los enlaces que leen los buscadores van aquí, fuera de la isla.
+// La presentación de la app vive en /como-funciona/.
 
-// Datos estructurados de la app: QuéFalta es una app gratuita para iOS y Android. Sin
-// `aggregateRating` a propósito: solo se añadirá cuando haya valoraciones
-// reales (inventarlas va contra las directrices de Google).
-const appSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'QuéFalta',
-  operatingSystem: ['iOS', 'Android'],
-  applicationCategory: 'ShoppingApplication',
-  softwareVersion: '1.3.1',
-  description:
-    'QuéFalta es una app de lista de la compra compartida para iPhone y Android. Crea un grupo con tu pareja, familia o compañeros de piso y añadid o marcad productos en tiempo real. Listas gratuitas y QuéFalta Plus opcional.',
-  url: 'https://quefalta.es/',
-  image: 'https://quefalta.es/og.png',
-  inLanguage: ['es', 'ca'],
-  installUrl: [APP_STORE_URL, PLAY_STORE_URL],
-  downloadUrl: [APP_STORE_URL, PLAY_STORE_URL],
-  author: { '@type': 'Organization', name: 'QuéFalta', url: 'https://quefalta.es/' },
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-};
+const { products } = await loadPrecios();
+const destacados = products.slice(0, 12);
+
+const FAQS = [
+  {
+    q: '¿Cómo funciona el comparador de precios de supermercados?',
+    a: 'Introduces tu código postal, buscas un producto y QuéFalta te enseña su precio en los supermercados de tu zona, con el precio por kilo, litro o unidad para comparar formatos distintos. También puedes elegir una cadena y recorrer su catálogo por categorías.',
+  },
+  {
+    q: '¿Qué supermercados puedo comparar?',
+    a: `Hasta ${STORES.length} cadenas, entre nacionales y regionales: Mercadona, Lidl, Carrefour, Dia, Aldi, Alcampo, Consum, Eroski y otras. Solo te mostramos las que operan en tu código postal.`,
+  },
+  {
+    q: '¿Por qué pedís mi código postal?',
+    a: 'Porque el surtido y los precios cambian según la zona. Tu código postal solo se usa para elegir los supermercados y precios que te corresponden, y se queda guardado en tu navegador.',
+  },
+  {
+    q: '¿Cada cuánto se actualizan los precios?',
+    a: 'Los catálogos se actualizan cada semana con los precios públicos de la tienda online de cada cadena. En tienda física pueden variar, así que conviene confirmarlos al comprar.',
+  },
+  {
+    q: '¿El comparador es gratis?',
+    a: 'Sí. Es gratuito y no necesitas registrarte ni instalar nada. QuéFalta no está afiliada a ningún supermercado.',
+  },
+];
+
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Comparador de precios de supermercados QuéFalta',
+    url: 'https://quefalta.es/',
+    applicationCategory: 'ShoppingApplication',
+    operatingSystem: 'Web',
+    browserRequirements: 'Requiere JavaScript',
+    inLanguage: 'es-ES',
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    inLanguage: 'es',
+    mainEntity: FAQS.map((f) => ({
+      '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
 ---
 
 <Layout
-  title="Lista de la compra compartida para iPhone y Android | QuéFalta"
-  description="Comparte la lista de la compra con tu pareja, familia o compañeros de piso. Sincronización en tiempo real entre iPhone y Android. Descarga QuéFalta gratis."
-  bare
-  alternates={{ es: '/', ca: '/ca/' }}
-  jsonld={appSchema}
+  alternates={{ es: '/', ca: '/ca/comparador/' }}
+  title="Comparador de precios de supermercados en España | QuéFalta"
+  description="Compara precios de Mercadona, Carrefour, Lidl, Dia, Aldi, Alcampo y más supermercados en tu código postal. Encuentra dónde sale más barata tu compra. Gratis y sin registro."
+  jsonld={schemas}
 >
-  <!-- El mockup del hero es el elemento LCP de la página: se descarga desde el
-       primer byte de HTML en vez de esperar al render de la isla React. -->
-  <link slot="head" rel="preload" as="image" href="/mock/home.png" fetchpriority="high" />
-  <SiteNav />
-  <Landing client:load />
+  <!-- Enlaces antiguos a las secciones de la app (/#descargar…): siguen llevando
+       a su sitio, ahora en /como-funciona/. -->
+  <script slot="head" is:inline>
+    if (/^#(top|como-funciona|funciones|descargar)$/.test(location.hash)) {
+      location.replace('/como-funciona/' + (location.hash === '#top' ? '' : location.hash));
+    }
+    // Evita un parpadeo del texto de portada al abrir un súper o una búsqueda.
+    if (/[?&](super|q)=/.test(location.search)) document.documentElement.classList.add('cmp-in-view');
+  </script>
+  <Comparador client:load />
+
+  <div class="cmp-seo container">
+    <section>
+      <h2>Precios de productos básicos</h2>
+      <p class="cmp-seo-text">
+        Mira qué cuesta lo que más se compra y en qué cadena sale más barato. Comparamos
+        el precio por kilo, litro o unidad para que un formato grande no engañe.
+      </p>
+      <div class="pr-links">
+        {destacados.map((p) => <a href={`/precios/${p.slug}/`}>{p.name}<span>desde {euro(p.best.ppu)}/{p.unit}</span></a>)}
+      </div>
+      <a class="cmp-seo-more" href="/precios/">Ver los {products.length} productos →</a>
+    </section>
+
+    <section>
+      <h2>Supermercados que comparamos</h2>
+      <p class="cmp-seo-text">
+        Reunimos el catálogo de {STORES.length} cadenas de toda España. Según tu código postal
+        verás solo las que tienes cerca, con los precios de tu zona.
+      </p>
+      <div class="cmp-seo-stores">
+        {STORES.map((s) => (
+          <a href={`/supermercados/${s.slug}/`}>
+            <img src={s.logo} alt="" width="24" height="24" loading="lazy" />{s.name}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <h2>Preguntas frecuentes sobre el comparador</h2>
+      <div class="pr-faqs">
+        {FAQS.map((f) => <div class="pr-faq"><h3>{f.q}</h3><p>{f.a}</p></div>)}
+      </div>
+    </section>
+  </div>
 </Layout>
