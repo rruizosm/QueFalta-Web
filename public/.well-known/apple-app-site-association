@@ -7,6 +7,14 @@
           {
             "/": "/join/*",
             "comment": "Enlaces de invitación a grupos de QuéFalta"
+          },
+          {
+            "/": "/inicio",
+            "comment": "Resultados compartidos que abren la pantalla de Inicio"
+          },
+          {
+            "/": "/inicio/*",
+            "comment": "Variantes con barra final de la ruta de Inicio"
           }
         ]
       }

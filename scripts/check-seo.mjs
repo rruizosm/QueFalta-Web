@@ -29,7 +29,7 @@ const pages = new Map();
 for (const url of urls) {
   assert.equal(new URL(url).origin, origin, `Host no canónico: ${url}`);
   assert(url.endsWith('/'), `Falta barra final: ${url}`);
-  assert(!/\/(join|404)(\/|$)/.test(new URL(url).pathname), `Página no indexable en sitemap: ${url}`);
+  assert(!/\/(join|inicio|404)(\/|$)/.test(new URL(url).pathname), `Página no indexable en sitemap: ${url}`);
   const html = await read(fileForUrl(url));
   pages.set(url, html);
   const canonical = links(html).filter((l) => l.rel === 'canonical');
@@ -64,11 +64,37 @@ for (const store of STORES) {
 const bonpreu = pages.get(`${origin}/supermercados/bonpreu/`);
 assert.equal([...bonpreu.matchAll(/<h3[^>]*>/g)].length, 10, 'Bonpreu: faltan pasos o respuestas');
 assert(bonpreu.includes('no es la tienda online ni el folleto oficial'), 'Bonpreu: falta distinguir la app de la tienda oficial');
+const h1 = (html) => plain(html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? '');
 const home = pages.get(`${origin}/`);
-assert(plain(home.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? '').includes('Tu lista de la compra, compartida'), 'Falta el H1 de lista compartida');
-assert(home.includes('¿Podemos compartir la lista entre iPhone y Android?'), 'Falta el contenido entre plataformas');
-assert(home.includes('Lidl requiere Plus'), 'La portada debe explicar el acceso a Lidl');
-for (const url of [`${origin}/`, `${origin}/supermercados/bonpreu/`]) {
+assert(h1(home).includes('Comparador de precios de supermercados'), 'Falta el H1 del comparador');
+assert(schemas(home).some((s) => s['@type'] === 'WebApplication'), 'Falta el esquema del comparador');
+assert(home.includes('href="/precios/"'), 'La portada debe enlazar los precios por producto');
+assert(!home.includes('cmp-modal'), 'El aviso de código postal no debe venir en el HTML');
+const app = pages.get(`${origin}/como-funciona/`);
+assert(app, 'Falta la página de la app');
+assert(h1(app).includes('Tu lista de la compra, compartida'), 'Falta el H1 de lista compartida');
+assert(app.includes('¿Podemos compartir la lista entre iPhone y Android?'), 'Falta el contenido entre plataformas');
+assert(app.includes('Lidl requiere Plus'), 'La página de la app debe explicar el acceso a Lidl');
+
+// Precios: escritos en el HTML. Una página sin tabla sería contenido vacío.
+const priceUrls = [...pages.keys()].filter((url) => /\/precios\/[^/]+\/$/.test(url));
+assert(priceUrls.length >= 20, `Muy pocas páginas de precios: ${priceUrls.length}`);
+for (const url of priceUrls) {
+  const html = pages.get(url);
+  const body = html.match(/<tbody[^>]*>([\s\S]*?)<\/tbody>/)?.[1] ?? '';
+  const rows = [...body.matchAll(/<tr\b/g)].length;
+  assert(rows >= 4, `Tabla de precios incompleta: ${url}`);
+  assert(/\d,\d{2}/.test(plain(body)), `Tabla sin precios: ${url}`);
+  const faq = schemas(html).find((s) => s['@type'] === 'FAQPage');
+  const visible = plain(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, ''));
+  assert(faq, `Falta la FAQ: ${url}`);
+  for (const question of faq.mainEntity) {
+    assert(visible.includes(plain(question.name)), `Pregunta no visible: ${url}`);
+    assert(visible.includes(plain(question.acceptedAnswer.text)), `Respuesta no visible: ${url}`);
+  }
+}
+
+for (const url of [`${origin}/`, `${origin}/como-funciona/`, `${origin}/precios/`, `${origin}/supermercados/bonpreu/`]) {
   const html = pages.get(url);
   for (const match of html.matchAll(/<a\b[^>]*href="(\/[^"]*)"/g)) {
     const target = new URL(match[1], origin);
@@ -77,8 +103,22 @@ for (const url of [`${origin}/`, `${origin}/supermercados/bonpreu/`]) {
     await access(path.join(dist, pathname.slice(1), 'index.html'));
   }
 }
-for (const file of ['join/index.html', '404.html']) {
+for (const file of ['join/index.html', 'inicio/index.html', '404.html']) {
   assert(/name="robots"[^>]*content="[^"]*noindex/.test(await read(file)), `Falta noindex: ${file}`);
 }
-for (const file of ['.well-known/apple-app-site-association', '.well-known/assetlinks.json']) JSON.parse(await read(file));
-console.log(`SEO OK: ${pages.size} URLs de sitemap, ${STORES.length} supermercados, canonicals, hreflang, FAQ visible, enlaces y asociación de apps.`);
+const inicio = await read('inicio/index.html');
+assert(inicio.includes('property="og:title" content="Palabra de hoy · QuéFalta"'), 'Título social incorrecto para Palabra de hoy');
+assert(inicio.includes('property="og:description" content="Un pequeño reto. Una nueva palabra cada día."'), 'Subtítulo social incorrecto para Palabra de hoy');
+assert(inicio.includes('property="og:image" content="https://quefalta.es/apple-touch-icon.png?v=word-share-compact-1"'), 'Inicio debe compartir solo el icono compacto de la app');
+assert(inicio.includes('property="og:image:width" content="180"'), 'Ancho OG incorrecto para el icono compacto');
+assert(inicio.includes('property="og:image:height" content="180"'), 'Alto OG incorrecto para el icono compacto');
+assert(inicio.includes('name="twitter:card" content="summary"'), 'Inicio debe usar una tarjeta social compacta');
+const aasa = JSON.parse(await read('.well-known/apple-app-site-association'));
+const aasaJson = JSON.parse(await read('.well-known/apple-app-site-association.json'));
+assert.deepEqual(aasaJson, aasa, 'Las dos copias del AASA deben ser idénticas');
+const components = aasa.applinks?.details?.flatMap((detail) => detail.components ?? []) ?? [];
+for (const route of ['/join/*', '/inicio', '/inicio/*']) {
+  assert(components.some((component) => component['/'] === route), `Falta la ruta AASA: ${route}`);
+}
+JSON.parse(await read('.well-known/assetlinks.json'));
+console.log(`SEO OK: ${pages.size} URLs de sitemap, ${priceUrls.length} páginas de precios, ${STORES.length} supermercados, canonicals, hreflang, FAQ visible, enlaces y asociación de apps.`);
