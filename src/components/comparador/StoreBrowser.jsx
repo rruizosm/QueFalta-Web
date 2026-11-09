@@ -84,7 +84,7 @@ function CategoryNav({ tree, status, selected, expanded, onToggle, onSelect, onR
   );
 }
 
-export default function StoreBrowser({ storeKey, categoryId, cp, onBack, onCategory, onEditZone, onCompare }) {
+export default function StoreBrowser({ storeKey, categoryId, cp, onBack, onCategory, onEditZone }) {
   const t = useT();
   const store = STORE_BY_KEY[storeKey];
   const [tree, setTree] = useState([]);
@@ -281,7 +281,7 @@ export default function StoreBrowser({ storeKey, categoryId, cp, onBack, onCateg
             <>
               <div className="cmp-grid-cards">
                 {items.map((p, i) => (
-                  <ProductCard key={p.uid} index={i % PAGE} product={p} isBest={false} onCompare={() => onCompare(p)} />
+                  <ProductCard key={p.uid} index={i % PAGE} product={p} isBest={false} />
                 ))}
               </div>
               {hasMore && (

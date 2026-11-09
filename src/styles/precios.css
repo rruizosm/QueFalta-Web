@@ -87,6 +87,7 @@ html.cmp-in-view .cmp-seo { display: none; }
 .cmp-seo h2 { font-size: clamp(24px, 3vw, 32px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.1; }
 .cmp-seo-text { margin-top: 12px; max-width: 760px; font-size: 16px; line-height: 1.65; color: var(--ink-soft); }
 .cmp-seo-more { display: inline-block; margin-top: 14px; font-size: 14.5px; font-weight: 700; color: var(--accent); }
+.cmp-seo-more + .cmp-seo-more { margin-left: 20px; }
 .cmp-seo-stores { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .cmp-seo-stores a {
   display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 8px; border-radius: 999px;

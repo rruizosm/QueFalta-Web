@@ -31,7 +31,7 @@ async function restResponse(path, { body, signal, headers } = {}) {
   return res;
 }
 
-const rest = async (path, options) => (await restResponse(path, options)).json();
+export const rest = async (path, options) => (await restResponse(path, options)).json();
 
 /* ───────────────────────── Columnas por súper ───────────────────────── */
 
@@ -41,10 +41,10 @@ const WITH_PACKAGING = new Set(['ahorramas', 'alcampo', 'aldi', 'ametller', 'bm'
 const EXTRA_COLS = { carrefour: 'regional_prices', consum: 'regional_prices', plusfresc: 'center_prices' };
 
 // Cadenas con catálogo propio en catalán: el resto solo tiene el castellano.
-const CATALAN_PRODUCTS = new Set(['mercadona', 'esclat', 'bonarea', 'sorli', 'condis', 'ametller', 'plusfresc']);
+export const CATALAN_PRODUCTS = new Set(['mercadona', 'esclat', 'bonarea', 'sorli', 'condis', 'ametller', 'plusfresc']);
 const CATALAN_CATEGORIES = new Set(['esclat', 'bonarea', 'sorli', 'condis', 'ametller', 'plusfresc']);
 
-function columnsFor(store, lang) {
+export function columnsFor(store, lang) {
   const cols = [BASE_COLS];
   if (lang === 'ca' && CATALAN_PRODUCTS.has(store)) cols.push('display_name_ca');
   if (store !== 'mercadona') cols.push('price_format');
@@ -85,7 +85,7 @@ async function lookupLidlStore(cp, signal) {
   return null;
 }
 
-function resolveLidlStore(cp, signal) {
+export function resolveLidlStore(cp, signal) {
   if (!lidlStoreCache.has(cp)) {
     const p = lookupLidlStore(cp, signal)
       .catch((e) => { lidlStoreCache.delete(cp); throw e; });
@@ -95,7 +95,7 @@ function resolveLidlStore(cp, signal) {
 }
 
 /** Ubicación BM del CP de referencia de la provincia (o null). */
-function resolveBmLocation(cp, signal) {
+export function resolveBmLocation(cp, signal) {
   const ref = bmReferencePostalCode(cp);
   if (!ref) return Promise.resolve(null);
   if (!bmLocationCache.has(ref)) {
@@ -133,7 +133,7 @@ function parseQuantity(text) {
 const cleanName = (name) => (name ?? '').replace(/&ordm;/g, 'º').replace(/&amp;/g, '&');
 
 /** Fila de cualquier súper → producto común del comparador. */
-function toProduct(store, r, cp, lang) {
+export function toProduct(store, r, cp, lang) {
   // Precio regional: Carrefour por comunidad, Consum por zona, Plusfresc por centro.
   let regional = null;
   if (store === 'carrefour') regional = r.regional_prices?.[REGION_CATALOG_NAME[regionFromPostalCode(cp)]];
@@ -173,7 +173,7 @@ function toProduct(store, r, cp, lang) {
   };
 }
 
-const valid = (p) => p.name && Number.isFinite(p.price) && p.price > 0;
+export const valid = (p) => p.name && Number.isFinite(p.price) && p.price > 0;
 
 /* ───────────────────────────── Búsqueda ───────────────────────────── */
 
@@ -322,7 +322,7 @@ export const lidlStoreFor = (cp) => resolveLidlStore(cp).catch(() => null);
 
 /* ───────────────────────── Navegar por súper ───────────────────────── */
 
-const TABLES = {
+export const TABLES = {
   mercadona: 'mercadona', carrefour: 'carrefour', dia: 'dia', aldi: 'aldi', alcampo: 'alcampo',
   consum: 'consum', eroski: 'eroski', esclat: 'bonpreu', bonarea: 'bonarea', sorli: 'sorli',
   caprabo: 'caprabo', condis: 'condis', ametller: 'ametller', plusfresc: 'plusfresc', gadis: 'gadis',
@@ -344,7 +344,7 @@ function niceName(name) {
 }
 
 /** Todas las filas de una consulta (PostgREST corta en 1.000). */
-async function restAll(path, signal) {
+export async function restAll(path, signal) {
   const rows = [];
   for (let offset = 0; ; offset += 1000) {
     const page = await rest(`${path}&limit=1000&offset=${offset}`, { signal });

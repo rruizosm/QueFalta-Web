@@ -1,0 +1,17 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProductPage from '../../components/comparador/ProductPage.jsx';
+import '../../styles/comparador.css';
+import '../../styles/producto.css';
+
+// Página base de las fichas que no se generan al compilar (casi todas: hay
+// ~235.000 productos). Amplify la sirve para cualquier /producto/<súper>/<id>/
+// sin fichero propio con una regla «404-200» de la consola:
+//   /producto/<*>  →  /producto/index.html  (404-200)
+// que va ANTES de la regla general del 404. La ficha se carga en el navegador
+// a partir de la URL; noindex: Google solo indexa las fichas generadas.
+---
+
+<Layout title="Producto | QuéFalta" description="Ficha de producto y comparación de precios entre supermercados." noindex>
+  <ProductPage client:load />
+</Layout>

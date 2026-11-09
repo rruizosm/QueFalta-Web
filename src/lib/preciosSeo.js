@@ -5,15 +5,7 @@
 
 import { apiConfigured, norm, searchStore } from './comparadorApi.js';
 import { MIN_STORES, PRODUCTS } from '../data/preciosProductos.js';
-
-// Las páginas no dependen del CP del visitante: cada cadena se consulta en una
-// zona donde opera. Por eso lo publicado son precios de referencia.
-const REFERENCE_CP = {
-  mercadona: '28013', carrefour: '28013', dia: '28013', aldi: '28013', alcampo: '28013', lidl: '28013',
-  bm: '28013', froiz: '28013', ahorramas: '28013', eroski: '48001', consum: '46001',
-  esclat: '08006', bonarea: '08006', sorli: '08006', caprabo: '08006', condis: '08006', ametller: '08006',
-  plusfresc: '08006', gadis: '15001', eljamon: '41001', hiperdino: '35001',
-};
+import { REFERENCE_CP } from '../data/comparadorZonas.js';
 
 const STORES = Object.keys(REFERENCE_CP);
 const CONCURRENCY = 4;

@@ -1,6 +1,10 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { STORES, UPDATED } from '../../data/supermercados.js';
+import { loadProductPages, linkItem } from '../../lib/productoSeo.js';
+import { productPath } from '../../lib/productoApi.js';
+import { euro } from '../../lib/preciosFormato.js';
+import '../../styles/productos.css';
 
 // Página de detalle de cada supermercado (plan AEO F2). La plantilla es común
 // pero TODO el contenido (intro, datos, FAQs, metas) es único por súper y vive
@@ -13,6 +17,17 @@ export function getStaticPaths() {
 const { store } = Astro.props;
 const others = STORES.filter((s) => s.slug !== store.slug);
 const updated = store.updated ?? UPDATED;
+
+// Fichas indexables donde aparece esta cadena (enlazado interno hacia
+// /producto/). En `astro dev` se omiten: cargarlas tarda ~40 s.
+const storeKey = store.slug === 'bonpreu' ? 'esclat' : store.slug;
+const productPages = import.meta.env.DEV ? [] : (await loadProductPages()).pages;
+const compared = productPages
+  .filter((p) => p.store === storeKey || p.same.some((s) => s.store === storeKey))
+  .sort((a, b) => b.same.length - a.same.length || a.detail.label.localeCompare(b.detail.label, 'es'))
+  .slice(0, 24)
+  .map((p) => ({ ...linkItem(p), here: [p.detail, ...p.same].find((o) => o.store === storeKey) }));
+const comparedTotal = productPages.filter((p) => p.store === storeKey || p.same.some((s) => s.store === storeKey)).length;
 const breadcrumbs = [
   { name: 'Inicio', url: '/' },
   { name: 'Supermercados', url: '/supermercados/' },
@@ -119,6 +134,27 @@ const fmt = (iso) => {
       <section class="st-block">
         <h2 class="st-h2">{store.pricing.title}</h2>
         {store.pricing.paragraphs.map((paragraph) => <p class="st-copy">{paragraph}</p>)}
+      </section>
+    )}
+
+    {compared.length > 0 && (
+      <section class="st-block">
+        <h2 class="st-h2">Productos de {store.name} con precio comparado</h2>
+        <p class="st-copy">
+          {comparedTotal.toLocaleString('es-ES')} productos de {store.name} se venden también en otras cadenas con el
+          mismo código de barras. Estos son algunos; en cada ficha ves dónde sale más barato.
+        </p>
+        <ul class="pdir-picks">
+          {compared.map((p) => (
+            <li>
+              <a href={productPath(p.store, p.id)}>
+                {p.label}
+                <small>{euro(p.here?.price ?? p.price)} en {store.name} · {p.stores} cadenas · desde {euro(p.low)}</small>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p class="st-copy"><a href="/productos/">Ver todos los productos comparados</a></p>
       </section>
     )}
 

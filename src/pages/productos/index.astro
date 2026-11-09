@@ -1,0 +1,81 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { STORES } from '../../data/comparadorZonas.js';
+import { loadProductPages, productDirectory } from '../../lib/productoSeo.js';
+import { fechaLarga } from '../../lib/preciosFormato.js';
+import '../../styles/precios.css';
+import '../../styles/productos.css';
+
+// Directorio de las fichas de producto indexables (/producto/<súper>/<id>/).
+// Su función es de enlazado: que Google llegue a cada ficha por un enlace
+// normal y no solo por el sitemap. Una página por letra (ver [letra].astro).
+
+const { pages, updated } = await loadProductPages();
+const directory = productDirectory(pages);
+
+const schemas = [{
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Comparador', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: 'Productos', item: new URL('/productos/', Astro.site).href },
+  ],
+}];
+---
+
+<Layout
+  title={`${pages.length.toLocaleString('es-ES')} productos con precio comparado en varios supermercados | QuéFalta`}
+  description={`Fichas de ${pages.length.toLocaleString('es-ES')} productos que se venden en varias cadenas: precio en cada supermercado, ingredientes, información nutricional e índice alimentario.`}
+  jsonld={schemas}
+>
+  <div class="pr container">
+    <nav class="pr-crumbs" aria-label="Ruta de navegación">
+      <ol>
+        <li><a href="/">Comparador</a></li>
+        <li><span aria-current="page">Productos</span></li>
+      </ol>
+    </nav>
+
+    <header class="pr-head">
+      <span class="pr-eyebrow">Productos</span>
+      <h1>El mismo producto, en varios supermercados</h1>
+      <p class="pr-answer">
+        <strong>{pages.length.toLocaleString('es-ES')} productos</strong> que venden al menos tres
+        cadenas con el mismo código de barras: es exactamente el mismo
+        producto, así que la diferencia de precio es real. Cada ficha trae el precio en cada
+        supermercado, los ingredientes, la información nutricional y el índice alimentario.
+      </p>
+      <p class="pr-updated">Actualizado el <time datetime={updated}>{fechaLarga(updated)}</time></p>
+    </header>
+
+    <section>
+      <h2>Busca por la primera letra</h2>
+      <div class="pdir-letters">
+        {directory.map((g) => (
+          <a href={`/productos/${g.letter}/`}>
+            <strong>{g.letter === '0-9' ? '0-9' : g.letter.toUpperCase()}</strong>
+            <span>{g.items.length}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <h2>Por supermercado</h2>
+      <p class="pr-note">Qué ofrece cada cadena en QuéFalta y cuáles de sus productos tienen comparativa.</p>
+      <div class="pdir-stores">
+        {STORES.map((s) => (
+          <a href={`/supermercados/${s.key === 'esclat' ? 'bonpreu' : s.key}/`}>
+            <img src={s.logo} alt="" width="22" height="22" loading="lazy" />{s.name}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <p class="pr-disclaimer">
+      Precios de referencia de las tiendas online de cada cadena, actualizados cada semana. Para ver los
+      de tu zona, abre cualquier ficha o usa el <a href="/">comparador con tu código postal</a>.
+      QuéFalta no está afiliada a ninguna de estas cadenas.
+    </p>
+  </div>
+</Layout>

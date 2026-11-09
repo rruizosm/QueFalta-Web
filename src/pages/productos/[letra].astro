@@ -1,0 +1,76 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { STORE_BY_KEY } from '../../data/comparadorZonas.js';
+import { loadProductPages, productDirectory } from '../../lib/productoSeo.js';
+import { productPath } from '../../lib/productoApi.js';
+import { euro } from '../../lib/preciosFormato.js';
+import '../../styles/precios.css';
+import '../../styles/productos.css';
+
+// Fichas indexables que empiezan por una letra (directorio /productos/).
+
+export async function getStaticPaths() {
+  const { pages } = await loadProductPages();
+  const directory = productDirectory(pages);
+  return directory.map((g) => ({ params: { letra: g.letter }, props: { group: g, letters: directory.map((d) => d.letter) } }));
+}
+
+const { group, letters } = Astro.props;
+const shown = group.letter === '0-9' ? '0-9' : group.letter.toUpperCase();
+
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Comparador', item: new URL('/', Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: 'Productos', item: new URL('/productos/', Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: shown, item: new URL(`/productos/${group.letter}/`, Astro.site).href },
+    ],
+  },
+];
+---
+
+<Layout
+  title={`Productos con ${shown}: precio comparado en supermercados | QuéFalta`}
+  description={`${group.items.length} productos que empiezan por ${shown}, con su precio en varios supermercados, ingredientes e información nutricional.`}
+  jsonld={schemas}
+>
+  <div class="pr container">
+    <nav class="pr-crumbs" aria-label="Ruta de navegación">
+      <ol>
+        <li><a href="/">Comparador</a></li>
+        <li><a href="/productos/">Productos</a></li>
+        <li><span aria-current="page">{shown}</span></li>
+      </ol>
+    </nav>
+
+    <header class="pr-head">
+      <span class="pr-eyebrow">Productos · {shown}</span>
+      <h1>Productos que empiezan por {shown}</h1>
+      <p class="pr-answer">
+        {group.items.length} productos a la venta en varias cadenas, con el mismo código de barras.
+        Entra en cada uno para ver dónde sale más barato.
+      </p>
+    </header>
+
+    <nav class="pdir-letters pdir-letters-small" aria-label="Letras">
+      {letters.map((l) => (
+        l === group.letter
+          ? <span aria-current="page"><strong>{l === '0-9' ? '0-9' : l.toUpperCase()}</strong></span>
+          : <a href={`/productos/${l}/`}><strong>{l === '0-9' ? '0-9' : l.toUpperCase()}</strong></a>
+      ))}
+    </nav>
+
+    <ul class="pdir-list">
+      {group.items.map((p) => (
+        <li>
+          <a href={productPath(p.store, p.id)}>
+            <span class="pdir-name">{p.label}</span>
+            <span class="pdir-meta">{p.stores} cadenas · desde <b>{euro(p.low)}</b> · ficha de {STORE_BY_KEY[p.store].name}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Layout>

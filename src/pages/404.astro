@@ -1,8 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import ProductFallback from '../components/comparador/ProductFallback.jsx';
+import '../styles/comparador.css';
+import '../styles/producto.css';
 // Página de error 404. Amplify la sirve con la regla de redirección
 // `/<*> → /404.html (404)` (va detrás del rewrite de /join/:id en la consola).
 // Con noindex: una página de error no debe aparecer en buscadores.
+//
+// También pinta las fichas de producto que no se generan al compilar
+// (/producto/<súper>/<id>/ y /ca/producte/…): ver ProductFallback.jsx.
 ---
 
 <Layout
@@ -10,6 +16,14 @@ import Layout from '../layouts/Layout.astro';
   description="La página que buscas no existe o ha cambiado de dirección."
   noindex
 >
+  <!-- En una ruta de ficha, el aviso de 404 no llega a verse. -->
+  <script slot="head" is:inline>
+    if (/^\/(ca\/producte|producto)\/[a-z]+\/[^/]+\/?$/.test(location.pathname)) {
+      document.documentElement.classList.add('pd-fallback');
+      document.title = 'QuéFalta';
+    }
+  </script>
+  <ProductFallback client:only="react" />
   <section class="nf container">
     <span class="nf-code">404</span>
     <h1>Esta página no existe</h1>
@@ -22,6 +36,9 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </section>
 
+  <style is:global>
+    html.pd-fallback .nf { display: none; }
+  </style>
   <style>
     .nf {
       max-width: 560px;

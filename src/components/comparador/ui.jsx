@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { STORE_BY_KEY } from '../../data/comparadorZonas.js';
 import { useT } from './i18n.jsx';
+import { productPath } from '../../lib/productoApi.js';
 
 // Piezas visuales compartidas por la home del comparador y la vista de súper.
 
@@ -60,12 +61,12 @@ export function ProductImage({ src }) {
 
 export const ppuText = (p) => (p.ppu != null ? `${fmt(p.ppu)}/${UNIT_LABEL[p.unit]}` : null);
 
-export function ProductCard({ product, isBest, onCompare, index }) {
+export function ProductCard({ product, isBest, index }) {
   const t = useT();
   const store = STORE_BY_KEY[product.store];
   return (
     <article className="cmp-card" style={{ animationDelay: `${Math.min(index, 12) * 25}ms` }}>
-      <button type="button" className="cmp-card-hit" onClick={onCompare} aria-label={t.cardCompare(product.label, store?.name ?? '')} />
+      <a className="cmp-card-hit" href={productPath(product.store, product.id, t.lang)} aria-label={t.cardCompare(product.label, store?.name ?? '')} />
       <div className="cmp-card-media">
         <ProductImage src={product.image} />
         <span className="cmp-card-store"><StoreLogo store={product.store} size={26} /></span>
@@ -83,7 +84,7 @@ export function ProductCard({ product, isBest, onCompare, index }) {
       <div className="cmp-card-foot">
         <span className="cmp-card-cmp">
           <Icon.scale width="15" height="15" />
-          {t.cmpEyebrow}
+          {t.cardOpen}
         </span>
         <Icon.arrow width="15" height="15" className="cmp-card-go" />
       </div>

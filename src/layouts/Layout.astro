@@ -56,13 +56,13 @@ const ogLocaleAlt = alternates ? (lang === 'ca' ? 'es_ES' : 'ca_ES') : null;
 // castellano (mejor un enlace cruzado que ninguno).
 const T = lang === 'ca'
   ? {
-      precios: 'Preus', novedades: 'Novetats', supermercados: 'Supermercats', preguntas: 'Preguntes',
+      precios: 'Preus', productos: 'Productes', novedades: 'Novetats', supermercados: 'Supermercats', preguntas: 'Preguntes',
       preguntasHref: '/ca/preguntes/', apoyar: 'Donar suport', privacidad: 'Privacitat',
       condiciones: 'Condicions', cookies: 'Cookies',
       contacto: 'Contacte', copy: 'Fet a Espanya',
     }
   : {
-      precios: 'Precios', novedades: 'Novedades', supermercados: 'Supermercados', preguntas: 'Preguntas',
+      precios: 'Precios', productos: 'Productos', novedades: 'Novedades', supermercados: 'Supermercados', preguntas: 'Preguntas',
       preguntasHref: '/preguntas/', apoyar: 'Apoyar', privacidad: 'Privacidad',
       condiciones: 'Condiciones', cookies: 'Cookies',
       contacto: 'Contacto', copy: 'Hecho en España',
@@ -181,6 +181,7 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
           </a>
           <nav class="footer-links">
             <a href="/precios/">{T.precios}</a>
+            <a href="/productos/">{T.productos}</a>
             <a href="/novedades/">{T.novedades}</a>
             <a href="/supermercados/">{T.supermercados}</a>
             <a href={T.preguntasHref}>{T.preguntas}</a>

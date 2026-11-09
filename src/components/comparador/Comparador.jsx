@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { STORES, STORE_BY_KEY, regionFromPostalCode, storesForPostalCode } from '../../data/comparadorZonas.js';
-import { apiConfigured, findSimilar, keyWords, norm, searchAllStores } from '../../lib/comparadorApi.js';
-import { Icon, ProductCard, ProductImage, SkeletonCard, StoreLogo, UNIT_LABEL, fmt, ppuText } from './ui.jsx';
+import { apiConfigured, norm, searchAllStores } from '../../lib/comparadorApi.js';
+import { Icon, ProductCard, SkeletonCard } from './ui.jsx';
 import StoreBrowser from './StoreBrowser.jsx';
+import PostalModal, { readCp, saveCp } from './PostalModal.jsx';
 import { LangProvider, useT } from './i18n.jsx';
 
 // Comparador de precios entre supermercados (isla React de / y /ca/comparador/).
@@ -11,289 +12,12 @@ import { LangProvider, useT } from './i18n.jsx';
 // tape la página perjudica en Google): se pide al buscar o elegir súper, y se
 // recuerda en este navegador (`qf-cp`).
 
-const CP_KEY = 'qf-cp';
-
-// La vista de súper vive en la URL (?super=…&cat=…): atrás del navegador y
+// La vista de súper (?super=…&cat=…) y la búsqueda (?q=…) viven en la URL:
+// atrás del navegador (también al volver de una ficha de producto) y los
 // enlaces compartidos funcionan.
 function readRoute() {
   const q = new URLSearchParams(window.location.search);
-  return { store: q.get('super'), cat: q.get('cat') };
-}
-
-function readCp() {
-  try {
-    const v = localStorage.getItem(CP_KEY);
-    return v && regionFromPostalCode(v) ? v : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveCp(cp) {
-  try { localStorage.setItem(CP_KEY, cp); } catch {}
-}
-
-/* ───────────────────── Modal de código postal ───────────────────── */
-
-function PostalModal({ initial, canClose, onSave, onClose }) {
-  const t = useT();
-  const [cp, setCp] = useState(initial ?? '');
-  const [touched, setTouched] = useState(false);
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    const t = setTimeout(() => inputRef.current?.focus(), 80);
-    return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    if (!canClose) return;
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [canClose, onClose]);
-
-  const complete = cp.length === 5;
-  const region = complete ? regionFromPostalCode(cp) : null;
-  const stores = region ? storesForPostalCode(cp) : [];
-  const invalid = complete && !region;
-
-  const submit = (e) => {
-    e.preventDefault();
-    setTouched(true);
-    if (region) onSave(cp);
-  };
-
-  return (
-    <div className="cmp-modal-root" role="presentation">
-      <div className="cmp-modal-backdrop" onClick={canClose ? onClose : undefined} />
-      <form className="cmp-modal" role="dialog" aria-modal="true" aria-labelledby="cmp-cp-title" onSubmit={submit}>
-        {canClose && (
-          <button type="button" className="cmp-modal-x" onClick={onClose} aria-label={t.close}>
-            <Icon.close width="18" height="18" />
-          </button>
-        )}
-        <div className="cmp-modal-pin" aria-hidden="true">
-          <span className="cmp-modal-pin-pulse" />
-          <Icon.pin width="28" height="28" />
-        </div>
-        <h2 id="cmp-cp-title" className="cmp-modal-title">{t.cpTitle}</h2>
-        <p className="cmp-modal-lead">{t.cpLead}</p>
-
-        <label className={`cmp-otp${invalid && touched ? ' is-error' : ''}${region ? ' is-ok' : ''}`}>
-          <span className="cmp-sr">{t.cpLabel}</span>
-          <input
-            ref={inputRef}
-            className="cmp-otp-input"
-            inputMode="numeric"
-            autoComplete="postal-code"
-            maxLength={5}
-            value={cp}
-            onChange={(e) => { setCp(e.target.value.replace(/\D/g, '').slice(0, 5)); setTouched(e.target.value.length >= 5); }}
-            aria-invalid={invalid}
-            aria-describedby="cmp-cp-status"
-          />
-          {Array.from({ length: 5 }, (_, i) => (
-            <span
-              key={i}
-              aria-hidden="true"
-              className={`cmp-otp-box${cp[i] ? ' is-filled' : ''}${i === cp.length || (i === 4 && complete) ? ' is-caret' : ''}`}
-            >
-              {cp[i] ?? ''}
-            </span>
-          ))}
-        </label>
-
-        <div id="cmp-cp-status" className="cmp-modal-status" aria-live="polite">
-          {region ? (
-            <div className="cmp-zone" key={cp}>
-              <div className="cmp-zone-head">
-                <span className="cmp-zone-dot" />
-                <strong>{t.region(region)}</strong>
-                <span className="cmp-zone-count">{t.stores(stores.length)}</span>
-              </div>
-              <div className="cmp-zone-logos">
-                {stores.map((s, i) => (
-                  <span key={s.key} className="cmp-zone-logo" style={{ animationDelay: `${i * 35}ms` }} title={s.name}>
-                    <img src={s.logo} alt={s.name} width="30" height="30" />
-                  </span>
-                ))}
-              </div>
-            </div>
-          ) : invalid ? (
-            <p className="cmp-modal-error">{t.cpInvalid}</p>
-          ) : (
-            <p className="cmp-modal-hint">{t.cpHint}</p>
-          )}
-        </div>
-
-        <button type="submit" className="cmp-btn cmp-btn-primary cmp-modal-cta" disabled={!region}>
-          {t.cpCta}
-          <Icon.arrow width="18" height="18" />
-        </button>
-        <p className="cmp-modal-privacy">
-          <Icon.lock width="13" height="13" />
-          {t.cpPrivacy}
-        </p>
-      </form>
-    </div>
-  );
-}
-
-/* ───────────────────── Panel de comparación ───────────────────── */
-
-function ComparePanel({ product, cp, zoneStores, onClose }) {
-  const t = useT();
-  const panelRef = useRef(null);
-  const [state, setState] = useState({ status: 'loading', rows: [product], failed: [], keys: [] });
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    const ctrl = new AbortController();
-    setState({ status: 'loading', rows: [product], failed: [], keys: [] });
-    findSimilar(product, { cp, stores: zoneStores.map((s) => s.key), signal: ctrl.signal, lang: t.lang })
-      .then((res) => { if (res) setState({ status: 'done', ...res }); })
-      .catch(() => { if (!ctrl.signal.aborted) setState((s) => ({ ...s, status: 'error' })); });
-    return () => ctrl.abort();
-  }, [product, cp, zoneStores, attempt, t.lang]);
-
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', onKey);
-    panelRef.current?.focus();
-    return () => document.removeEventListener('keydown', onKey);
-  }, [onClose]);
-
-  const { rows, status, failed, keys } = state;
-  const done = status === 'done';
-  const comparable = rows.filter((r) => r.ppu != null);
-  const best = comparable[0] ?? rows[0];
-  const saving = product.ppu != null && best.ppu != null ? product.ppu - best.ppu : 0;
-  const savingPct = product.ppu ? Math.round((saving / product.ppu) * 100) : 0;
-  const max = Math.max(...comparable.map((r) => r.ppu), 0.0001);
-  const unitWord = t.units[product.unit] ?? null;
-  const missing = done ? zoneStores.filter((s) => !rows.some((r) => r.store === s.key) && !failed.includes(s.key)) : [];
-  // Las claves salen del nombre canónico (castellano); el título, del que se ve.
-  const shownKeys = keys.length ? keyWords(product.label) : [];
-  const title = shownKeys.length ? shownKeys.join(' ') : product.label;
-
-  let verdict;
-  if (status === 'error') {
-    verdict = { cls: 'is-loading', icon: <Icon.search width="20" height="20" />, title: t.cmpFailed, sub: t.checkConnection, retry: true };
-  } else if (!done) {
-    verdict = { cls: 'is-loading', icon: <span className="cmp-spinner" />, title: t.cmpLoading, sub: t.cmpLooking(zoneStores.length) };
-  } else if (rows.length < 2) {
-    verdict = { cls: 'is-best', icon: <Icon.search width="20" height="20" />, title: t.cmpNoSimilar, sub: t.cmpNotFound };
-  } else if (saving > 0.005) {
-    verdict = { cls: 'is-save', icon: <Icon.trophy width="20" height="20" />, title: t.cmpSave(fmt(saving), UNIT_LABEL[product.unit], savingPct), sub: t.cmpWith(STORE_BY_KEY[best.store].name) };
-  } else {
-    verdict = { cls: 'is-best', icon: <Icon.trophy width="20" height="20" />, title: t.cmpBest, sub: t.cmpNobody(unitWord ?? t.units.ud) };
-  }
-
-  return (
-    <div className="cmp-sheet-root">
-      <div className="cmp-sheet-backdrop" onClick={onClose} />
-      <aside ref={panelRef} tabIndex={-1} className="cmp-sheet" role="dialog" aria-modal="true" aria-labelledby="cmp-sheet-title">
-        <header className="cmp-sheet-head">
-          <span className="cmp-sheet-grip" aria-hidden="true" />
-          <div className="cmp-sheet-hero">
-            <div className="cmp-sheet-img"><ProductImage src={product.image} /></div>
-            <div className="cmp-sheet-meta">
-              <span className="cmp-eyebrow">{t.cmpEyebrow}</span>
-              <h2 id="cmp-sheet-title">{product.label}</h2>
-              <p>
-                {STORE_BY_KEY[product.store].name} · <strong>{fmt(product.price)}</strong>
-                {ppuText(product) && <> · {ppuText(product)}</>}
-              </p>
-            </div>
-          </div>
-          <button type="button" className="cmp-sheet-x" onClick={onClose} aria-label={t.cmpClose}>
-            <Icon.close width="18" height="18" />
-          </button>
-        </header>
-
-        <div className="cmp-sheet-scroll">
-          <div className={`cmp-verdict ${verdict.cls}`} aria-live="polite">
-            <span className="cmp-verdict-icon">{verdict.icon}</span>
-            <div>
-              <strong>{verdict.title}</strong>
-              <span>{verdict.sub}</span>
-            </div>
-            {verdict.retry && <button type="button" className="cmp-chip" onClick={() => setAttempt((n) => n + 1)}>{t.retry}</button>}
-          </div>
-
-          <h3 className="cmp-sheet-sub">
-            {done ? t.cmpCount(rows.length, title) : t.results}
-            {unitWord && <span>{t.cmpSubtitle(unitWord)}</span>}
-          </h3>
-
-          <ol className="cmp-rank">
-            {rows.map((r, i) => {
-              const diff = r.ppu != null && best.ppu != null ? r.ppu - best.ppu : 0;
-              const isBest = done && rows.length > 1 && r.ppu != null && diff < 0.0001;
-              const selected = r.uid === product.uid;
-              return (
-                <li key={r.uid} className={`cmp-rank-row${isBest ? ' is-best' : ''}${selected ? ' is-selected' : ''}`}>
-                  <span className="cmp-rank-pos">{i + 1}</span>
-                  <div className="cmp-rank-thumb">
-                    <ProductImage src={r.image} />
-                    <span className="cmp-rank-logo"><StoreLogo store={r.store} size={22} /></span>
-                  </div>
-                  <div className="cmp-rank-info">
-                    <div className="cmp-rank-top">
-                      <span className="cmp-rank-store">{STORE_BY_KEY[r.store].name}</span>
-                      {isBest && <span className="cmp-badge cmp-badge-best">{t.cmpCheapest}</span>}
-                      {selected && !isBest && <span className="cmp-badge cmp-badge-mine">{t.cmpYours}</span>}
-                    </div>
-                    <span className="cmp-rank-name">{r.label}{r.format ? ` · ${r.format}` : ''}</span>
-                    {r.ppu != null && (
-                      <span className="cmp-rank-bar" aria-hidden="true">
-                        <span style={{ width: `${Math.max(14, (r.ppu / max) * 100)}%` }} />
-                      </span>
-                    )}
-                  </div>
-                  <div className="cmp-rank-price">
-                    <strong>{fmt(r.price)}</strong>
-                    {ppuText(r) && <span>{ppuText(r)}</span>}
-                    {diff > 0.005 && <em>+{fmt(diff)}</em>}
-                  </div>
-                </li>
-              );
-            })}
-            {status === 'loading' && Array.from({ length: 3 }, (_, i) => (
-              <li key={`s${i}`} className="cmp-rank-row cmp-skel" aria-hidden="true">
-                <span className="cmp-skel-block" style={{ width: 52, height: 52, borderRadius: 12 }} />
-                <div className="cmp-rank-info">
-                  <span className="cmp-skel-block" style={{ width: '35%', height: 12 }} />
-                  <span className="cmp-skel-block" style={{ width: '80%', height: 10, marginTop: 8 }} />
-                </div>
-                <span className="cmp-skel-block" style={{ width: 52, height: 18 }} />
-              </li>
-            ))}
-          </ol>
-
-          {missing.length > 0 && (
-            <div className="cmp-missing">
-              <span>{t.cmpMissing}</span>
-              <div>{missing.map((s) => <StoreLogo key={s.key} store={s.key} size={22} />)}</div>
-            </div>
-          )}
-          {failed.length > 0 && (
-            <p className="cmp-note">{t.cmpCouldNotNow(failed.map((k) => STORE_BY_KEY[k].name).join(', '))}</p>
-          )}
-
-          <p className="cmp-note">{t.cmpNote}</p>
-        </div>
-
-        <footer className="cmp-sheet-foot">
-          <a className="cmp-btn cmp-btn-primary" href={t.download}>
-            {t.cmpList}
-            <Icon.arrow width="18" height="18" />
-          </a>
-        </footer>
-      </aside>
-    </div>
-  );
+  return { store: q.get('super'), cat: q.get('cat'), q: q.get('q') };
 }
 
 /* ───────────────────────────── Página ───────────────────────────── */
@@ -311,7 +35,6 @@ function ComparadorPage() {
   const [focused, setFocused] = useState(false);
   const [sort, setSort] = useState('relevance');
   const [storeFilter, setStoreFilter] = useState(null); // null = todos los de la zona
-  const [compare, setCompare] = useState(null);
   const [byStore, setByStore] = useState({}); // súper → productos
   const [pending, setPending] = useState([]); // súper que aún no han respondido
   const [failed, setFailed] = useState([]);
@@ -332,7 +55,15 @@ function ComparadorPage() {
       setSubmitted(initial.trim());
       if (readCp()) setScrollTick(1);
     }
-    const onPop = () => setRoute(readRoute());
+    const onPop = () => {
+      const next = readRoute();
+      setRoute(next);
+      const q = next.q?.trim() ?? '';
+      if (!next.store) {
+        setQuery(next.q ?? '');
+        setSubmitted(q.length >= 2 ? q : '');
+      }
+    };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);
@@ -357,12 +88,11 @@ function ComparadorPage() {
   const storeKey = route.store && zoneKeys.has(route.store) ? route.store : null;
   const outOfZone = cp && route.store && !storeKey ? STORE_BY_KEY[route.store]?.name : null;
 
-  // Bloquea el scroll del fondo con un modal o el panel abiertos.
+  // Bloquea el scroll del fondo con el modal abierto.
   useEffect(() => {
-    const lock = showModal || !!compare;
-    document.documentElement.classList.toggle('cmp-locked', lock);
+    document.documentElement.classList.toggle('cmp-locked', showModal);
     return () => document.documentElement.classList.remove('cmp-locked');
-  }, [showModal, compare]);
+  }, [showModal]);
 
   // Búsqueda real: un RPC por súper de la zona, pintando según responden.
   useEffect(() => {
@@ -431,6 +161,9 @@ function ComparadorPage() {
     setStoreFilter(null);
     setFocused(false);
     searchRef.current?.blur();
+    // En la URL, para volver a estos resultados desde una ficha.
+    const url = `${window.location.pathname}?q=${encodeURIComponent(t)}`;
+    if (new URLSearchParams(window.location.search).get('q') !== t) window.history.pushState(null, '', url);
     if (cp) setScrollTick((n) => n + 1);
   };
 
@@ -475,7 +208,6 @@ function ComparadorPage() {
           onBack={() => { navigate(null); window.scrollTo({ top: 0 }); }}
           onCategory={(cat) => navigate(storeKey, cat)}
           onEditZone={() => setEditingCp(true)}
-          onCompare={setCompare}
         />
       ) : (
       <>
@@ -638,7 +370,6 @@ function ComparadorPage() {
                       index={i}
                       product={p}
                       isBest={p.ppu != null && results.length > 1 && p.ppu <= bestPpu[p.unit] + 0.0001}
-                      onCompare={() => setCompare(p)}
                     />
                   ))}
                   {loading && results.length < 8 && Array.from({ length: 4 }, (_, i) => <SkeletonCard key={`sk${i}`} />)}
@@ -718,7 +449,6 @@ function ComparadorPage() {
           onClose={closeZone}
         />
       )}
-      {compare && <ComparePanel product={compare} cp={cp} zoneStores={zoneStores} onClose={() => setCompare(null)} />}
     </div>
   );
 }

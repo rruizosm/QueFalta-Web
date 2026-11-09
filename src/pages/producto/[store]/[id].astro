@@ -1,0 +1,86 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import ProductPage from '../../../components/comparador/ProductPage.jsx';
+import { STORE_BY_KEY } from '../../../data/comparadorZonas.js';
+import { loadProductPages, relatedPages } from '../../../lib/productoSeo.js';
+import { productParams, productPath } from '../../../lib/productoApi.js';
+import { euro } from '../../../lib/preciosFormato.js';
+import '../../../styles/comparador.css';
+import '../../../styles/producto.css';
+
+// Fichas que se indexan: el mismo producto (EAN) en varias cadenas, generadas
+// en HTML al compilar con precios de referencia (ver lib/productoSeo.js). El
+// resto de fichas las sirve pages/producto/index.astro (noindex).
+
+export async function getStaticPaths() {
+  // En `astro dev` no se generan: cargarlas tarda ~40 s y bloquearía cada
+  // primer clic. Las fichas se ven igual por la página 404 (ProductFallback).
+  if (import.meta.env.DEV) return [];
+  const { pages, updated } = await loadProductPages();
+  return pages.map((page) => ({
+    params: productParams(page.store, page.id),
+    props: { ...page, updated, related: relatedPages(pages, page) },
+  }));
+}
+
+const { store, id, detail: d, same, related } = Astro.props;
+// Página de la cadena en /supermercados/ (Bonpreu i Esclat usa otra clave).
+const storeSlug = store === 'esclat' ? 'bonpreu' : store;
+const storeName = STORE_BY_KEY[store].name;
+const offers = [d, ...same];
+const prices = offers.map((o) => o.price);
+const low = Math.min(...prices);
+const high = Math.max(...prices);
+const cheapest = offers.find((o) => o.price === low);
+const otherNames = same.map((o) => STORE_BY_KEY[o.store].name);
+const listNames = otherNames.length > 1 ? `${otherNames.slice(0, -1).join(', ')} y ${otherNames.at(-1)}` : otherNames[0];
+
+const name = d.label.replace(/[.\s]+$/, '');
+const title = `${name}: precio en ${storeName} y ${same.length} supermercados más | QuéFalta`;
+const description = `${name} a ${euro(d.price)} en ${storeName}. Compara su precio en ${listNames}: desde ${euro(low)} en ${STORE_BY_KEY[cheapest.store].name}.${d.info.ingredients ? ' Ingredientes e información nutricional.' : ''}`;
+
+const digits = (d.ean ?? '').replace(/\D/g, '');
+const gtin = digits.length === 13 ? { gtin13: digits } : digits.length === 8 ? { gtin8: digits } : digits.length === 14 ? { gtin14: digits } : digits ? { gtin: digits } : {};
+const url = new URL(productPath(store, id), Astro.site).href;
+
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { name: 'Comparador', item: new URL('/', Astro.site).href },
+      { name: storeName, item: new URL(`/supermercados/${storeSlug}/`, Astro.site).href },
+      { name: d.label, item: url },
+    ].map((c, i) => ({ '@type': 'ListItem', position: i + 1, ...c })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: d.label,
+    ...(d.image ? { image: d.image } : {}),
+    ...(d.brand ? { brand: { '@type': 'Brand', name: d.brand } } : {}),
+    ...(d.category ? { category: d.category } : {}),
+    description: d.info.description ?? description,
+    ...gtin,
+    url,
+    offers: {
+      '@type': 'AggregateOffer',
+      priceCurrency: 'EUR',
+      lowPrice: low.toFixed(2),
+      highPrice: high.toFixed(2),
+      offerCount: offers.length,
+      offers: offers.map((o) => ({
+        '@type': 'Offer',
+        price: o.price.toFixed(2),
+        priceCurrency: 'EUR',
+        url: new URL(productPath(o.store, o.id), Astro.site).href,
+        seller: { '@type': 'Organization', name: STORE_BY_KEY[o.store].name },
+      })),
+    },
+  },
+];
+---
+
+<Layout title={title} description={description} jsonld={schemas}>
+  <ProductPage client:load store={store} id={id} initial={d} initialSame={same} related={related} />
+</Layout>

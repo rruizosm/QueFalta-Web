@@ -106,6 +106,15 @@ const PLUSFRESC_CENTER_BY_CP = {
 };
 const BM_REFERENCE_CP = { '01': '01001', '20': '20009', '26': '26001', '28': '28008', '31': '31001', '39': '39001', '48': '48009' };
 
+// Precios de referencia (páginas generadas al compilar y fichas sin CP): cada
+// cadena se consulta en una zona donde opera, no en la del visitante.
+export const REFERENCE_CP = {
+  mercadona: '28013', carrefour: '28013', dia: '28013', aldi: '28013', alcampo: '28013', lidl: '28013',
+  bm: '28013', froiz: '28013', ahorramas: '28013', eroski: '48001', consum: '46001',
+  esclat: '08006', bonarea: '08006', sorli: '08006', caprabo: '08006', condis: '08006', ametller: '08006',
+  plusfresc: '08006', gadis: '15001', eljamon: '41001', hiperdino: '35001',
+};
+
 export const consumZone = (cp) => CONSUM_ZONE_BY_PROVINCE[cp.slice(0, 2)] ?? null;
 // Sin centro propio se usa el de referencia (12, Lleida), igual que la app.
 export const plusfrescCenter = (cp) => PLUSFRESC_CENTER_BY_CP[cp] ?? '12';

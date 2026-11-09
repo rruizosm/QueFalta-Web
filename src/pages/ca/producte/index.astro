@@ -1,0 +1,14 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import ProductPage from '../../../components/comparador/ProductPage.jsx';
+import '../../../styles/comparador.css';
+import '../../../styles/producto.css';
+
+// Fitxa de producte en català (equivalent de /producto/). Totes es pinten al
+// navegador: Amplify serveix aquesta pàgina per a qualsevol /ca/producte/<*>
+// amb una regla «404-200» (veure pages/producto/index.astro). Amb noindex.
+---
+
+<Layout title="Producte | QuéFalta" description="Fitxa de producte i comparació de preus entre supermercats." lang="ca" noindex>
+  <ProductPage client:load lang="ca" />
+</Layout>

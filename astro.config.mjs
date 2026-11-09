@@ -16,6 +16,11 @@ export default defineConfig({
     react(),
     // Las páginas-puente y la de error 404 no se indexan (van con noindex),
     // así que tampoco entran en el sitemap.
-    sitemap({ filter: (page) => !page.includes('/join') && !page.includes('/inicio') && !page.includes('/404') }),
+    // Las páginas base de fichas (/producto/, /ca/producte/) tampoco: solo son el
+    // contenedor de las fichas que se pintan en el navegador.
+    sitemap({
+      filter: (page) => !page.includes('/join') && !page.includes('/inicio') && !page.includes('/404')
+        && !page.endsWith('/producto/') && !page.includes('/ca/producte/'),
+    }),
   ],
 });

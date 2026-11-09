@@ -1,0 +1,224 @@
+/* Ficha de producto (/producto/<súper>/<id>/). Reutiliza las piezas del
+   comparador (.cmp-*) y sus tokens; aquí solo va la maquetación de la página.
+   El lateral mantiene el ancho del antiguo panel emergente (500 px). */
+
+.pd { max-width: 1320px; margin: 0 auto; padding: 0 24px 56px; }
+
+/* ─────────────── Migas ─────────────── */
+.pd-crumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 18px 0 6px; font-size: 13.5px; color: var(--ink-faint); }
+.pd-crumbs li { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.pd-crumbs li + li::before { content: '›'; color: var(--ink-faint); }
+.pd-crumbs a { color: var(--ink-soft); text-decoration: none; font-weight: 600; }
+.pd-crumbs a:hover { color: var(--accent); }
+.pd-crumbs span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40ch; }
+
+/* ─────────────── Rejilla ─────────────── */
+.pd-layout {
+  display: grid; gap: 24px 32px; align-items: start; margin-top: 10px;
+  grid-template-columns: minmax(0, 1fr) min(500px, 40%);
+  grid-template-rows: auto 1fr;
+  grid-template-areas: 'top aside' 'info aside';
+}
+.pd-top { grid-area: top; }
+.pd-info { grid-area: info; display: flex; flex-direction: column; gap: 16px; }
+.pd-aside { grid-area: aside; align-self: stretch; }
+.pd-aside-inner {
+  position: sticky; top: 76px; display: flex; flex-direction: column;
+  /* Lo ajusta ProductPage según dónde empieza el lateral; esto es la reserva. */
+  max-height: var(--pd-aside-max, calc(100vh - 92px));
+  border-radius: 26px; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--cmp-shadow); overflow: hidden;
+}
+.pd-aside-head { padding: 20px 22px 14px; border-bottom: 1px solid var(--border); }
+.pd-aside-head h2 { margin-top: 4px; font-size: 21px; font-weight: 800; letter-spacing: -0.03em; }
+.pd-aside-body { flex: 1; min-height: 0; overflow-y: auto; padding: 18px 22px 22px; overscroll-behavior: contain; scrollbar-width: thin; }
+.pd-aside-foot { padding: 14px 22px 18px; border-top: 1px solid var(--border); }
+.pd-aside-foot .cmp-btn { width: 100%; padding: 16px 20px; border-radius: 16px; }
+
+.pd-needzone { align-items: flex-start; }
+.pd-needzone .cmp-btn { margin-top: 14px; padding: 12px 18px; border-radius: 14px; font-size: 14.5px; }
+
+/* Filas del ranking: enlazan a la ficha de cada opción. */
+.cmp-rank-row { padding: 0; }
+.cmp-rank-link {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 12px 14px 12px 10px;
+  color: inherit; text-decoration: none; border-radius: inherit;
+}
+.cmp-rank-row.cmp-skel { padding: 12px 14px 12px 10px; }
+.cmp-rank-row.is-link { transition: border-color 0.18s, transform 0.18s var(--ease); }
+.cmp-rank-row.is-link:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); transform: translateY(-1px); }
+.cmp-rank-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ─────────────── Cabecera del producto ─────────────── */
+.pd-hero { display: grid; grid-template-columns: minmax(220px, 340px) minmax(0, 1fr); gap: 28px; align-items: start; }
+.pd-media {
+  position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; padding: 28px;
+  border-radius: 26px; background: #fff; border: 1px solid var(--border);
+}
+.pd-media img { width: 100%; height: 100%; object-fit: contain; }
+.pd-media .cmp-noimg { color: #b9bcc6; }
+.pd-promo {
+  position: absolute; top: 14px; left: 14px; max-width: calc(100% - 28px); padding: 6px 11px; border-radius: 99px;
+  font: 800 13px/1.2 var(--geo); color: #fff; background: var(--cmp-warn);
+}
+.pd-summary { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding-top: 6px; }
+.pd-store { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; color: var(--ink); text-decoration: none; }
+.pd-store:hover { color: var(--accent); }
+.pd-summary h1 { margin-top: 14px; font-size: clamp(26px, 3vw, 36px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; overflow-wrap: anywhere; }
+.pd-sub { margin-top: 8px; font-size: 15px; color: var(--ink-soft); }
+.pd-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.pd-badges:empty { display: none; }
+.pd-pill {
+  padding: 5px 11px; border-radius: 99px; font-size: 12.5px; font-weight: 700;
+  color: var(--cmp-ok); background: var(--cmp-ok-soft);
+}
+.pd-nutriscore { display: inline-flex; align-items: center; gap: 7px; padding: 4px 6px 4px 11px; border-radius: 99px; font-size: 12.5px; font-weight: 700; background: var(--paper-2); }
+.pd-nutriscore strong { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; color: #fff; }
+.pd-nutriscore.is-a strong { background: #038141; }
+.pd-nutriscore.is-b strong { background: #85bb2f; }
+.pd-nutriscore.is-c strong { background: #fecb02; color: #3a2f00; }
+.pd-nutriscore.is-d strong { background: #ee8100; }
+.pd-nutriscore.is-e strong { background: #e63e11; }
+.pd-price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; margin-top: 22px; }
+.pd-price strong { font-size: 42px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
+.pd-price span { font-size: 16px; font-weight: 600; color: var(--ink-faint); }
+.pd-promo-text { margin-top: 10px; font-size: 13.5px; color: var(--cmp-warn); font-weight: 600; }
+.pd-zone { margin-top: 22px; }
+.pd-summary .cmp-note { margin-top: 10px; }
+.pd-out {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; padding: 4px 0;
+  font: 700 14px/1.2 var(--geo); color: var(--accent); text-decoration: none;
+}
+.pd-out:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ─────────────── Bloques de la ficha ─────────────── */
+.pd-card {
+  padding: 22px 24px; border-radius: 22px; background: var(--surface); border: 1px solid var(--border);
+}
+.pd-card h2 { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+.pd-card-lead { margin-top: 4px; font-size: 13.5px; color: var(--ink-soft); }
+.pd-summary-text { margin-top: 8px; font-size: 15px; line-height: 1.55; color: var(--ink); }
+
+.pd-related ul { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 14px; }
+.pd-related a { display: flex; align-items: center; gap: 10px; height: 100%; padding: 8px 12px 8px 8px; border-radius: 14px; border: 1px solid var(--border); color: inherit; text-decoration: none; }
+.pd-related a:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+.pd-related-img { flex: 0 0 auto; width: 46px; height: 46px; border-radius: 10px; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.pd-related-img img { width: 100%; height: 100%; object-fit: contain; }
+.pd-related-img .cmp-noimg { color: #b9bcc6; }
+.pd-related-img .cmp-noimg svg { width: 22px; height: 22px; }
+.pd-related-info { min-width: 0; display: flex; flex-direction: column; }
+.pd-related-info strong { font-size: 13.5px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pd-related-info small { font-size: 12px; color: var(--ink-soft); }
+.pd-related-all { display: inline-block; margin-top: 14px; font-size: 14px; font-weight: 700; color: var(--accent); text-decoration: none; }
+.pd-text { margin-top: 10px; font-size: 15px; line-height: 1.6; color: var(--ink-soft); white-space: pre-line; overflow-wrap: anywhere; }
+.pd-noinfo { font-size: 15px; color: var(--ink-soft); line-height: 1.55; }
+
+.pd-nutri-head { margin-top: 8px; font-size: 13.5px; color: var(--ink-faint); }
+.pd-nutri { width: 100%; margin-top: 10px; border-collapse: collapse; font-size: 14.5px; }
+.pd-nutri th, .pd-nutri td { padding: 9px 0; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.pd-nutri th { font-weight: 600; color: var(--ink); padding-right: 16px; }
+.pd-nutri td { text-align: right; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.pd-nutri tr.is-sub th { padding-left: 16px; font-weight: 500; color: var(--ink-soft); }
+.pd-nutri tbody tr:last-child th, .pd-nutri tbody tr:last-child td { border-bottom: 0; }
+
+.pd-same ul { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.pd-same a {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px 10px 10px; border-radius: 16px;
+  border: 1px solid var(--border); color: inherit; text-decoration: none; transition: border-color 0.18s;
+}
+.pd-same a:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+.pd-same .cmp-logo { border-radius: 10px; flex: 0 0 auto; }
+.pd-same-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pd-same-info strong { font-size: 14.5px; }
+.pd-same-info span { font-size: 12.5px; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pd-same-price { display: flex; flex-direction: column; align-items: flex-end; flex: 0 0 auto; }
+.pd-same-price strong { font-size: 17px; font-weight: 800; letter-spacing: -0.02em; }
+.pd-same-price em { font-style: normal; font-size: 11.5px; font-weight: 700; color: var(--cmp-ok); }
+
+.pd-facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px 24px; margin-top: 14px; }
+.pd-facts dt { font-size: 12.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-faint); }
+.pd-facts dd { margin-top: 3px; font-size: 15px; color: var(--ink); overflow-wrap: anywhere; }
+
+.pd .cmp-disclaimer { margin: 6px 0 0; text-align: left; }
+
+.pd-missing { max-width: 560px; margin: 64px auto; }
+.pd-missing h1 { margin-top: 18px; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+.pd-missing .cmp-btn { text-decoration: none; padding: 13px 20px; border-radius: 14px; }
+
+/* ─────────────── Responsive ─────────────── */
+@media (max-width: 1080px) {
+  .pd-hero { grid-template-columns: minmax(0, 1fr); }
+  .pd-media { max-width: 360px; }
+}
+
+@media (max-width: 900px) {
+  .pd-layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: 'top' 'aside' 'info'; }
+  .pd-aside-inner { position: static; max-height: none; }
+  .pd-aside-body { overflow: visible; }
+  .pd-hero { grid-template-columns: minmax(160px, 260px) minmax(0, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .pd { padding: 0 16px 40px; }
+  .pd-crumbs ol { padding-top: 12px; }
+  .pd-hero { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .pd-media { max-width: none; aspect-ratio: 4 / 3; padding: 20px; }
+  .pd-price strong { font-size: 36px; }
+  .pd-card { padding: 18px; border-radius: 18px; }
+  .pd-aside-head { padding: 18px 16px 12px; }
+  .pd-aside-body { padding: 16px; }
+  .pd-aside-foot { padding: 12px 16px 16px; }
+  .pd-facts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+
+/* ─────────────── Índice alimentario ─────────────── */
+.pd-fi-badge {
+  display: inline-flex; align-items: center; gap: 10px; margin-top: 14px; padding: 6px 14px 6px 6px;
+  border-radius: 99px; background: var(--paper-2); border: 1px solid var(--border); color: var(--ink); text-decoration: none;
+  transition: border-color 0.18s;
+}
+.pd-fi-badge:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+.pd-fi-dot {
+  display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%;
+  font: 800 15px/1 var(--geo); letter-spacing: -0.02em;
+}
+.pd-fi-badge > span:last-child { display: flex; flex-direction: column; line-height: 1.2; }
+.pd-fi-badge strong { font-size: 13.5px; font-weight: 700; }
+.pd-fi-badge em { font-style: normal; font-size: 12.5px; font-weight: 700; }
+
+.pd-fi { scroll-margin-top: 90px; }
+.pd-fi-hero { display: flex; align-items: center; gap: 18px; }
+.pd-fi-circle {
+  flex: 0 0 auto; width: 92px; height: 92px; border-radius: 50%;
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;
+}
+.pd-fi-circle strong { font: 800 34px/1 var(--geo); letter-spacing: -0.04em; }
+.pd-fi-circle span { margin-top: 3px; font-size: 12px; font-weight: 700; opacity: 0.85; }
+.pd-fi-level { margin-top: 3px; font-size: 16px; font-weight: 800; }
+.pd-fi-formula { margin-top: 3px; font-size: 13px; color: var(--ink-faint); }
+
+.pd-fi-block { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+.pd-fi-block-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.pd-fi-block-head h3 { font-size: 15.5px; font-weight: 800; letter-spacing: -0.01em; }
+.pd-fi-block-head p { margin-top: 2px; font-size: 13px; color: var(--ink-faint); }
+.pd-fi-total { flex: 0 0 auto; padding: 4px 10px; border-radius: 99px; background: var(--paper-2); font-size: 12.5px; font-weight: 800; }
+
+.pd-fi-components, .pd-fi-points { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+.pd-fi-point-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; }
+.pd-fi-point-head > span { display: flex; flex-direction: column; min-width: 0; }
+.pd-fi-point-head strong { font-weight: 700; }
+.pd-fi-point-head em { font-style: normal; font-size: 12.5px; color: var(--ink-soft); }
+.pd-fi-point-head b { flex: 0 0 auto; padding: 3px 9px; border-radius: 99px; font-size: 12px; font-weight: 800; }
+.pd-fi-track { display: block; height: 6px; margin-top: 7px; border-radius: 99px; background: var(--paper-2); overflow: hidden; }
+.pd-fi-track span { display: block; height: 100%; border-radius: inherit; min-width: 3px; }
+
+.pd-fi-note, .pd-fi-empty { margin-top: 10px; font-size: 13.5px; color: var(--ink-soft); }
+.pd-fi-flag { margin-top: 10px; padding: 10px 12px; border-radius: 12px; font-size: 14px; color: #c83b32; background: color-mix(in srgb, #c83b32 10%, transparent); }
+.pd-fi-additives { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.pd-fi-additives li { display: inline-flex; gap: 6px; padding: 6px 11px; border-radius: 10px; font-size: 13px; color: var(--ink-soft); background: var(--paper-2); }
+.pd-fi-additives strong { color: #b07d12; }
+.pd-fi .cmp-note { margin-top: 20px; }
+
+@media (max-width: 640px) {
+  .pd-fi-circle { width: 76px; height: 76px; }
+  .pd-fi-circle strong { font-size: 28px; }
+}
