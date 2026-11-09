@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { REFERENCE_CP, STORES, STORE_BY_KEY, regionFromPostalCode, storesForPostalCode } from '../../data/comparadorZonas.js';
 import { apiConfigured } from '../../lib/comparadorApi.js';
-import { fetchProductDetail, findSameEan, nutritionTable, parseProductPath, productPath } from '../../lib/productoApi.js';
+import {
+  fetchProductDetail, findSameEan, nutritionTable, parseProductPath, parseProductQuery, productLink, productPath,
+} from '../../lib/productoApi.js';
 import { Icon, ProductImage, StoreLogo, fmt, ppuText } from './ui.jsx';
 import CompareAside from './CompareAside.jsx';
 import FoodIndexCard, { FoodIndexBadge } from './FoodIndexCard.jsx';
@@ -85,7 +87,7 @@ function SameProduct({ rows, zoned, product }) {
       <ul>
         {rows.map((r) => (
           <li key={r.uid}>
-            <a href={productPath(r.store, r.id, t.lang)}>
+            <a href={productLink(r.store, r.id, t.lang)}>
               <StoreLogo store={r.store} size={34} />
               <span className="pd-same-info">
                 <strong>{STORE_BY_KEY[r.store].name}</strong>
@@ -132,9 +134,17 @@ function ProductView({ store: storeProp, id: idProp, initial, initialSame, relat
   // Página base: el producto sale de la URL.
   useEffect(() => {
     if (!storeProp) {
-      const parsed = parseProductPath(window.location.pathname);
+      const fromQuery = parseProductQuery(window.location.search);
+      const parsed = parseProductPath(window.location.pathname) ?? fromQuery;
       if (parsed) setRoute(parsed);
       else setStatus('missing');
+      // Desde la página base (?p=…): si la ficha está generada, a su dirección limpia.
+      if (fromQuery) {
+        const pretty = productPath(fromQuery.store, fromQuery.id, t.lang);
+        fetch(pretty, { method: 'HEAD', redirect: 'manual' })
+          .then((res) => { if (res.status === 200) window.location.replace(pretty); })
+          .catch(() => {});
+      }
     }
     setCp(readCp());
     setReady(true);

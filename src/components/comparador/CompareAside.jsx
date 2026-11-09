@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { STORE_BY_KEY } from '../../data/comparadorZonas.js';
 import { findSimilar, keyWords } from '../../lib/comparadorApi.js';
-import { productPath } from '../../lib/productoApi.js';
+import { productLink } from '../../lib/productoApi.js';
 import { Icon, ProductImage, StoreLogo, UNIT_LABEL, fmt, ppuText } from './ui.jsx';
 import { useT } from './i18n.jsx';
 
@@ -109,7 +109,7 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
             const Row = selected ? 'div' : 'a';
             return (
               <li key={r.uid} className={`cmp-rank-row${isBest ? ' is-best' : ''}${selected ? ' is-selected' : ' is-link'}`}>
-                <Row className="cmp-rank-link" {...(selected ? {} : { href: productPath(r.store, r.id, t.lang) })}>
+                <Row className="cmp-rank-link" {...(selected ? {} : { href: productLink(r.store, r.id, t.lang) })}>
                   <span className="cmp-rank-pos">{i + 1}</span>
                   <div className="cmp-rank-thumb">
                     <ProductImage src={r.image} />

@@ -19,6 +19,24 @@ const decodeId = (id) => id.replace(/~/g, '*');
 
 export const productPath = (store, id, lang = 'es') => `${PRODUCT_BASE[lang] ?? PRODUCT_BASE.es}${store}/${encodeId(id)}/`;
 
+/**
+ * Enlace a una ficha desde la interfaz (comparador, lateral, «mismo producto»).
+ * Solo ~3.200 fichas tienen página propia; el resto lo pinta la página base
+ * /producto/, que sí existe (la regla 404 de Amplify REDIRIGE a /404.html y
+ * perdería la ruta). La página base salta a la dirección limpia si la ficha
+ * está generada. Los enlaces para buscadores usan `productPath`.
+ */
+export const productLink = (store, id, lang = 'es') =>
+  `${PRODUCT_BASE[lang] ?? PRODUCT_BASE.es}?p=${store}/${encodeURIComponent(encodeId(id))}`;
+
+/** ?p=<súper>/<id> de la página base → { store, id }, o null. */
+export function parseProductQuery(search) {
+  const value = new URLSearchParams(search).get('p');
+  const m = value?.match(/^([a-z]+)\/(.+)$/);
+  if (!m || !STORE_BY_KEY[m[1]]) return null;
+  return { store: m[1], id: decodeId(m[2]) };
+}
+
 /** Segmentos de la ruta pública para getStaticPaths. */
 export const productParams = (store, id) => ({ store, id: encodeId(id) });
 

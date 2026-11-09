@@ -73,7 +73,7 @@ const schemas = [
         '@type': 'Offer',
         price: o.price.toFixed(2),
         priceCurrency: 'EUR',
-        url: new URL(productPath(o.store, o.id), Astro.site).href,
+        ...(o === d ? { url } : {}),
         seller: { '@type': 'Organization', name: STORE_BY_KEY[o.store].name },
       })),
     },

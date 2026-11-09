@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { STORE_BY_KEY } from '../../data/comparadorZonas.js';
 import { useT } from './i18n.jsx';
-import { productPath } from '../../lib/productoApi.js';
+import { productLink } from '../../lib/productoApi.js';
 
 // Piezas visuales compartidas por la home del comparador y la vista de súper.
 
@@ -66,7 +66,7 @@ export function ProductCard({ product, isBest, index }) {
   const store = STORE_BY_KEY[product.store];
   return (
     <article className="cmp-card" style={{ animationDelay: `${Math.min(index, 12) * 25}ms` }}>
-      <a className="cmp-card-hit" href={productPath(product.store, product.id, t.lang)} aria-label={t.cardCompare(product.label, store?.name ?? '')} />
+      <a className="cmp-card-hit" href={productLink(product.store, product.id, t.lang)} aria-label={t.cardCompare(product.label, store?.name ?? '')} />
       <div className="cmp-card-media">
         <ProductImage src={product.image} />
         <span className="cmp-card-store"><StoreLogo store={product.store} size={26} /></span>
