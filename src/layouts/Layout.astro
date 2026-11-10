@@ -58,13 +58,13 @@ const T = lang === 'ca'
   ? {
       precios: 'Preus', productos: 'Productes', novedades: 'Novetats', supermercados: 'Supermercats', preguntas: 'Preguntes',
       preguntasHref: '/ca/preguntes/', apoyar: 'Donar suport', privacidad: 'Privacitat',
-      condiciones: 'Condicions', cookies: 'Cookies',
+      condiciones: 'Condicions', cookies: 'Cookies', cookieSettings: 'Configura les cookies',
       contacto: 'Contacte', copy: 'Fet a Espanya',
     }
   : {
       precios: 'Precios', productos: 'Productos', novedades: 'Novedades', supermercados: 'Supermercados', preguntas: 'Preguntas',
       preguntasHref: '/preguntas/', apoyar: 'Apoyar', privacidad: 'Privacidad',
-      condiciones: 'Condiciones', cookies: 'Cookies',
+      condiciones: 'Condiciones', cookies: 'Cookies', cookieSettings: 'Configurar cookies',
       contacto: 'Contacto', copy: 'Hecho en España',
     };
 
@@ -144,6 +144,8 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     {schemas.map((s) => (
       <script type="application/ld+json" set:html={JSON.stringify(s)} />
     ))}
+    <!-- Modo de consentimiento + AdSense (incluye la CMP de Google). -->
+    <CookieConsent />
     <!-- Extras de <head> por página (p. ej. preload de la imagen LCP en la home). -->
     <slot name="head" />
     <!-- Aplica el tema (claro/oscuro) y el color de acento guardados antes de
@@ -189,6 +191,7 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
             <a href="/privacidad/">{T.privacidad}</a>
             <a href="/condiciones/">{T.condiciones}</a>
             <a href="/cookies/">{T.cookies}</a>
+            <a href="/cookies/#configurar" data-qf-cookie-settings>{T.cookieSettings}</a>
             <a href="mailto:contacto@quefalta.es">{T.contacto}</a>
           </nav>
           <p class="footer-copy">© {new Date().getFullYear()} QuéFalta · {T.copy}</p>
@@ -196,7 +199,6 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
       </footer>
     )}
 
-    <CookieConsent />
     <AppStoreHelp lang={lang} />
 
     <style is:global>
