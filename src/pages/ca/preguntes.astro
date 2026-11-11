@@ -6,9 +6,13 @@ import Layout from '../../layouts/Layout.astro';
 // el array FAQS alimenta a la vez el HTML y el schema FAQPage).
 // ⚠️ Mantener las DOS versiones sincronizadas: si cambias una respuesta en
 // /preguntas, cámbiala también aquí (y viceversa) y actualiza ambas UPDATED.
-const UPDATED = '2026-10-16';
+const UPDATED = '2026-11-11';
 
 const FAQS = [
+  {
+    q: "On puc veure el preu d'un mateix producte a diversos supermercats?",
+    a: "Cada producte que es ven a més d'una cadena té la seva pròpia fitxa a quefalta.es amb el preu a cada supermercat, la diferència entre el més barat i el més car i, quan el supermercat els publica, ingredients i informació nutricional. Hi ha milers de fitxes, ordenades a l'<a href=\"/productos/\">índex de productes</a> (en castellà).",
+  },
   {
     q: 'A quins països i en quins idiomes està disponible QuéFalta?',
     a: "QuéFalta està disponible a Espanya per a iPhone i Android, amb la interfície en castellà i català. Pots compartir la llista entre tots dos sistemes. L'idioma del catàleg depèn del que publiqui cada supermercat; les cadenes i els productes disponibles poden variar segons la teva zona.",
@@ -19,7 +23,7 @@ const FAQS = [
   },
   {
     q: 'QuéFalta és gratuïta? Té anuncis?',
-    a: "Sí. Pots descarregar i fer servir QuéFalta gratuïtament, sense anuncis, i crear tots els grups i llistes que vulguis. QuéFalta Plus és opcional i afegeix funcions avançades, com el Radar d'estalvi il·limitat, estadístiques, ordre per preu unitari i accés conjunt a tots els supermercats, inclòs Lidl.",
+    a: "L'app és gratuïta i no té anuncis: la pots descarregar i crear tots els grups i llistes que vulguis. QuéFalta Plus és opcional i afegeix funcions avançades, com el Radar d'estalvi il·limitat, estadístiques, ordre per preu unitari i accés conjunt a tots els supermercats, inclòs Lidl. El web quefalta.es, amb el comparador gratuït, pot mostrar publicitat de Google.",
   },
   {
     q: 'A quins supermercats funciona QuéFalta?',

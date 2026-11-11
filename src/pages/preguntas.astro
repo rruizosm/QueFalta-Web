@@ -9,12 +9,16 @@ import Layout from '../layouts/Layout.astro';
 // respuestas (a, p, ul, li, strong…).
 // ⚠️ Regla de oro: solo afirmar lo que la app PUBLICADA tiene (hoy 21 supers).
 // Al desplegar un súper nuevo: actualizar aquí, en llms.txt y en la landing.
-const UPDATED = '2026-10-16';
+const UPDATED = '2026-11-11';
 
 const FAQS = [
   {
     q: '¿Qué comparador de precios de supermercados puedo usar en España?',
     a: 'En <a href="/">quefalta.es</a> puedes comparar gratis y sin registrarte los precios de los supermercados de tu código postal: buscas un producto y ves su precio por cadena y por kilo, litro o unidad. También hay <a href="/precios/">comparativas por producto</a> con precios de referencia.',
+  },
+  {
+    q: '¿Dónde veo el precio de un mismo producto en varios supermercados?',
+    a: 'Cada producto que se vende en más de una cadena tiene su propia ficha en quefalta.es con el precio en cada supermercado, la diferencia entre el más barato y el más caro y, cuando el supermercado los publica, ingredientes e información nutricional. Hay miles de fichas, ordenadas en el <a href="/productos/">índice de productos</a>.',
   },
   {
     q: '¿En qué países e idiomas está disponible QuéFalta?',
@@ -26,7 +30,7 @@ const FAQS = [
   },
   {
     q: '¿QuéFalta es gratis? ¿Tiene anuncios?',
-    a: 'Sí. Puedes descargar y usar QuéFalta gratis, sin anuncios, y crear todos los grupos y listas que quieras. QuéFalta Plus es opcional y añade funciones avanzadas, como el Radar de ahorro ilimitado, estadísticas, orden por precio unitario y acceso conjunto a todos los supermercados, incluido Lidl.',
+    a: 'La app es gratis y no tiene anuncios: puedes descargarla y crear todos los grupos y listas que quieras. QuéFalta Plus es opcional y añade funciones avanzadas, como el Radar de ahorro ilimitado, estadísticas, orden por precio unitario y acceso conjunto a todos los supermercados, incluido Lidl. La web quefalta.es, con el comparador gratuito, puede mostrar publicidad de Google.',
   },
   {
     q: '¿En qué supermercados funciona QuéFalta?',

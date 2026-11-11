@@ -10,6 +10,37 @@
 
 ---
 
+## Estado real (revisado 2026-11-11) — leer esto primero
+
+Las secciones de abajo son el plan ORIGINAL de julio (6 supermercados, solo
+iOS). Desde entonces la web creció; lo vigente es esto:
+
+- ✅ **F0–F3 en producción** (comprobado en vivo con UA de GPTBot): todo da
+  200, `llms.txt` y `robots.txt` como `text/plain`, sitemap con ~3.300 URLs.
+- Cifras actuales: **21 supermercados**, iPhone **y Android**, comparador en
+  la home (`/`, `/ca/comparador/`), `/precios/` (32 básicos, `FAQPage` +
+  `dateModified` semanal), **~3.200 fichas `/producto/<súper>/<id>/`**
+  (`Product` + `AggregateOffer`) con índice `/productos/`, 21 páginas de
+  súper (`BreadcrumbList` + `FAQPage`).
+- hreflang: `/` ↔ `/ca/comparador/`, `/como-funciona/` ↔ `/ca/`,
+  `/preguntas/` ↔ `/ca/preguntes/`.
+- **Anuncios**: la APP no tiene; la WEB lleva AdSense desde 2026-11-10. Todo
+  texto que diga «sin anuncios» debe referirse a la app (FAQ y llms.txt ya
+  lo distinguen desde 2026-11-11).
+- ⬜ **F4** (fuentes de terceros) sin ejecutar, y el kit `AEO-F4-KIT.md`
+  sigue con las cifras de julio (6 súpers, solo iOS): actualizarlo antes de
+  publicar nada.
+- ⬜ **F5** (medición) sin arrancar.
+
+### Checklist GEO en cada release o cambio grande de la web
+1. `public/llms.txt`: cifras, plataformas, páginas nuevas + fecha de cabecera.
+2. FAQ `src/pages/preguntas.astro` **y** `src/pages/ca/preguntes.astro`
+   (sincronizadas a mano) + sus `UPDATED`.
+3. Súper nuevo: `src/data/supermercados.js` + `Landing.jsx` + FAQ + llms.txt.
+4. Tras el deploy: `curl -A "GPTBot" https://quefalta.es/llms.txt` → 200.
+
+---
+
 ## Auditoría (2026-07-12) — punto de partida
 
 **Ya a favor (no tocar):**
@@ -198,11 +229,11 @@ solo lo puede hacer el usuario). Tabla de seguimiento dentro del kit.
 
 | Fase | Qué | Esfuerzo | Estado |
 |------|-----|----------|--------|
-| F0 | llms.txt | 30 min | ✅ código 2026-07-12 (falta deploy + check Content-Type) |
-| F1 | FAQ + FAQPage schema | ½ día | ✅ código 2026-07-12 (falta deploy + rich results test) |
-| F2 | 6 páginas de súper + índice | 1–2 días | ✅ código 2026-07-12 (falta deploy + rich results test) |
-| F3 | Catalán (FAQ + home) | ½–1 día | ✅ código 2026-07-12 (falta deploy) |
-| F4 | Terceros (AlternativeTo, PH, Reddit, prensa) | continuo | 📋 material listo (AEO-F4-KIT.md); falta publicar (manual) |
+| F0 | llms.txt | 30 min | ✅ en producción (verificado 2026-11-11) |
+| F1 | FAQ + FAQPage schema | ½ día | ✅ en producción (verificado 2026-11-11; rich results test pendiente) |
+| F2 | 6 páginas de súper + índice | 1–2 días | ✅ en producción (verificado 2026-11-11; rich results test pendiente) |
+| F3 | Catalán (FAQ + home) | ½–1 día | ✅ en producción (verificado 2026-11-11) |
+| F4 | Terceros (AlternativeTo, PH, Reddit, prensa) | continuo | 📋 kit desfasado (cifras de julio); falta actualizarlo y publicar (manual) |
 | F5 | Medición mensual | 15 min/mes | ⬜ |
 
 F0+F1 pueden ir en el mismo deploy. F4 puede empezar en paralelo desde ya
