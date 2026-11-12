@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 // TODO antes de publicar: si se quiere, añadir una dirección postal del responsable.
 // Recomendable una revisión por un profesional antes del lanzamiento.
-const updated = '10 de noviembre de 2026';
+const updated = '12 de noviembre de 2026';
 ---
 
 <Layout
@@ -39,10 +39,24 @@ const updated = '10 de noviembre de 2026';
         ejemplo, qué supermercados quieres ver).
       </li>
       <li>
+        <strong>Zona (código postal):</strong> el código postal que indicas al
+        registrarte, la comunidad autónoma que se deriva de él y, si lo eliges,
+        tu tienda Lidl de referencia. Sirve para mostrarte los supermercados,
+        productos y precios de tu zona. No usamos el GPS ni la ubicación precisa
+        de tu dispositivo.
+      </li>
+      <li>
         <strong>Datos de uso de la app:</strong> los grupos que creas o a los
         que te unes, tus listas de la compra y sus productos, tu historial de
-        compras finalizadas, tus favoritos y tus relaciones de amistad dentro de
+        compras finalizadas, tus favoritos, la despensa de tus grupos, las
+        alertas de precio que configures y tus relaciones de amistad dentro de
         la app.
+      </li>
+      <li>
+        <strong>Suscripción QuéFalta Plus (opcional):</strong> si te suscribes,
+        guardamos el estado de tu suscripción y su historial de compras (plan,
+        fechas de alta y renovación). El pago lo gestionan Google Play o la App
+        Store: nunca vemos ni guardamos tus datos de tarjeta.
       </li>
       <li>
         <strong>Token de notificaciones (opcional):</strong> si activas las
@@ -72,8 +86,9 @@ const updated = '10 de noviembre de 2026';
     <h2>3. Para qué y con qué base legal</h2>
     <ul>
       <li>
-        <strong>Prestarte el servicio</strong> (cuenta, perfil, sincronización
-        en tiempo real de listas y grupos entre miembros, historial): ejecución
+        <strong>Prestarte el servicio</strong> (cuenta, perfil, precios de tu
+        zona, sincronización en tiempo real de listas, despensa y grupos entre
+        miembros, historial, alertas de precio y suscripción Plus): ejecución
         del contrato (art. 6.1.b RGPD).
       </li>
       <li>
@@ -111,16 +126,28 @@ const updated = '10 de noviembre de 2026';
     <ul>
       <li><strong>Supabase</strong> (backend y base de datos, con servidores en la Unión Europea): almacena los datos descritos arriba.</li>
       <li><strong>Google / Apple</strong> (inicio de sesión): gestionan la autenticación de tu cuenta.</li>
+      <li><strong>RevenueCat</strong> (gestión de suscripciones): solo si te suscribes a QuéFalta Plus. Recibe tu identificador de usuario de la app y los recibos de compra de Google Play o la App Store para validar y mantener tu suscripción. Puede implicar transferencias internacionales a EE. UU. con las garantías previstas en su política.</li>
+      <li><strong>Google Play / App Store</strong> (pagos): procesan el cobro de la suscripción Plus como responsables independientes, según sus propias condiciones.</li>
       <li><strong>Expo</strong> (Expo Push API): solo si activas las notificaciones push. Envía los avisos a tu dispositivo; la entrega final la realizan los servicios del sistema operativo —Apple (APNs) en iPhone y Google (FCM) en Android—, lo que puede implicar transferencias internacionales con las garantías previstas en sus políticas.</li>
       <li><strong>Google Analytics</strong> (analítica web): solo si aceptas las cookies de análisis en quefalta.es. Puede implicar transferencias internacionales con las garantías de su política. Detalle en la <a href="/cookies/">política de cookies</a>.</li>
       <li><strong>Google AdSense</strong> (anuncios en la web quefalta.es, no en la app): muestra anuncios y gestiona el aviso de cookies. Google actúa como responsable independiente de sus propios tratamientos publicitarios. Puede implicar transferencias internacionales. Detalle en la <a href="/cookies/">política de cookies</a>.</li>
     </ul>
     <p>
       Los catálogos y precios que se muestran en la app proceden de las webs y
-      APIs públicas de Mercadona, Bonpreu/Esclat, Carrefour, bonÀrea, Dia y
-      Consum. QuéFalta
-      <strong>no está afiliada ni asociada</strong> a ninguno de esos
-      supermercados, y ellos no reciben ningún dato tuyo por usar la app.
+      APIs públicas de los supermercados que incluye (Mercadona, Carrefour, Dia,
+      Lidl, Aldi, Alcampo, Eroski, Consum, Bonpreu/Esclat, bonÀrea, entre
+      otros). QuéFalta <strong>no está afiliada ni asociada</strong> a ninguno
+      de esos supermercados, y ellos no reciben tu nombre, tu correo ni ningún
+      otro dato de tu cuenta.
+    </p>
+    <p>
+      Para ajustar el catálogo a tu zona, la app consulta directamente desde tu
+      dispositivo dos servicios con tu <strong>código postal</strong>, sin
+      ningún dato que te identifique: la web de Mercadona, para saber qué
+      almacén te corresponde, y el servicio público Zippopotam.us, para situar
+      en el mapa las tiendas Lidl cercanas. Como en cualquier conexión a
+      internet, esos servicios ven la dirección IP desde la que se hace la
+      consulta.
     </p>
 
     <h2>6. Cuánto tiempo conservamos tus datos</h2>
