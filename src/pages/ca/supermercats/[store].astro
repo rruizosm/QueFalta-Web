@@ -1,0 +1,168 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import StoreCatalog from '../../../components/comparador/StoreCatalog.jsx';
+import { REGION_NAMES_CA } from '../../../components/comparador/i18n.jsx';
+import { STORE_REGIONS } from '../../../data/comparadorZonas.js';
+import { STORES } from '../../../data/supermercados.js';
+import { CATALAN_PRODUCTS } from '../../../lib/comparadorApi.js';
+import { CATALOG_OFFERS, offersPagePath } from '../../../lib/ofertas.js';
+import { dropsPagePath, hasDrops } from '../../../lib/bajadas.js';
+import '../../../styles/comparador.css';
+import '../../../styles/supermercats.css';
+
+// Catàleg de cada supermercat en català (/ca/supermercats/<slug>/), parella de
+// /supermercados/<slug>/. A dalt, el catàleg navegable (StoreCatalog en català);
+// a sota, un text breu fet a partir de les dades de la cadena (zones, idioma
+// del catàleg, ofertes i baixades): el text llarg de cada súper només existeix
+// en castellà (src/data/supermercados.js).
+
+export function getStaticPaths() {
+  return STORES.map((s) => ({ params: { store: s.slug }, props: { store: s } }));
+}
+
+const { store } = Astro.props;
+const name = store.name;
+const storeKey = store.slug === 'bonpreu' ? 'esclat' : store.slug;
+const hasOffers = !!CATALOG_OFFERS[storeKey];
+const drops = hasDrops(storeKey);
+const catalanNames = CATALAN_PRODUCTS.has(storeKey);
+const regions = STORE_REGIONS[storeKey];
+const others = STORES.filter((s) => s.slug !== store.slug);
+
+/** «de Mercadona», però «d'Aldi». */
+const de = (n: string) => (/^(h?[aeiouàèéíòóú])/i.test(n) ? `d'${n}` : `de ${n}`);
+const list = (items: string[]) => (items.length > 1 ? `${items.slice(0, -1).join(', ')} i ${items.at(-1)}` : items[0]);
+const zones = regions ? list(regions.map((r: string) => REGION_NAMES_CA[r] ?? r)) : null;
+
+const heading = `Catàleg${hasOffers ? ' i ofertes' : ''} ${de(name)}`;
+const title = `Catàleg${hasOffers ? ' i ofertes' : ''} ${de(name)} amb preus | QuéFalta`;
+const description = `Consulta el catàleg ${de(name)} per seccions i amb preus${hasOffers ? ', les ofertes de la setmana' : ''}${drops ? ' i els productes que han baixat de preu' : ''}. Sense registrar-te ni posar el codi postal.`;
+
+const intro = [
+  `A QuéFalta pots veure el catàleg ${de(name)} per seccions, amb buscador i amb el preu de cada producte, també per quilo o per litre.`,
+  catalanNames
+    ? `Els productes es mostren en català, tal com els publica la cadena.`
+    : `Els noms dels productes es mostren en castellà, tal com els publica la cadena.`,
+  zones ? `${name} té botigues a ${zones}.` : `${name} té botigues a tota Espanya.`,
+].join(' ');
+
+const datos = [
+  `El catàleg de la botiga en línia ${de(name)}, actualitzat cada setmana.`,
+  'Preu de cada producte i preu per quilo, litre o unitat per comparar formats.',
+  ...(hasOffers ? [`Les ofertes de la setmana: preus rebaixats, 2a unitat, 3x2 i lots.`] : []),
+  ...(drops ? ['Els productes que han baixat de preu respecte a la setmana passada.'] : []),
+  'Una fitxa de cada producte amb el preu als altres supermercats.',
+];
+
+const faqs = [
+  {
+    q: `On veig el catàleg ${de(name)}?`,
+    a: `Aquí mateix: a dalt tens el catàleg ${de(name)} per seccions i amb buscador. No cal registrar-se. Sense codi postal veus els preus d'una zona de referència on opera la cadena; amb el teu, els de la teva zona.`,
+  },
+  ...(hasOffers ? [{
+    q: `On són les ofertes ${de(name)} d'aquesta setmana?`,
+    a: `A la pàgina d'<a href="${offersPagePath(storeKey, 'ca')}">ofertes ${de(name)}</a> tens totes les promocions de la setmana, per seccions i per tipus d'oferta.`,
+  }] : []),
+  ...(drops ? [{
+    q: `Quins productes ${de(name)} han baixat de preu?`,
+    a: `A les <a href="${dropsPagePath(storeKey, 'ca')}">baixades de preu ${de(name)}</a> hi ha els productes que costen menys que la setmana passada, amb el preu d'abans ratllat.`,
+  }] : []),
+  {
+    q: `QuéFalta és la botiga oficial ${de(name)}?`,
+    a: `No. QuéFalta és una app independent que recull els preus de la web pública ${de(name)} per consultar-los i comparar-los. Per comprar en línia, fes servir els canals oficials del supermercat.`,
+  },
+];
+
+const breadcrumbs = [
+  { name: 'Inici', url: '/ca/comparador/' },
+  { name: 'Supermercats', url: '/ca/supermercats/' },
+  { name, url: `/ca/supermercats/${store.slug}/` },
+];
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: new URL(c.url, Astro.site).href })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    inLanguage: 'ca',
+    mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') } })),
+  },
+];
+---
+
+<Layout
+  title={title}
+  description={description}
+  lang="ca"
+  alternates={{ es: `/supermercados/${store.slug}/`, ca: `/ca/supermercats/${store.slug}/` }}
+  jsonld={schemas}
+>
+  <nav class="sc-crumbs" aria-label="Ruta de navegació">
+    <ol>
+      {breadcrumbs.map((c, i) => (
+        <li>{i === breadcrumbs.length - 1 ? <span aria-current="page">{c.name}</span> : <a href={c.url}>{c.name}</a>}</li>
+      ))}
+    </ol>
+  </nav>
+  <StoreCatalog client:load storeKey={storeKey} heading={heading} lang="ca" />
+
+  <section class="sc container">
+    <header class="sc-head">
+      <img class="sc-logo" src={store.logo} alt="" width="44" height="44" />
+      <h2 class="sc-title">{name} a QuéFalta</h2>
+      <p class="sc-lead">{intro}</p>
+      {(hasOffers || drops) && (
+        <div class="sc-actions">
+          {hasOffers && <a class="sc-btn sc-btn-hot" href={offersPagePath(storeKey, 'ca')}>Ofertes d'aquesta setmana</a>}
+          {drops && <a class="sc-btn sc-btn-green" href={dropsPagePath(storeKey, 'ca')}>Baixades de preu</a>}
+        </div>
+      )}
+    </header>
+
+    <section class="sc-block">
+      <h2 class="sc-h2">Què hi trobes {de(name)}</h2>
+      <ul class="sc-list">{datos.map((d) => <li>{d}</li>)}</ul>
+    </section>
+
+    <section class="sc-block">
+      <h2 class="sc-h2">Preguntes sobre {name}</h2>
+      <div class="sc-faqs">
+        {faqs.map((f) => (
+          <article class="sc-faq">
+            <h3>{f.q}</h3>
+            <p set:html={f.a} />
+          </article>
+        ))}
+      </div>
+      <p class="sc-more">Més respostes a les <a href="/ca/preguntes/">preguntes freqüents</a>.</p>
+    </section>
+
+    <p class="sc-disclaimer">
+      Els preus i les dades {de(name)} que mostra QuéFalta surten de la seva web pública, són orientatius i poden
+      variar. QuéFalta no està afiliada ni patrocinada per {name}.
+    </p>
+
+    <section class="sc-block">
+      <h2 class="sc-h2">També a QuéFalta</h2>
+      <div class="sc-chips">
+        {others.map((s) => (
+          <a class="sc-chip" href={`/ca/supermercats/${s.slug}/`}>
+            <img src={s.logo} alt="" width="22" height="22" loading="lazy" />
+            {s.name}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <aside class="sc-cta">
+      <p>Gratis, sense anuncis i amb la llista compartida en temps real.</p>
+      <div class="sc-actions">
+        <a class="sc-btn" href="https://apps.apple.com/es/app/id6777720373">Descarrega-la a l'App Store</a>
+        <a class="sc-btn" href="https://play.google.com/store/apps/details?id=com.quefalta.app&pcampaignid=web_share&pli=1">Descarrega-la a Google Play</a>
+      </div>
+    </aside>
+  </section>
+</Layout>

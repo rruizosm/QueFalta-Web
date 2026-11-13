@@ -17,13 +17,27 @@ export async function getStaticPaths() {
   // primer clic. Las fichas se ven igual por la página 404 (ProductFallback).
   if (import.meta.env.DEV) return [];
   const { pages, updated } = await loadProductPages();
-  return pages.map((page) => ({
-    params: productParams(page.store, page.id),
-    props: { ...page, updated, related: relatedPages(pages, page) },
-  }));
+  // Nombre para el <title>: con la marca si el nombre no la lleva («Cerveza 33 cl»
+  // de BM → «Mahou Maestra Cerveza 33 cl»). Si aun así dos fichas coinciden, se
+  // añade el formato para que cada <title> sea único (guía de Google).
+  const named = pages.map((page) => {
+    const label = page.detail.label.replace(/[.\s]+$/, '');
+    const brand = page.detail.brand?.trim();
+    return brand && !label.toLowerCase().includes(brand.toLowerCase()) ? `${brand} ${label}` : label;
+  });
+  const seen = new Map();
+  for (const n of named) seen.set(n.toLowerCase(), (seen.get(n.toLowerCase()) ?? 0) + 1);
+  return pages.map((page, i) => {
+    const format = page.detail.format;
+    const titleName = seen.get(named[i].toLowerCase()) > 1 && format ? `${named[i]} (${format})` : named[i];
+    return {
+      params: productParams(page.store, page.id),
+      props: { ...page, titleName, updated, related: relatedPages(pages, page) },
+    };
+  });
 }
 
-const { store, id, detail: d, same, related } = Astro.props;
+const { store, id, detail: d, same, related, titleName } = Astro.props;
 // Página de la cadena en /supermercados/ (Bonpreu i Esclat usa otra clave).
 const storeSlug = store === 'esclat' ? 'bonpreu' : store;
 const storeName = STORE_BY_KEY[store].name;
@@ -36,8 +50,20 @@ const otherNames = same.map((o) => STORE_BY_KEY[o.store].name);
 const listNames = otherNames.length > 1 ? `${otherNames.slice(0, -1).join(', ')} y ${otherNames.at(-1)}` : otherNames[0];
 
 const name = d.label.replace(/[.\s]+$/, '');
-const title = `${name}: precio en ${storeName} y ${same.length} supermercados más | QuéFalta`;
-const description = `${name} a ${euro(d.price)} en ${storeName}. Compara su precio en ${listNames}: desde ${euro(low)} en ${STORE_BY_KEY[cheapest.store].name}.${d.info.ingredients ? ' Ingredientes e información nutricional.' : ''}`;
+const title = `${titleName ?? name}: precio en ${storeName} y ${same.length} supermercados más | QuéFalta`;
+// Meta description corta (1–2 frases, guía de Google): sin repetir la cadena
+// cuando ella misma es la más barata, y el extra de la ficha solo si cabe.
+const cheapestName = STORE_BY_KEY[cheapest.store].name;
+const descName = (titleName ?? name).replace(/ \([^)]*\)$/, '');
+const joinNames = (list) => list.length > 1 ? `${list.slice(0, -1).join(', ')} y ${list.at(-1)}` : list[0];
+const tiedNames = same.filter((o) => o.price === low).map((o) => STORE_BY_KEY[o.store].name);
+const restNames = same.filter((o) => o !== cheapest).map((o) => STORE_BY_KEY[o.store].name);
+const baseDescription = cheapest === d
+  ? `${descName} a ${euro(d.price)} en ${storeName}, ${tiedNames.length ? `el precio más bajo junto a ${joinNames(tiedNames)}` : `más barato que en ${listNames}`}.`
+  : [`${descName} a ${euro(d.price)} en ${storeName}. Más barato en ${cheapestName}: ${euro(low)}`]
+      .map((s) => (restNames.length && s.length < 120 ? `${s}; también lo comparamos en ${joinNames(restNames)}.` : `${s}.`))[0];
+const extra = ' Con ingredientes e información nutricional.';
+const description = d.info.ingredients && baseDescription.length + extra.length <= 160 ? baseDescription + extra : baseDescription;
 
 const digits = (d.ean ?? '').replace(/\D/g, '');
 const gtin = digits.length === 13 ? { gtin13: digits } : digits.length === 8 ? { gtin8: digits } : digits.length === 14 ? { gtin14: digits } : digits ? { gtin: digits } : {};

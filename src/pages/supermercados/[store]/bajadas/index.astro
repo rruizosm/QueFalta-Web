@@ -1,0 +1,12 @@
+---
+import BajadasPage from '../../../../components/ofertas/BajadasPage.astro';
+import { DROP_PAGES } from '../../../../lib/bajadas.js';
+
+// Bajadas de precio de la semana por súper (/supermercados/carrefour/bajadas/…). Contenido en BajadasPage.
+export function getStaticPaths() {
+  return DROP_PAGES.map(({ store, slug }) => ({ params: { store: slug }, props: { store } }));
+}
+const { store } = Astro.props;
+---
+
+<BajadasPage store={store} lang="es" />

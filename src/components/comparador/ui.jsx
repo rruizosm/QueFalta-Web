@@ -71,6 +71,7 @@ export function ProductCard({ product, isBest, index }) {
         <ProductImage src={product.image} />
         <span className="cmp-card-store"><StoreLogo store={product.store} size={26} /></span>
         {isBest && <span className="cmp-badge cmp-badge-best">{t.cardBest(UNIT_LABEL[product.unit])}</span>}
+        {product.offer?.badge && <span className={`cmp-badge cmp-badge-offer${product.offer.drop ? ' is-drop' : ''}`}>{product.offer.badge}</span>}
       </div>
       <div className="cmp-card-body">
         <span className="cmp-card-storename">{store?.name}</span>
@@ -78,6 +79,7 @@ export function ProductCard({ product, isBest, index }) {
         {product.format && <span className="cmp-card-format">{product.format}</span>}
         <div className="cmp-card-price">
           <strong>{fmt(product.price)}</strong>
+          {product.offer?.was && <s>{fmt(product.offer.was)}</s>}
           {ppuText(product) && <span>{ppuText(product)}</span>}
         </div>
       </div>

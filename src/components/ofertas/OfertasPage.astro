@@ -1,0 +1,247 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import OffersBrowser from './OffersBrowser.jsx';
+import { REFERENCE_CP, STORE_BY_KEY } from '../../data/comparadorZonas.js';
+import { loadOfertas } from '../../lib/ofertasSeo.js';
+import { loadFolleto } from '../../lib/folleto.js';
+import { fetchBannerImages } from '../../lib/comparadorApi.js';
+import { KIND_ORDER, offersPagePath, offersSlug } from '../../lib/ofertas.js';
+import { catalogPath } from '../../lib/rutas.js';
+import '../../styles/comparador.css';
+import '../../styles/ofertas.css';
+
+// Página de ofertas de un súper (/supermercados/<slug>/ofertas/ y /ca/supermercats/<slug>/ofertes/), una
+// por cadena de CATALOG_OFFERS. Bonpreu i Esclat lleva el banner de su folleto
+// vigente (enlace al visor oficial, con sus fechas); el resto, el banner
+// «Ofertas de la semana». Debajo: mayores rebajas y todas las ofertas con el
+// diseño de la vista de súper del comparador.
+
+interface Props { store: string; lang: 'es' | 'ca' }
+const { store, lang } = Astro.props;
+const ca = lang === 'ca';
+const hasFolleto = store === 'esclat';
+const cp = REFERENCE_CP[store];
+const [data, folleto, stickers] = await Promise.all([
+  loadOfertas(store),
+  hasFolleto ? loadFolleto() : Promise.resolve(null),
+  fetchBannerImages(store, undefined, cp).catch(() => []),
+]);
+const meta = STORE_BY_KEY[store];
+const name = meta.name;
+const slug = offersSlug(store);
+const locale = ca ? 'ca-ES' : 'es-ES';
+
+const parse = (iso: string) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+};
+const fmt = (iso: string, opts: Intl.DateTimeFormatOptions) => parse(iso).toLocaleDateString(locale, opts);
+const updatedLong = fmt(data.updated, { day: 'numeric', month: 'long', year: 'numeric' });
+const month = `${fmt(data.updated, { month: 'long' }).replace(/^(de |d')/, '')} ${data.updated.slice(0, 4)}`;
+const n = (x: number) => x.toLocaleString(locale);
+
+// «Del 3 al 16 de noviembre» (o «Del 28 de diciembre al 10 de enero»).
+const v = folleto?.validity;
+let validity: string | null = null;
+let validityShort: string | null = null;
+if (v) {
+  const sameMonth = v.from.slice(0, 7) === v.to.slice(0, 7);
+  const from = sameMonth ? String(parse(v.from).getDate()) : fmt(v.from, { day: 'numeric', month: 'long' });
+  const to = fmt(v.to, { day: 'numeric', month: 'long' });
+  validity = `Del ${from} al ${to}`;
+  const mon = fmt(v.to, { month: 'short' }).replace(/^(de |d')/, '').replace('.', '');
+  validityShort = `${parse(v.from).getDate()}–${parse(v.to).getDate()} ${mon}`;
+}
+
+// Cadenas cuyo precio u oferta cambia según la zona: se avisa de la referencia.
+const CITY: Record<string, string> = {
+  '28013': 'Madrid', '08006': 'Barcelona', '48001': 'Bilbao', '46001': 'València',
+  '15001': 'A Coruña', '41001': 'Sevilla', '35001': 'Las Palmas',
+};
+const ZONAL = new Set(['carrefour', 'consum', 'plusfresc', 'lidl', 'bm']);
+const zoneCity = ZONAL.has(store) ? CITY[cp] : null;
+
+// Estrella del sello (igual que la del banner de la vista de súper).
+const BURST = Array.from({ length: 36 }, (_, i) => {
+  const r = i % 2 ? 40 : 50;
+  const a = (Math.PI * i) / 18 - Math.PI / 2;
+  return `${(50 + r * Math.cos(a)).toFixed(1)},${(50 + r * Math.sin(a)).toFixed(1)}`;
+}).join(' ');
+
+const kinds = KIND_ORDER.filter((k) => data.counts[k] > 0).map((k) => ({ k, count: data.counts[k] }));
+const catalogLink = catalogPath(store, lang);
+const dataUrl = `${offersPagePath(store, 'es')}datos.json`;
+// Con muy pocas ofertas la página no aporta: existe (el botón del comparador
+// enlaza aquí) pero no se indexa.
+const thin = data.total < 10;
+
+const T = ca ? {
+  title: hasFolleto
+    ? `Ofertes i fullet de ${name} d'aquesta setmana (${month}) | QuéFalta`
+    : `Ofertes de ${name} d'aquesta setmana (${month}) | QuéFalta`,
+  description: `${n(data.total)} ofertes de ${name} per seccions i tipus d'oferta: preus rebaixats, 2a unitat, 3x2 i lots.${validity ? ` Fullet vigent: ${validity.toLowerCase()}.` : ''} Sense codi postal.`,
+  crumbs: ['Inici', 'Supermercats', name, 'Ofertes'],
+  h1: `Ofertes de ${name}`,
+  lead: `<strong>${n(data.total)} productes en oferta</strong> a la botiga en línia${zoneCity ? ` (preus de referència de ${zoneCity})` : ''} · actualitzat el ${updatedLong}`,
+  catalog: 'Veure tot el catàleg',
+  ribbon: hasFolleto ? (validity ?? 'Fullet vigent') : 'Estalvia a la compra',
+  big: hasFolleto ? 'Fullet' : 'Ofertes',
+  small: hasFolleto ? "d'aquesta setmana" : 'de la setmana',
+  cta: hasFolleto ? "Descobreix el fullet de Bonpreu d'aquesta setmana" : `Veure les ${n(data.total)} ofertes`,
+  burst: 'en oferta',
+  aria: hasFolleto ? `Fullet de ${name}${validity ? ` ${validity.toLowerCase()}` : ''}` : `Ofertes de ${name}`,
+  faqTitle: 'Preguntes freqüents',
+  faqs: [
+    ...(hasFolleto ? [
+      { q: `On és el fullet de ${name} d'aquesta setmana?`, a: `${name} publica un fullet d'ofertes cada quinze dies al seu <a href="${folleto!.url}" target="_blank" rel="noopener">visor oficial</a>${validity ? `; el vigent és vàlid ${validity.toLowerCase()}` : ''}. En aquesta pàgina tens, a més, totes les ofertes de la seva botiga en línia per seccions.` },
+      { q: 'Són les mateixes ofertes que les del fullet?', a: `Moltes coincideixen, però no totes: aquí hi ha les de la botiga en línia, recollides per QuéFalta el ${updatedLong}. Algunes promocions només són en línia o només a la botiga física.` },
+      { q: 'Valen igual a Bonpreu i a Esclat?', a: "La botiga en línia és comuna a Bonpreu i a Esclat. A les botigues físiques l'assortiment i alguna promoció poden variar." },
+    ] : [
+      { q: `D'on surten aquestes ofertes de ${name}?`, a: `De la botiga en línia de ${name}, recollides per QuéFalta el ${updatedLong}. Moltes coincideixen amb el fullet, però algunes promocions només són en línia o només a la botiga física.` },
+      ...(zoneCity ? [{ q: 'Són les mateixes a tot arreu?', a: `No sempre: ${name} canvia algunes ofertes o preus segons la zona. Aquí es mostren les de ${zoneCity}; al <a href="${catalogLink}">catàleg del comparador</a> pots posar el teu codi postal per veure les de la teva zona.` }] : []),
+    ]),
+    { q: 'Cada quant s’actualitzen?', a: 'Cada setmana, quan QuéFalta torna a llegir el catàleg de la cadena.' },
+    { q: 'Què vol dir «2a unitat −50 %» o «3x2»?', a: "A «2a unitat −50 %» la segona unitat surt a meitat de preu. A «3x2» t'emportes tres unitats i en pagues dues. Els lots són packs a preu tancat i les bonificacions es descompten amb la targeta de client." },
+  ],
+  disclaimer: `Preus i promocions de la botiga en línia de ${name}, orientatius. QuéFalta és una app independent, no afiliada a ${name}.`,
+} : {
+  title: hasFolleto
+    ? `Ofertas y folleto de ${name} de esta semana (${month}) | QuéFalta`
+    : `Ofertas de ${name} esta semana (${month}) | QuéFalta`,
+  description: `${n(data.total)} ofertas de ${name} por secciones y tipo de oferta: precios rebajados, 2ª unidad, 3x2 y lotes.${validity ? ` Folleto vigente: ${validity.toLowerCase()}.` : ''} Sin código postal.`,
+  crumbs: ['Inicio', 'Supermercados', name, 'Ofertas'],
+  h1: `Ofertas de ${name}`,
+  lead: `<strong>${n(data.total)} productos en oferta</strong> en su tienda online${zoneCity ? ` (precios de referencia de ${zoneCity})` : ''} · actualizado el ${updatedLong}`,
+  catalog: 'Ver todo el catálogo',
+  ribbon: hasFolleto ? (validity ?? 'Folleto vigente') : 'Ahorra en tu compra',
+  big: hasFolleto ? 'Folleto' : 'Ofertas',
+  small: hasFolleto ? 'de esta semana' : 'de la semana',
+  cta: hasFolleto ? 'Descubre el folleto de Bonpreu de esta semana' : `Ver las ${n(data.total)} ofertas`,
+  burst: 'en oferta',
+  aria: hasFolleto ? `Folleto de ${name}${validity ? ` ${validity.toLowerCase()}` : ''}` : `Ofertas de ${name}`,
+  faqTitle: 'Preguntas frecuentes',
+  faqs: [
+    ...(hasFolleto ? [
+      { q: `¿Dónde está el folleto de ${name} de esta semana?`, a: `${name} publica un folleto de ofertas cada quince días en su <a href="${folleto!.url}" target="_blank" rel="noopener">visor oficial</a>${validity ? `; el vigente es válido ${validity.toLowerCase()}` : ''}. En esta página tienes, además, todas las ofertas de su tienda online por secciones.` },
+      { q: '¿Son las mismas ofertas que las del folleto?', a: `Muchas coinciden, pero no todas: aquí están las de la tienda online, recogidas por QuéFalta el ${updatedLong}. Algunas promociones son solo online o solo de tienda física.` },
+      { q: '¿Valen igual en Bonpreu y en Esclat?', a: 'La tienda online es común a Bonpreu y a Esclat. En las tiendas físicas el surtido y alguna promoción pueden variar.' },
+    ] : [
+      { q: `¿De dónde salen estas ofertas de ${name}?`, a: `De la tienda online de ${name}, recogidas por QuéFalta el ${updatedLong}. Muchas coinciden con el folleto, pero algunas promociones son solo online o solo de tienda física.` },
+      ...(zoneCity ? [{ q: '¿Son las mismas en todas partes?', a: `No siempre: ${name} cambia algunas ofertas o precios según la zona. Aquí se muestran las de ${zoneCity}; en el <a href="${catalogLink}">catálogo del comparador</a> puedes poner tu código postal para ver las de tu zona.` }] : []),
+    ]),
+    { q: '¿Cada cuánto se actualizan?', a: 'Cada semana, cuando QuéFalta vuelve a leer el catálogo de la cadena.' },
+    { q: '¿Qué significa «2ª ud. −50 %» o «3x2»?', a: 'En «2ª ud. −50 %» la segunda unidad sale a mitad de precio. En «3x2» te llevas tres unidades y pagas dos. Los lotes son packs a precio cerrado y las bonificaciones se descuentan con la tarjeta de cliente.' },
+  ],
+  disclaimer: `Precios y promociones de la tienda online de ${name}, orientativos. QuéFalta es una app independiente, no afiliada a ${name}.`,
+};
+
+const crumbUrls = ca
+  ? ['/ca/comparador/', '/ca/supermercats/', `/ca/supermercats/${slug}/`, offersPagePath(store, 'ca')]
+  : ['/', '/supermercados/', `/supermercados/${slug}/`, offersPagePath(store, 'es')];
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: T.crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c, item: new URL(crumbUrls[i], Astro.site).href })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    inLanguage: lang,
+    dateModified: data.updated,
+    // Mismo texto que el visible, sin etiquetas.
+    mainEntity: T.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') } })),
+  },
+];
+---
+
+<Layout
+  title={T.title}
+  description={T.description}
+  lang={lang}
+  noindex={thin}
+  alternates={{ es: offersPagePath(store, 'es'), ca: offersPagePath(store, 'ca') }}
+  jsonld={schemas}
+>
+  <div class="cmp of">
+    <div class="of-wrap">
+      <nav class="of-crumbs" aria-label={ca ? 'Ruta de navegació' : 'Ruta de navegación'}>
+        <ol>
+          {T.crumbs.map((c, i) => (
+            <li>{i === T.crumbs.length - 1 ? <span aria-current="page">{c}</span> : <a href={crumbUrls[i]}>{c}</a>}</li>
+          ))}
+        </ol>
+      </nav>
+
+      <header class="of-head">
+        <img class="of-logo" src={meta.logo} alt="" width="48" height="48" />
+        <div>
+          <h1>{T.h1}</h1>
+          <p set:html={T.lead} />
+        </div>
+        <a class="of-catalog" href={catalogLink}>{T.catalog} →</a>
+      </header>
+
+      {data.total > 0 && (
+        <section class="cmp-promo of-flyer" aria-label={T.aria}>
+          <span class="cmp-promo-rays" aria-hidden="true"></span>
+          <span class="cmp-promo-dots" aria-hidden="true"></span>
+          <div class="cmp-promo-copy">
+            <span class="cmp-promo-ribbon">{T.ribbon}</span>
+            <p class="cmp-promo-title">
+              <span class="cmp-promo-big">{T.big}</span>
+              <span class="cmp-promo-small">{T.small}</span>
+            </p>
+            <div class="cmp-promo-actions">
+              {hasFolleto
+                ? <a class="cmp-promo-btn" href={folleto!.url} target="_blank" rel="noopener">{T.cta} →</a>
+                : <a class="cmp-promo-btn" href="#ofertas">{T.cta} ↓</a>}
+            </div>
+          </div>
+          <div class="cmp-promo-art" aria-hidden="true">
+            <span class="cmp-promo-burst">
+              <svg viewBox="0 0 100 100"><polygon points={BURST} /></svg>
+              <span>
+                {validityShort
+                  ? <><strong>{validityShort.split(' ')[0]}</strong><em>{validityShort.split(' ')[1]}</em></>
+                  : <><strong>{n(data.total)}</strong><em>{T.burst}</em></>}
+              </span>
+            </span>
+            {stickers.map((src, i) => (
+              <span class={`cmp-promo-sticker is-${i + 1}`}>
+                <img src={src} alt="" loading="lazy" decoding="async" />
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+
+    <div id="ofertas" class="of-anchor">
+      <OffersBrowser
+        client:load
+        lang={lang}
+        store={store}
+        categories={data.categories}
+        kinds={kinds}
+        top={data.top}
+        initial={data.rows.slice(0, 60)}
+        total={data.total}
+        dataUrl={dataUrl}
+      />
+    </div>
+
+    <div class="of-wrap">
+      <section class="of-faq">
+        <h2>{T.faqTitle}</h2>
+        {T.faqs.map((f, i) => (
+          <details open={i === 0}>
+            <summary>{f.q}</summary>
+            <p set:html={f.a} />
+          </details>
+        ))}
+      </section>
+      <p class="of-disclaimer">{T.disclaimer}</p>
+    </div>
+  </div>
+</Layout>

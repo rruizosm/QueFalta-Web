@@ -54,7 +54,9 @@ for (const store of STORES) {
   assert.equal(crumbs?.itemListElement.at(-1).item, url, `Ruta estructurada incorrecta: ${url}`);
   const faq = data.find((s) => s['@type'] === 'FAQPage');
   const visible = plain(html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, ''));
-  assert.equal(faq?.mainEntity.length, store.faqs.length, `FAQ incompleta: ${url}`);
+  // [store].astro antepone la pregunta «¿Dónde veo el catálogo…?» si la cadena no la trae.
+  const hasCatalogFaq = store.faqs.some((f) => /^¿Dónde (consulto|veo) el catálogo/.test(f.q));
+  assert.equal(faq?.mainEntity.length, store.faqs.length + (hasCatalogFaq ? 0 : 1), `FAQ incompleta: ${url}`);
   for (const question of faq.mainEntity) {
     assert(visible.includes(plain(question.name)), `Pregunta no visible: ${url}`);
     assert(visible.includes(plain(question.acceptedAnswer.text)), `Respuesta no visible: ${url}`);
@@ -62,8 +64,9 @@ for (const store of STORES) {
 }
 
 const bonpreu = pages.get(`${origin}/supermercados/bonpreu/`);
-assert.equal([...bonpreu.matchAll(/<h3[^>]*>/g)].length, 10, 'Bonpreu: faltan pasos o respuestas');
-assert(bonpreu.includes('no es la tienda online ni el folleto oficial'), 'Bonpreu: falta distinguir la app de la tienda oficial');
+// Desde el rediseño del 2026-11-13 la página abre con el catálogo y el texto va debajo.
+assert(bonpreu.includes('QuéFalta es una app independiente'), 'Bonpreu: falta distinguir la app de la tienda oficial');
+assert(bonpreu.includes('href="/supermercados/bonpreu/ofertas/"'), 'Bonpreu: falta el enlace a sus ofertas');
 const h1 = (html) => plain(html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? '');
 const home = pages.get(`${origin}/`);
 assert(h1(home).includes('Comparador de precios de supermercados'), 'Falta el H1 del comparador');

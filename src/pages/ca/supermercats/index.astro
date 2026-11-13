@@ -1,0 +1,64 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { REGION_NAMES_CA } from '../../../components/comparador/i18n.jsx';
+import { STORE_REGIONS } from '../../../data/comparadorZonas.js';
+import { STORES } from '../../../data/supermercados.js';
+import { CATALOG_OFFERS } from '../../../lib/ofertas.js';
+import '../../../styles/supermercats.css';
+
+// Índex dels supermercats en català (/ca/supermercats/), parella de /supermercados/.
+
+const keyOf = (slug: string) => (slug === 'bonpreu' ? 'esclat' : slug);
+const zoneLine = (slug: string) => {
+  const regions = STORE_REGIONS[keyOf(slug)];
+  if (!regions) return 'A tota Espanya';
+  const names = regions.map((r: string) => REGION_NAMES_CA[r] ?? r);
+  return names.length > 3 ? `${names.slice(0, 3).join(', ')} i ${names.length - 3} més` : names.join(', ');
+};
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Supermercats inclosos a QuéFalta',
+  numberOfItems: STORES.length,
+  itemListElement: STORES.map((s, i) => ({
+    '@type': 'ListItem', position: i + 1, name: s.name, url: new URL(`/ca/supermercats/${s.slug}/`, Astro.site).href,
+  })),
+};
+---
+
+<Layout
+  title="Catàlegs i ofertes de 21 supermercats | QuéFalta"
+  description="Consulta el catàleg, els preus i les ofertes de 21 supermercats: Mercadona, Bonpreu i Esclat, bonÀrea, Lidl, Carrefour, Condis i més. Sense registrar-te."
+  lang="ca"
+  alternates={{ es: '/supermercados/', ca: '/ca/supermercats/' }}
+  jsonld={schema}
+>
+  <section class="sc container">
+    <header class="sc-head">
+      <h1 class="sc-title">Catàlegs de vint-i-un supermercats</h1>
+      <p class="sc-lead">
+        Tria un supermercat per veure el seu catàleg per seccions, amb preus i, si en té, les ofertes de la
+        setmana. No cal registrar-se ni posar el codi postal.
+      </p>
+    </header>
+    <div class="sc-grid">
+      {STORES.map((s) => (
+        <a class="sc-card" href={`/ca/supermercats/${s.slug}/`}>
+          <span class="sc-card-head">
+            <img src={s.logo} alt="" width="28" height="28" loading="lazy" />
+            <strong>{s.name}</strong>
+          </span>
+          <span class="sc-card-desc">
+            {CATALOG_OFFERS[keyOf(s.slug)] ? 'Catàleg i ofertes' : 'Catàleg i preus'} · {zoneLine(s.slug)}
+          </span>
+          <span class="sc-card-more">Veure el catàleg →</span>
+        </a>
+      ))}
+    </div>
+    <p class="sc-disclaimer">
+      Els preus són orientatius i surten de les webs públiques de cada cadena. QuéFalta no està afiliada ni
+      patrocinada per cap d'aquests supermercats.
+    </p>
+  </section>
+</Layout>

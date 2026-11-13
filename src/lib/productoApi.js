@@ -129,7 +129,8 @@ export function detailColumns(store, lang = 'es') {
   const cols = [columnsFor(store, lang), DETAIL_COLS[store]];
   if (STORE_URL_COL[store]) cols.push(`store_url:${STORE_URL_COL[store]}`);
   if (lang === 'ca' && CATALAN_DETAIL[store]) cols.push(CATALAN_DETAIL[store].map((c) => `${c}_ca`).join(','));
-  return cols.join(',');
+  // Sin repetidos: las columnas de oferta van también en columnsFor.
+  return [...new Set(cols.join(',').split(','))].join(',');
 }
 
 /* ───────────────────────── Texto de la ficha ───────────────────────── */
@@ -206,7 +207,8 @@ export function toDetail(store, r, cp, lang = 'es') {
     }),
     glutenFree: r.gluten_free_label === true,
     promo: pick('promo_name'),
-    promoText: pick('promo_text'),
+    // Bonpreu solo publica el texto en castellano: la oferta lo trae traducido.
+    promoText: product.offer?.text || pick('promo_text'),
     nutriScore: r.nutri_score ? String(r.nutri_score).trim().toUpperCase().slice(0, 1) : null,
     info: {
       description: pick('description') ?? pick('product_info'),

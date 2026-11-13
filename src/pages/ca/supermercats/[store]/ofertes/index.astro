@@ -1,0 +1,12 @@
+---
+import OfertasPage from '../../../../../components/ofertas/OfertasPage.astro';
+import { OFFER_PAGES } from '../../../../../lib/ofertas.js';
+
+// Ofertes de la setmana per súper (/ca/supermercats/bonpreu/ofertes/…). Contingut a OfertasPage.
+export function getStaticPaths() {
+  return OFFER_PAGES.map(({ store, slug }) => ({ params: { store: slug }, props: { store } }));
+}
+const { store } = Astro.props;
+---
+
+<OfertasPage store={store} lang="ca" />

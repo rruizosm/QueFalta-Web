@@ -1,14 +1,20 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import StoreCatalog from '../../components/comparador/StoreCatalog.jsx';
 import { STORES, UPDATED } from '../../data/supermercados.js';
 import { loadProductPages, linkItem } from '../../lib/productoSeo.js';
 import { productPath } from '../../lib/productoApi.js';
 import { euro } from '../../lib/preciosFormato.js';
+import { CATALOG_OFFERS } from '../../lib/ofertas.js';
 import '../../styles/productos.css';
+import '../../styles/comparador.css';
 
 // Página de detalle de cada supermercado (plan AEO F2). La plantilla es común
 // pero TODO el contenido (intro, datos, FAQs, metas) es único por súper y vive
 // en src/data/supermercados.js — editar allí, no aquí.
+// Arriba va el catálogo navegable (StoreCatalog, la misma vista que /?super=…):
+// quien llega buscando «catálogo X» u «ofertas X» ve productos al entrar, y el
+// texto para buscadores queda debajo.
 
 export function getStaticPaths() {
   return STORES.map((s) => ({ params: { store: s.slug }, props: { store: s } }));
@@ -28,6 +34,15 @@ const compared = productPages
   .slice(0, 24)
   .map((p) => ({ ...linkItem(p), here: [p.detail, ...p.same].find((o) => o.store === storeKey) }));
 const comparedTotal = productPages.filter((p) => p.store === storeKey || p.same.some((s) => s.store === storeKey)).length;
+const hasOffers = !!CATALOG_OFFERS[storeKey];
+const catalogHeading = store.catalogHeading ?? `Catálogo${hasOffers ? ' y ofertas' : ''} de ${store.name}`;
+// Pregunta «¿dónde veo el catálogo?» (la que hace quien llega desde Google),
+// salvo que la cadena ya tenga la suya en supermercados.js.
+const catalogFaq = {
+  q: `¿Dónde veo el catálogo${hasOffers ? ' y las ofertas' : ''} de ${store.name}?`,
+  a: `Aquí mismo, en la web: arriba tienes el catálogo de ${store.name} por secciones y con buscador${hasOffers ? ', y con «Ver solo ofertas» te quedas con los productos rebajados, de 2ª unidad, 3x2 o lotes' : ''}. No hace falta registrarse. Sin código postal ves los precios de una zona de referencia donde opera la cadena; con el tuyo, los de tu zona. En la app QuéFalta, además, añades los productos a una lista compartida.`,
+};
+const faqs = store.faqs.some((f) => /^¿Dónde (consulto|veo) el catálogo/.test(f.q)) ? store.faqs : [catalogFaq, ...store.faqs];
 const breadcrumbs = [
   { name: 'Inicio', url: '/' },
   { name: 'Supermercados', url: '/supermercados/' },
@@ -48,7 +63,7 @@ const faqSchema = {
   '@type': 'FAQPage',
   inLanguage: 'es',
   dateModified: updated,
-  mainEntity: store.faqs.map((f) => ({
+  mainEntity: faqs.map((f) => ({
     '@type': 'Question',
     name: f.q,
     acceptedAnswer: { '@type': 'Answer', text: f.a },
@@ -76,23 +91,33 @@ const fmt = (iso) => {
 <Layout
   title={store.title}
   description={store.description}
+  alternates={{ es: `/supermercados/${store.slug}/`, ca: `/ca/supermercats/${store.slug}/` }}
   jsonld={[faqSchema, breadcrumbSchema]}
 >
+  <nav class="st-breadcrumbs st-breadcrumbs-top" aria-label="Ruta de navegación">
+    <ol>
+      {breadcrumbs.map((crumb, i) => (
+        <li>{i === breadcrumbs.length - 1
+          ? <span aria-current="page">{crumb.name}</span>
+          : <a href={crumb.url}>{crumb.name}</a>}</li>
+      ))}
+    </ol>
+  </nav>
+  <StoreCatalog client:load storeKey={storeKey} heading={catalogHeading} />
+
   <section class="st container">
-    <nav class="st-breadcrumbs" aria-label="Ruta de navegación">
-      <ol>
-        {breadcrumbs.map((crumb, i) => (
-          <li>{i === breadcrumbs.length - 1
-            ? <span aria-current="page">{crumb.name}</span>
-            : <a href={crumb.url}>{crumb.name}</a>}</li>
-        ))}
-      </ol>
-    </nav>
     <header class="st-head">
       <img class="st-logo" src={store.logo} alt="" width="44" height="44" />
       <span class="st-eyebrow">Supermercados</span>
-      <h1 class="st-title">{store.heading ?? `${store.name} en QuéFalta`}</h1>
+      <h2 class="st-title">{store.heading ?? `${store.name} en QuéFalta`}</h2>
       <p class="st-lead">{store.intro}</p>
+      {store.links && (
+        <div class="st-cta-actions st-links">
+          {store.links.map((l) => (
+            <a class={l.primary ? 'st-cta-btn st-link-hot' : 'st-cta-btn st-link-soft'} href={l.href}>{l.label}</a>
+          ))}
+        </div>
+      )}
       {store.notice && (
         <>
           <p class="st-notice">{store.notice}</p>
@@ -119,7 +144,7 @@ const fmt = (iso) => {
         <h2 class="st-h2">{store.guide.title}</h2>
         <ol class="st-guide">
           {store.guide.steps.map((step) => (
-            <li><h3>{step.title}</h3><p>{step.text}</p></li>
+            <li><h3>{step.title}</h3><p set:html={step.text} /></li>
           ))}
         </ol>
       </section>
@@ -161,7 +186,7 @@ const fmt = (iso) => {
     <section class="st-block">
       <h2 class="st-h2">Preguntas sobre {store.name}</h2>
       <div class="st-faqs">
-        {store.faqs.map((f) => (
+        {faqs.map((f) => (
           <article class="st-faq">
             <h3 class="st-q">{f.q}</h3>
             <p class="st-a" set:html={f.a} />
@@ -209,7 +234,12 @@ const fmt = (iso) => {
     .st-compare { margin-top: 32px; font-size: 15.5px; line-height: 1.6; color: var(--ink-soft); }
     .st-compare a { color: var(--accent); font-weight: 600; }
 
-    .st { max-width: 760px; padding-top: 36px; }
+    .st { max-width: 760px; padding-top: 24px; border-top: 1px solid var(--border); margin-top: 56px; }
+    .st-breadcrumbs-top { background: var(--paper-2); padding: 18px 24px 0; }
+    .st-breadcrumbs-top ol { max-width: 1272px; margin: 0 auto; }
+    .st-breadcrumbs-top + :global(.cmp) :global(.cmp-store-head-inner) { padding-top: 10px; }
+    /* Las migas ya llevan a los demás súper. */
+    :global(.cmp-embedded .cmp-store-back) { display: none; }
     .st-breadcrumbs ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; font-size: 13px; color: var(--ink-soft); }
     .st-breadcrumbs li + li::before { content: '/'; margin-right: 8px; color: var(--ink-faint); }
     .st-breadcrumbs a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
@@ -297,5 +327,9 @@ const fmt = (iso) => {
       transition: opacity 0.15s;
     }
     .st-cta-btn:hover { opacity: 0.9; }
+    .st-links { margin-top: 22px; }
+    .st-link-hot { background: #e0412f; }
+    .st-link-soft { background: var(--surface); color: var(--ink) !important; border: 1px solid var(--border); }
+    .st-guide p :global(a) { color: var(--accent); font-weight: 600; }
   </style>
 </Layout>

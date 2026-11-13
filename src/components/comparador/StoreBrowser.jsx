@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { STORE_BY_KEY, regionFromPostalCode } from '../../data/comparadorZonas.js';
-import { categoryIds, fetchCategoryTree, fetchStoreProducts, lidlStoreFor, searchStore } from '../../lib/comparadorApi.js';
+import { categoryIds, countDrops, countOffers, fetchBannerImages, fetchCategoryTree, fetchStoreProducts, lidlStoreFor, searchStore } from '../../lib/comparadorApi.js';
+import { CATALOG_OFFERS, offersPagePath } from '../../lib/ofertas.js';
+import { dropsPagePath, hasDrops } from '../../lib/bajadas.js';
 import { Icon, ProductCard, SkeletonCard, StoreLogo } from './ui.jsx';
 import { useT } from './i18n.jsx';
 
 // Vista de un supermercado: navegador de categorías a la izquierda y sus
-// productos a la derecha. La categoría va en la URL (la gestiona Comparador).
+// productos a la derecha. La categoría va en la URL (la gestiona Comparador,
+// o StoreCatalog en /supermercados/). Sin `cp` todavía (la página aún no ha
+// leído el CP guardado) solo pinta el esqueleto.
 
 const PAGE = 48;
 
@@ -84,7 +88,88 @@ function CategoryNav({ tree, status, selected, expanded, onToggle, onSelect, onR
   );
 }
 
-export default function StoreBrowser({ storeKey, categoryId, cp, onBack, onCategory, onEditZone }) {
+// Estrella de 18 puntas (sello «2.393 productos») en un viewBox 0 0 100 100.
+const BURST = Array.from({ length: 36 }, (_, i) => {
+  const r = i % 2 ? 40 : 50;
+  const a = (Math.PI * i) / 18 - Math.PI / 2;
+  return `${(50 + r * Math.cos(a)).toFixed(1)},${(50 + r * Math.sin(a)).toFixed(1)}`;
+}).join(' ');
+
+/** Banner de ofertas de la semana (rotulado tipo folleto): activa el filtro y,
+ *  si la cadena la tiene, enlaza a su página /ofertas/. Las fotos son
+ *  decorativas (fetchBannerImages). */
+function OffersBanner({ storeKey, cp, count, active, onToggle }) {
+  const t = useT();
+  const [images, setImages] = useState([]);
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+    fetchBannerImages(storeKey, ctrl.signal, cp).then(setImages).catch(() => {});
+    return () => ctrl.abort();
+  }, [storeKey, cp]);
+
+  if (!count) return null;
+  return (
+    <section className={`cmp-promo${active ? ' is-on' : ''}`} aria-label={t.promoAria(count)}>
+      <span className="cmp-promo-rays" aria-hidden="true" />
+      <span className="cmp-promo-dots" aria-hidden="true" />
+
+      <div className="cmp-promo-copy">
+        <span className="cmp-promo-ribbon">{t.promoRibbon}</span>
+        <p className="cmp-promo-title">
+          <span className="cmp-promo-big">{t.promoBig}</span>
+          <span className="cmp-promo-small">{t.promoSmall}</span>
+        </p>
+        <div className="cmp-promo-actions">
+          {/* Cada cadena con ofertas tiene su página /ofertas/<slug>/ (OFFER_PAGES). */}
+          {offersPagePath(storeKey, t.lang) ? (
+            <a className="cmp-promo-btn" href={offersPagePath(storeKey, t.lang)}>{t.offersOnly} →</a>
+          ) : (
+            <button type="button" className="cmp-promo-btn" onClick={onToggle} aria-pressed={active}>
+              {active ? t.offersAll : t.offersOnly}
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="cmp-promo-art" aria-hidden="true">
+        <span className="cmp-promo-burst">
+          <svg viewBox="0 0 100 100"><polygon points={BURST} /></svg>
+          <span>
+            <strong>{count.toLocaleString(t.lang === 'ca' ? 'ca-ES' : 'de-DE')}</strong>
+            <em>{t.promoBurst}</em>
+          </span>
+        </span>
+        {images.map((src, i) => (
+          <span key={src} className={`cmp-promo-sticker is-${i + 1}`}>
+            <img src={src} alt="" loading="lazy" decoding="async" />
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/** Banner verde «Bajadas de precio» (encima de las categorías): lleva a la
+ *  página /supermercados/<slug>/bajadas/ con los productos que han bajado esta semana. */
+function DropsBanner({ storeKey, count, className = '' }) {
+  const t = useT();
+  if (!count) return null;
+  return (
+    <a className={`cmp-drops ${className}`} href={dropsPagePath(storeKey, t.lang)}>
+      <span className="cmp-drops-arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7l6 6 4-4 8 8" /><path d="M21 11v6h-6" /></svg>
+      </span>
+      <span className="cmp-drops-copy">
+        <span className="cmp-drops-title">{t.dropsTitle}</span>
+        <span className="cmp-drops-sub">{t.dropsSub(count)}</span>
+      </span>
+      <Icon.arrow width="18" height="18" className="cmp-drops-go" />
+    </a>
+  );
+}
+
+export default function StoreBrowser({ storeKey, heading, categoryId, offersOnly = false, cp, referenceZone = false, onBack, onCategory, onEditZone }) {
   const t = useT();
   const store = STORE_BY_KEY[storeKey];
   const [tree, setTree] = useState([]);
@@ -102,8 +187,29 @@ export default function StoreBrowser({ storeKey, categoryId, cp, onBack, onCateg
   const [loadingMore, setLoadingMore] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [lidlLabel, setLidlLabel] = useState(null);
+  const [offerCount, setOfferCount] = useState(null);
+  const [dropCount, setDropCount] = useState(null);
 
   useEffect(() => {
+    setDropCount(null);
+    if (!hasDrops(storeKey) || !cp) return undefined;
+    const ctrl = new AbortController();
+    countDrops(storeKey, cp, ctrl.signal).then(setDropCount).catch(() => {});
+    return () => ctrl.abort();
+  }, [storeKey, cp]);
+  const hasOffers = !!CATALOG_OFFERS[storeKey];
+  const showOffers = hasOffers && offersOnly;
+
+  useEffect(() => {
+    setOfferCount(null);
+    if (!hasOffers || !cp) return undefined;
+    const ctrl = new AbortController();
+    countOffers(storeKey, cp, ctrl.signal).then(setOfferCount).catch(() => {});
+    return () => ctrl.abort();
+  }, [storeKey, hasOffers, cp]);
+
+  useEffect(() => {
+    if (!cp) return undefined;
     const ctrl = new AbortController();
     setTreeStatus('loading');
     fetchCategoryTree(storeKey, cp, ctrl.signal, t.lang)
@@ -114,7 +220,7 @@ export default function StoreBrowser({ storeKey, categoryId, cp, onBack, onCateg
 
   useEffect(() => {
     setLidlLabel(null);
-    if (storeKey === 'lidl') lidlStoreFor(cp).then((s) => setLidlLabel(s?.label?.replace(/,+\s*/g, ', ') ?? null));
+    if (storeKey === 'lidl' && cp) lidlStoreFor(cp).then((s) => setLidlLabel(s?.label?.replace(/,+\s*/g, ', ') ?? null));
   }, [storeKey, cp]);
 
   const found = useMemo(() => (categoryId ? findNode(tree, categoryId) : null), [tree, categoryId]);
@@ -125,7 +231,7 @@ export default function StoreBrowser({ storeKey, categoryId, cp, onBack, onCateg
 
   // Productos: al entrar, cambiar de categoría u orden, o buscar dentro del súper.
   useEffect(() => {
-    if (treeStatus === 'loading') return undefined;
+    if (!cp || treeStatus === 'loading') return undefined;
     const ctrl = new AbortController();
     setStatus('loading');
     setItems([]);
@@ -133,7 +239,7 @@ export default function StoreBrowser({ storeKey, categoryId, cp, onBack, onCateg
     setHasMore(false);
     const load = searched
       ? searchStore(storeKey, searched, cp, { limit: PAGE, signal: ctrl.signal, lang: t.lang }).then((products) => ({ products, rowCount: 0, total: products.length }))
-      : fetchStoreProducts({ store: storeKey, cp, ids, order, limit: PAGE, signal: ctrl.signal, lang: t.lang });
+      : fetchStoreProducts({ store: storeKey, cp, ids, order, limit: PAGE, signal: ctrl.signal, lang: t.lang, offersOnly: showOffers });
     load
       .then((res) => {
         setItems(res.products);
@@ -143,11 +249,11 @@ export default function StoreBrowser({ storeKey, categoryId, cp, onBack, onCateg
       })
       .catch(() => { if (!ctrl.signal.aborted) setStatus('error'); });
     return () => ctrl.abort();
-  }, [storeKey, cp, ids, order, searched, treeStatus, attempt, t.lang]);
+  }, [storeKey, cp, ids, order, searched, treeStatus, attempt, t.lang, showOffers]);
 
   const loadMore = () => {
     setLoadingMore(true);
-    fetchStoreProducts({ store: storeKey, cp, ids, order, offset: items.length, limit: PAGE, lang: t.lang })
+    fetchStoreProducts({ store: storeKey, cp, ids, order, offset: items.length, limit: PAGE, lang: t.lang, offersOnly: showOffers })
       .then((res) => {
         setItems((prev) => {
           const seen = new Set(prev.map((p) => p.uid));
@@ -185,7 +291,14 @@ export default function StoreBrowser({ storeKey, categoryId, cp, onBack, onCateg
     setSearched(q.length >= 2 ? q : '');
   };
 
-  const title = searched ? t.resultsForShort(searched) : found?.node.name ?? t.allProducts;
+  const toggleOffers = () => {
+    setSearched('');
+    setQuery('');
+    onCategory(categoryId, !showOffers);
+  };
+
+  const baseTitle = found?.node.name ?? t.allProducts;
+  const title = searched ? t.resultsForShort(searched) : showOffers ? t.offersIn(found ? baseTitle : null) : baseTitle;
   const nav = (
     <CategoryNav
       tree={tree}
@@ -210,10 +323,10 @@ export default function StoreBrowser({ storeKey, categoryId, cp, onBack, onCateg
           <div className="cmp-store-title">
             <StoreLogo store={storeKey} size={64} />
             <div>
-              <h1>{store.name}</h1>
+              <h1>{heading ?? store.name}</h1>
               <p>
-                {t.pricesFor(cp, t.region(regionFromPostalCode(cp)))}
-                <button type="button" onClick={onEditZone}>{t.change}</button>
+                {cp && (referenceZone ? t.refPrices(t.region(regionFromPostalCode(cp))) : t.pricesFor(cp, t.region(regionFromPostalCode(cp))))}
+                {cp && <button type="button" onClick={onEditZone}>{referenceZone ? t.setCp : t.change}</button>}
               </p>
               {lidlLabel && <p className="cmp-store-sub">{t.refStore(lidlLabel)}</p>}
             </div>
@@ -234,14 +347,23 @@ export default function StoreBrowser({ storeKey, categoryId, cp, onBack, onCateg
       </header>
 
       <div className="cmp-store-layout">
-        <aside className="cmp-side">{nav}</aside>
+        <aside className="cmp-side">
+          <DropsBanner storeKey={storeKey} count={dropCount} />
+          {nav}
+        </aside>
 
         <section className="cmp-store-main">
+          {/* En móvil el lateral no se ve: el banner va encima del botón de categorías. */}
+          <DropsBanner storeKey={storeKey} count={dropCount} className="is-mobile" />
           <button type="button" className="cmp-side-open" onClick={() => setDrawer(true)}>
             <Icon.list width="18" height="18" />
             <span>{t.categoriesLabel}</span>
             <em>{found?.node.name ?? t.allProducts}</em>
           </button>
+
+          {!searched && (
+            <OffersBanner storeKey={storeKey} cp={cp} count={offerCount} active={showOffers} onToggle={toggleOffers} />
+          )}
 
           <div className="cmp-results-head">
             <div>

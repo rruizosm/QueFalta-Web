@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { catalogPath } from '../../lib/rutas.js';
 import { REFERENCE_CP, STORES, STORE_BY_KEY, regionFromPostalCode, storesForPostalCode } from '../../data/comparadorZonas.js';
 import { apiConfigured } from '../../lib/comparadorApi.js';
 import {
@@ -232,7 +233,7 @@ function ProductView({ store: storeProp, id: idProp, initial, initialSame, relat
   };
 
   const storeInfo = store ? STORE_BY_KEY[store] : null;
-  const storeHref = `${t.pdHomeHref}?super=${store}`;
+  const storeHref = catalogPath(store, t.lang);
   const modal = editingCp && <PostalModal initial={cp} canClose onSave={saveZone} onClose={() => setEditingCp(false)} />;
 
   if (status === 'missing' || status === 'error') {
@@ -298,6 +299,7 @@ function ProductView({ store: storeProp, id: idProp, initial, initialSame, relat
                 {foodIndex && <FoodIndexBadge info={foodIndex} href="#indice" />}
                 <div className="pd-price">
                   <strong>{fmt(d.price)}</strong>
+                  {d.offer?.was && <s className="pd-was">{fmt(d.offer.was)}</s>}
                   {ppuText(d) && <span>{ppuText(d)}</span>}
                 </div>
                 {d.promoText && <p className="pd-promo-text">{d.promoText}</p>}

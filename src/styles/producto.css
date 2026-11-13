@@ -81,6 +81,7 @@
 .pd-price { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; margin-top: 22px; }
 .pd-price strong { font-size: 42px; font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
 .pd-price span { font-size: 16px; font-weight: 600; color: var(--ink-faint); }
+.pd-price s.pd-was { font-size: 18px; font-weight: 600; color: var(--ink-faint); }
 .pd-promo-text { margin-top: 10px; font-size: 13.5px; color: var(--cmp-warn); font-weight: 600; }
 .pd-zone { margin-top: 22px; }
 .pd-summary .cmp-note { margin-top: 10px; }

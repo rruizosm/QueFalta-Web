@@ -8,6 +8,8 @@ import {
   REGION_CATALOG_NAME, regionFromPostalCode, consumZone, plusfrescCenter, bmReferencePostalCode,
 } from '../data/comparadorZonas.js';
 import { catalanToSpanish } from '../data/glosarioCatala.js';
+import { CATALOG_OFFERS, OFFER_STORES, parseOffer } from './ofertas.js';
+import { dropFilters, dropsSince, hasDrops } from './bajadas.js';
 
 const URL_BASE = import.meta.env.PUBLIC_SUPABASE_URL;
 const ANON_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
@@ -50,6 +52,7 @@ export function columnsFor(store, lang) {
   if (store !== 'mercadona') cols.push('price_format');
   if (WITH_PACKAGING.has(store)) cols.push('packaging');
   if (EXTRA_COLS[store]) cols.push(EXTRA_COLS[store]);
+  if (CATALOG_OFFERS[store]) cols.push(CATALOG_OFFERS[store].cols);
   return cols.join(',');
 }
 
@@ -132,6 +135,16 @@ function parseQuantity(text) {
 
 const cleanName = (name) => (name ?? '').replace(/&ordm;/g, 'º').replace(/&amp;/g, '&');
 
+/** Zona/centro del CP para las cadenas con ofertas solo en parte de sus zonas. */
+const offerZoneOf = (store, cp) => (store === 'consum' ? consumZone(cp) : store === 'plusfresc' ? plusfrescCenter(cp) : null);
+
+function offerInZone(store, r, cp) {
+  const col = CATALOG_OFFERS[store].zone;
+  if (!col || !r[col]?.length) return true;
+  const zone = offerZoneOf(store, cp);
+  return zone != null && r[col].map(String).includes(zone);
+}
+
 /** Fila de cualquier súper → producto común del comparador. */
 export function toProduct(store, r, cp, lang) {
   // Precio regional: Carrefour por comunidad, Consum por zona, Plusfresc por centro.
@@ -140,15 +153,21 @@ export function toProduct(store, r, cp, lang) {
   else if (store === 'consum') regional = r.regional_prices?.[consumZone(cp)];
   else if (store === 'plusfresc') regional = r.center_prices?.[plusfrescCenter(cp)];
 
-  const price = Number(regional?.p ?? r.unit_price);
+  // Oferta (cadenas de CATALOG_OFFERS): se muestra el precio que se paga. En
+  // Consum y Plusfresc solo si vale en la zona o el centro del CP.
+  const current = Number(regional?.p ?? r.unit_price);
+  const offer = CATALOG_OFFERS[store] && offerInZone(store, r, cp) ? parseOffer(r, lang, current) : null;
+  const price = offer?.price ?? current;
   const ppuRaw = regional?.ppu ?? r.price_per_unit;
   const unit = regional?.ppuu ?? r.price_per_unit_unit;
-  // `price_format` a veces es solo el precio en texto ("1,77 €/u."): no es formato.
+  // `price_format` a veces es solo el precio en texto ("1,77 €/u.", "0.49 EUR/each"): no es formato.
   // Gadis publica "U · 1" o "P · 0.19": indican venta por unidad o peso, no formato.
-  const format = [r.packaging, regional?.pf, r.price_format].find((f) => f && !f.includes('€') && !/^[UP] · /.test(f)) ?? null;
+  const format = [r.packaging, regional?.pf, r.price_format].find((f) => f && !/€|\bEUR\b/.test(f) && !/^[UP] · /.test(f)) ?? null;
   // Froiz guarda la cantidad en vez del precio por unidad: nunca es fiable.
   const trusted = store !== 'froiz' && ppuRaw != null && Number(ppuRaw) > 0 && ['kg', 'l', 'ud'].includes(unit);
-  let ppu = trusted ? Number(ppuRaw) : null;
+  // El precio por unidad de la tabla es el del precio sin descuento.
+  const ratio = offer && Number(r.unit_price) > 0 ? price / Number(r.unit_price) : 1;
+  let ppu = trusted ? Math.round(Number(ppuRaw) * ratio * 100) / 100 : null;
   let ppuUnit = ppu != null ? unit : null;
   // Sin precio por unidad, o con uno incoherente con el formato, se calcula de él.
   const q = price > 0 ? parseQuantity(`${format ?? ''} ${r.display_name ?? ''}`) : null;
@@ -170,6 +189,7 @@ export function toProduct(store, r, cp, lang) {
     ppu,
     unit: ppuUnit,
     image: r.thumbnail ?? null,
+    offer,
   };
 }
 
@@ -401,9 +421,19 @@ export async function fetchCategoryTree(store, cp, signal, lang = 'es') {
 /** Ids a consultar para un nodo: sus subcategorías o, si no tiene, él mismo. */
 export const categoryIds = (node) => (node.children.length ? node.children.map((c) => c.id) : [node.id]);
 
-/** Una página de productos de un súper (entero o de unas categorías). */
-export async function fetchStoreProducts({ store, cp, ids, order = 'name', offset = 0, limit = 48, signal, lang = 'es' }) {
+/** Una página de productos de un súper (entero o de unas categorías).
+ *  `extraCols` añade columnas a la consulta; las filas tal cual van en `rows`
+ *  (las usa ofertasSeo para leer category_ids y ambos idiomas). */
+export async function fetchStoreProducts({ store, cp, ids, order = 'name', offset = 0, limit = 48, signal, lang = 'es', offersOnly = false, extraCols = '', dropsFrom = null }) {
   const filters = ['published=eq.true'];
+  const offers = CATALOG_OFFERS[store];
+  if (offersOnly && offers) {
+    filters.push(offers.filter);
+    const zone = offers.zone && offerZoneOf(store, cp);
+    if (offers.zone) filters.push(zone ? `${offers.zone}=cs.${encodeURIComponent(`{${zone}}`)}` : 'id=is.null');
+  }
+  // Bajadas de precio desde `dropsFrom` (ISO): ver src/lib/bajadas.js.
+  if (dropsFrom && hasDrops(store)) filters.push(...dropFilters(dropsFrom));
   const catalanNames = lang === 'ca' && CATALAN_PRODUCTS.has(store);
   const sorting = order === 'name' && catalanNames ? 'display_name_ca_norm.asc.nullslast,id.asc' : ORDERS[order];
   let source = `${TABLES[store]}_products`;
@@ -431,8 +461,8 @@ export async function fetchStoreProducts({ store, cp, ids, order = 'name', offse
   }
 
   const res = await restResponse(
-    `${source}?select=${columnsFor(store, lang)}&${filters.join('&')}&order=${sorting}&limit=${limit}&offset=${offset}`,
-    { signal, headers: ids?.length ? { Prefer: 'count=exact' } : undefined },
+    `${source}?select=${columnsFor(store, lang)}${extraCols ? `,${extraCols}` : ''}&${filters.join('&')}&order=${sorting}&limit=${limit}&offset=${offset}`,
+    { signal, headers: ids?.length || offersOnly || dropsFrom ? { Prefer: 'count=exact' } : undefined },
   );
   const total = Number(res.headers.get('content-range')?.split('/')[1]);
   const rows = await res.json();
@@ -440,5 +470,42 @@ export async function fetchStoreProducts({ store, cp, ids, order = 'name', offse
     products: rows.map((r, i) => ({ ...toProduct(store, r, cp, lang), rank: offset + i })).filter(valid),
     rowCount: rows.length,
     total: Number.isFinite(total) ? total : null,
+    rows,
   };
+}
+
+/** Número de productos en oferta de un súper en la zona del CP (null si la
+ *  cadena no tiene datos de ofertas). */
+/** Número de productos que han bajado de precio esta semana en la zona del CP
+ *  (null si la cadena no guarda historial de precios). */
+export async function countDrops(store, cp, signal) {
+  if (!hasDrops(store)) return null;
+  const res = await fetchStoreProducts({ store, cp, limit: 1, signal, dropsFrom: dropsSince() });
+  return res.total;
+}
+
+export async function countOffers(store, cp, signal) {
+  if (!CATALOG_OFFERS[store]) return null;
+  const res = await fetchStoreProducts({ store, cp, limit: 1, signal, offersOnly: true });
+  return res.total;
+}
+
+/** Fotos que decoran el banner de ofertas: los básicos elegidos a mano
+ *  (OFFER_STORES.bannerProducts) o, si la cadena no tiene, productos en oferta. */
+export async function fetchBannerImages(store, signal, cp = null) {
+  const ids = OFFER_STORES[store]?.bannerProducts;
+  if (!ids?.length) {
+    if (!cp || !CATALOG_OFFERS[store]) return [];
+    const res = await fetchStoreProducts({ store, cp, order: 'price', limit: 24, signal, offersOnly: true });
+    // Las de mayor descuento, con foto.
+    return res.products
+      .filter((p) => p.image)
+      .sort((a, b) => (b.offer?.pct ?? 0) - (a.offer?.pct ?? 0))
+      .slice(0, 5)
+      .map((p) => p.image);
+  }
+  const list = encodeURIComponent(`(${ids.join(',')})`);
+  const rows = await rest(`${OFFER_STORES[store].table}?select=id,thumbnail&published=eq.true&id=in.${list}`, { signal });
+  const byId = new Map((rows ?? []).map((r) => [String(r.id), r.thumbnail]));
+  return ids.map((id) => byId.get(id)).filter(Boolean);
 }

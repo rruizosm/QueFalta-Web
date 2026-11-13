@@ -1,0 +1,202 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import OffersBrowser from './OffersBrowser.jsx';
+import { REFERENCE_CP, STORE_BY_KEY } from '../../data/comparadorZonas.js';
+import { loadBajadas } from '../../lib/ofertasSeo.js';
+import { DROP_DAYS, dropsPagePath, dropsSlug } from '../../lib/bajadas.js';
+import { unpackOffer } from '../../lib/ofertas.js';
+import { catalogPath } from '../../lib/rutas.js';
+import '../../styles/comparador.css';
+import '../../styles/ofertas.css';
+
+// Bajadas de precio de la semana de un súper (/supermercados/<slug>/bajadas/ y
+// /ca/supermercats/<slug>/baixades/): banner verde, mayores bajadas y todos los productos
+// que han bajado con el diseño de la vista de súper (filtro por categoría).
+// Datos: loadBajadas (historial prev_unit_price / price_delta_pct de los syncs).
+
+interface Props { store: string; lang: 'es' | 'ca' }
+const { store, lang } = Astro.props;
+const ca = lang === 'ca';
+const cp = REFERENCE_CP[store];
+const data = await loadBajadas(store);
+const meta = STORE_BY_KEY[store];
+const name = meta.name;
+const slug = dropsSlug(store);
+const locale = ca ? 'ca-ES' : 'es-ES';
+
+const parse = (iso: string) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+};
+const fmt = (iso: string, opts: Intl.DateTimeFormatOptions) => parse(iso).toLocaleDateString(locale, opts);
+const updatedLong = fmt(data.updated, { day: 'numeric', month: 'long', year: 'numeric' });
+const month = `${fmt(data.updated, { month: 'long' }).replace(/^(de |d')/, '')} ${data.updated.slice(0, 4)}`;
+const n = (x: number) => x.toLocaleString(locale);
+
+const CITY: Record<string, string> = {
+  '28013': 'Madrid', '08006': 'Barcelona', '48001': 'Bilbao', '46001': 'València',
+  '15001': 'A Coruña', '41001': 'Sevilla', '35001': 'Las Palmas',
+};
+const ZONAL = new Set(['carrefour', 'consum', 'plusfresc', 'lidl', 'dia', 'mercadona']);
+const zoneCity = ZONAL.has(store) ? CITY[cp] : null;
+
+const BURST = Array.from({ length: 36 }, (_, i) => {
+  const r = i % 2 ? 40 : 50;
+  const a = (Math.PI * i) / 18 - Math.PI / 2;
+  return `${(50 + r * Math.cos(a)).toFixed(1)},${(50 + r * Math.sin(a)).toFixed(1)}`;
+}).join(' ');
+// Fotos del banner: las mayores bajadas que tengan foto.
+const stickers = data.top.map((r) => unpackOffer(r, store, lang).image).filter(Boolean).slice(0, 5);
+const maxPct = data.top[0]?.d ?? null;
+
+const catalogLink = catalogPath(store, lang);
+const dataUrl = `${dropsPagePath(store, 'es')}datos.json`;
+const thin = data.total < 10;
+
+const T = ca ? {
+  title: `Baixades de preu de ${name} d'aquesta setmana (${month}) | QuéFalta`,
+  description: `${n(data.total)} productes de ${name} han baixat de preu en els últims ${DROP_DAYS} dies${maxPct ? `, fins a un ${maxPct} %` : ''}. Per seccions i amb el preu d'abans, sense codi postal.`,
+  crumbs: ['Inici', 'Supermercats', name, 'Baixades de preu'],
+  h1: `Baixades de preu de ${name}`,
+  lead: `<strong>${n(data.total)} productes més barats</strong> que la setmana passada${zoneCity ? ` (preus de referència de ${zoneCity})` : ''} · actualitzat el ${updatedLong}`,
+  catalog: 'Veure tot el catàleg',
+  ribbon: 'Aquesta setmana',
+  big: 'Baixades',
+  small: 'de preu',
+  cta: `Veure els ${n(data.total)} productes`,
+  burst: 'més barats',
+  faqTitle: 'Preguntes freqüents',
+  faqs: [
+    { q: 'Com sabeu que un producte ha baixat de preu?', a: `QuéFalta llegeix cada setmana el catàleg de ${name} i compara el preu de cada producte amb el de la lectura anterior. Aquí hi ha els que han baixat en els últims ${DROP_DAYS} dies, amb el preu d'abans ratllat.` },
+    { q: 'És una oferta o una baixada definitiva?', a: `Pot ser qualsevol de les dues: una promoció temporal o un canvi de preu de ${name}. Si vols veure només les promocions, consulta les ofertes de la setmana.` },
+    ...(zoneCity ? [{ q: 'Són les mateixes a tot arreu?', a: `No sempre: ${name} pot tenir preus diferents segons la zona. Aquí es mostren els de ${zoneCity}; al <a href="${catalogLink}">catàleg del comparador</a> pots posar el teu codi postal.` }] : []),
+  ],
+  disclaimer: `Preus de la botiga en línia de ${name}, orientatius. QuéFalta és una app independent, no afiliada a ${name}.`,
+} : {
+  title: `Bajadas de precio de ${name} esta semana (${month}) | QuéFalta`,
+  description: `${n(data.total)} productos de ${name} han bajado de precio en los últimos ${DROP_DAYS} días${maxPct ? `, hasta un ${maxPct} %` : ''}. Por secciones y con el precio anterior, sin código postal.`,
+  crumbs: ['Inicio', 'Supermercados', name, 'Bajadas de precio'],
+  h1: `Bajadas de precio de ${name}`,
+  lead: `<strong>${n(data.total)} productos más baratos</strong> que la semana pasada${zoneCity ? ` (precios de referencia de ${zoneCity})` : ''} · actualizado el ${updatedLong}`,
+  catalog: 'Ver todo el catálogo',
+  ribbon: 'Esta semana',
+  big: 'Bajadas',
+  small: 'de precio',
+  cta: `Ver los ${n(data.total)} productos`,
+  burst: 'más baratos',
+  faqTitle: 'Preguntas frecuentes',
+  faqs: [
+    { q: '¿Cómo sabéis que un producto ha bajado de precio?', a: `QuéFalta lee cada semana el catálogo de ${name} y compara el precio de cada producto con el de la lectura anterior. Aquí están los que han bajado en los últimos ${DROP_DAYS} días, con el precio de antes tachado.` },
+    { q: '¿Es una oferta o una bajada definitiva?', a: `Puede ser cualquiera de las dos: una promoción temporal o un cambio de precio de ${name}. Si quieres ver solo las promociones, consulta las ofertas de la semana.` },
+    ...(zoneCity ? [{ q: '¿Son las mismas en todas partes?', a: `No siempre: ${name} puede tener precios distintos según la zona. Aquí se muestran los de ${zoneCity}; en el <a href="${catalogLink}">catálogo del comparador</a> puedes poner tu código postal.` }] : []),
+  ],
+  disclaimer: `Precios de la tienda online de ${name}, orientativos. QuéFalta es una app independiente, no afiliada a ${name}.`,
+};
+
+const crumbUrls = ca
+  ? ['/ca/comparador/', '/ca/supermercats/', `/ca/supermercats/${slug}/`, dropsPagePath(store, 'ca')]
+  : ['/', '/supermercados/', `/supermercados/${slug}/`, dropsPagePath(store, 'es')];
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: T.crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c, item: new URL(crumbUrls[i], Astro.site).href })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    inLanguage: lang,
+    dateModified: data.updated,
+    mainEntity: T.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') } })),
+  },
+];
+---
+
+<Layout
+  title={T.title}
+  description={T.description}
+  lang={lang}
+  noindex={thin}
+  alternates={{ es: dropsPagePath(store, 'es'), ca: dropsPagePath(store, 'ca') }}
+  jsonld={schemas}
+>
+  <div class="cmp of">
+    <div class="of-wrap">
+      <nav class="of-crumbs" aria-label={ca ? 'Ruta de navegació' : 'Ruta de navegación'}>
+        <ol>
+          {T.crumbs.map((c, i) => (
+            <li>{i === T.crumbs.length - 1 ? <span aria-current="page">{c}</span> : <a href={crumbUrls[i]}>{c}</a>}</li>
+          ))}
+        </ol>
+      </nav>
+
+      <header class="of-head">
+        <img class="of-logo" src={meta.logo} alt="" width="48" height="48" />
+        <div>
+          <h1>{T.h1}</h1>
+          <p set:html={T.lead} />
+        </div>
+        <a class="of-catalog" href={catalogLink}>{T.catalog} →</a>
+      </header>
+
+      {data.total > 0 && (
+        <section class="cmp-promo is-green of-flyer" aria-label={T.h1}>
+          <span class="cmp-promo-rays" aria-hidden="true"></span>
+          <span class="cmp-promo-dots" aria-hidden="true"></span>
+          <div class="cmp-promo-copy">
+            <span class="cmp-promo-ribbon">{T.ribbon}</span>
+            <p class="cmp-promo-title">
+              <span class="cmp-promo-big">{T.big}</span>
+              <span class="cmp-promo-small">{T.small}</span>
+            </p>
+            <div class="cmp-promo-actions">
+              <a class="cmp-promo-btn" href="#ofertas">{T.cta} ↓</a>
+            </div>
+          </div>
+          <div class="cmp-promo-art" aria-hidden="true">
+            <span class="cmp-promo-burst">
+              <svg viewBox="0 0 100 100"><polygon points={BURST} /></svg>
+              <span>
+                <strong>{n(data.total)}</strong>
+                <em>{T.burst}</em>
+              </span>
+            </span>
+            {stickers.map((src, i) => (
+              <span class={`cmp-promo-sticker is-${i + 1}`}>
+                <img src={src} alt="" loading="lazy" decoding="async" />
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+
+    <div id="ofertas" class="of-anchor">
+      <OffersBrowser
+        client:load
+        mode="bajadas"
+        lang={lang}
+        store={store}
+        categories={data.categories}
+        kinds={[]}
+        top={data.top}
+        initial={data.rows.slice(0, 60)}
+        total={data.total}
+        dataUrl={dataUrl}
+      />
+    </div>
+
+    <div class="of-wrap">
+      <section class="of-faq">
+        <h2>{T.faqTitle}</h2>
+        {T.faqs.map((f, i) => (
+          <details open={i === 0}>
+            <summary>{f.q}</summary>
+            <p set:html={f.a} />
+          </details>
+        ))}
+      </section>
+      <p class="of-disclaimer">{T.disclaimer}</p>
+    </div>
+  </div>
+</Layout>

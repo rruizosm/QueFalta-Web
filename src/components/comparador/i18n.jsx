@@ -4,7 +4,7 @@ import { REGION_NAMES } from '../../data/comparadorZonas.js';
 // Textos del comparador en castellano y catalán. Los componentes los leen con
 // useT(); el idioma lo fija la página (<Comparador lang="ca" />).
 
-const REGION_NAMES_CA = {
+export const REGION_NAMES_CA = {
   ...REGION_NAMES,
   'ES-AN': 'Andalusia', 'ES-AS': 'Astúries', 'ES-CN': 'Canàries', 'ES-CM': 'Castella-la Manxa',
   'ES-CL': 'Castella i Lleó', 'ES-CT': 'Catalunya', 'ES-MD': 'Comunitat de Madrid',
@@ -41,6 +41,8 @@ const es = {
   cpCta: 'Ver precios de mi zona',
   cpPrivacy: 'Solo lo usamos para filtrar supermercados. Se queda en este dispositivo.',
   notInZone: (name) => `${name} no opera en tu código postal. Estos son los supermercados de tu zona.`,
+  goCatalog: (name) => `Ver el catálogo de ${name}`,
+  goOffers: (name) => `Ver las ofertas de ${name}`,
 
   // Panel de comparación
   cmpFailed: 'No hemos podido comparar',
@@ -217,6 +219,20 @@ const es = {
   allStores: 'Todos los supermercados',
   pricesFor: (cp, region) => `Precios para ${cp} · ${region}`,
   refStore: (label) => `Tienda de referencia: ${label}`,
+  refPrices: (region) => `Precios de referencia de ${region}`,
+  setCp: 'Poner mi código postal',
+  offersBanner: (n) => `${n.toLocaleString('es-ES')} productos en oferta esta semana`,
+  offersPage: 'Ver la página de ofertas',
+  offersOnly: 'Ver solo ofertas',
+  offersAll: 'Ver todo',
+  offersIn: (cat) => (cat ? `Ofertas en ${cat}` : 'Ofertas de esta semana'),
+  promoAria: (n) => `Ofertas de la semana: ${n.toLocaleString('es-ES')} productos en oferta`,
+  promoRibbon: 'Ahorra en tu compra',
+  promoBig: 'Ofertas',
+  dropsTitle: 'Bajadas de precio',
+  dropsSub: (n) => `${n.toLocaleString('es-ES')} ${n === 1 ? 'producto más barato' : 'productos más baratos'} esta semana`,
+  promoSmall: 'de la semana',
+  promoBurst: 'en oferta',
   searchIn: (store) => `Buscar en ${store}`,
   categoriesLabel: 'Categorías',
   sortName: 'Nombre',
@@ -254,6 +270,8 @@ const ca = {
   cpCta: 'Veure els preus de la meva zona',
   cpPrivacy: 'Només el fem servir per filtrar supermercats. Es queda en aquest dispositiu.',
   notInZone: (name) => `${name} no opera al teu codi postal. Aquests són els supermercats de la teva zona.`,
+  goCatalog: (name) => `Veure el catàleg de ${name}`,
+  goOffers: (name) => `Veure les ofertes de ${name}`,
 
   cmpFailed: 'No hem pogut comparar',
   cmpLoading: 'Buscant a la teva zona…',
@@ -424,6 +442,20 @@ const ca = {
   allStores: 'Tots els supermercats',
   pricesFor: (cp, region) => `Preus per a ${cp} · ${region}`,
   refStore: (label) => `Botiga de referència: ${label}`,
+  refPrices: (region) => `Preus de referència de ${region}`,
+  setCp: 'Posar el meu codi postal',
+  offersBanner: (n) => `${n.toLocaleString('ca-ES')} productes en oferta aquesta setmana`,
+  offersPage: "Veure la pàgina d'ofertes",
+  offersOnly: 'Veure només ofertes',
+  offersAll: 'Veure-ho tot',
+  offersIn: (cat) => (cat ? `Ofertes a ${cat}` : "Ofertes d'aquesta setmana"),
+  promoAria: (n) => `Ofertes de la setmana: ${n.toLocaleString('ca-ES')} productes en oferta`,
+  promoRibbon: 'Estalvia a la compra',
+  promoBig: 'Ofertes',
+  dropsTitle: 'Baixades de preu',
+  dropsSub: (n) => `${n.toLocaleString('ca-ES')} ${n === 1 ? 'producte més barat' : 'productes més barats'} aquesta setmana`,
+  promoSmall: 'de la setmana',
+  promoBurst: 'en oferta',
   searchIn: (store) => `Buscar a ${store}`,
   categoriesLabel: 'Categories',
   sortName: 'Nom',

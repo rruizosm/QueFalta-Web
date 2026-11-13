@@ -31,7 +31,7 @@ export const STORES = [
 export const STORE_BY_KEY = Object.fromEntries(STORES.map((s) => [s.key, s]));
 
 /** Huella de cada súper. null = nacional. */
-const STORE_REGIONS = {
+export const STORE_REGIONS = {
   mercadona: null,
   carrefour: null,
   dia: null,

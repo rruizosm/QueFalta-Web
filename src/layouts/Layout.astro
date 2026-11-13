@@ -183,9 +183,10 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
           </a>
           <nav class="footer-links">
             <a href="/precios/">{T.precios}</a>
+            <a href={lang === 'ca' ? '/ca/supermercats/bonpreu/ofertes/' : '/supermercados/bonpreu/ofertas/'}>{lang === 'ca' ? 'Ofertes Bonpreu' : 'Ofertas Bonpreu'}</a>
             <a href="/productos/">{T.productos}</a>
             <a href="/novedades/">{T.novedades}</a>
-            <a href="/supermercados/">{T.supermercados}</a>
+            <a href={lang === 'ca' ? '/ca/supermercats/' : '/supermercados/'}>{T.supermercados}</a>
             <a href={T.preguntasHref}>{T.preguntas}</a>
             <a href="/apoyar/">{T.apoyar}</a>
             <a href="/privacidad/">{T.privacidad}</a>

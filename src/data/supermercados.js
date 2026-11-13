@@ -15,9 +15,9 @@ export const STORES = [
     slug: 'mercadona',
     name: 'Mercadona',
     logo: '/stores/mercadona.png',
-    title: 'Mercadona en QuéFalta — la lista de la compra con sus precios reales',
+    title: 'Catálogo de Mercadona con todos sus precios reales | QuéFalta',
     description:
-      'Haz la lista de la compra de Mercadona con su catálogo completo: precios reales, ficha con ingredientes y alérgenos, y nombres también en catalán. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo completo de Mercadona: precios reales, ficha con ingredientes y alérgenos, y nombres también en catalán. Y haz tu lista compartida, gratis.',
     summary:
       'El catálogo completo con precios reales, la ficha de producto más detallada y nombres también en catalán.',
     intro:
@@ -43,7 +43,7 @@ export const STORES = [
     slug: 'lidl',
     name: 'Lidl',
     logo: '/stores/lidl.png',
-    title: 'Lidl en QuéFalta — catálogo, ofertas y precios por tienda',
+    title: 'Catálogo y ofertas de Lidl con precios por tienda | QuéFalta',
     description:
       'Consulta Lidl con QuéFalta Plus: catálogo alimentario, precios, ofertas, novedades y cambios de precio de la tienda que elijas. Añade productos a tu lista compartida.',
     summary:
@@ -71,9 +71,9 @@ export const STORES = [
     slug: 'carrefour',
     name: 'Carrefour',
     logo: '/stores/carrefour.png',
-    title: 'Carrefour en QuéFalta — más de 15.000 productos con su precio',
+    title: 'Catálogo y ofertas de Carrefour: más de 15.000 productos | QuéFalta',
     description:
-      'Haz la lista de la compra de Carrefour con más de 15.000 productos de su supermercado online: precios actualizados cada semana y ficha con ingredientes y alérgenos. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo de Carrefour, con más de 15.000 productos de su supermercado online: precios actualizados cada semana y ficha con ingredientes y alérgenos. Y haz tu lista compartida, gratis.',
     summary:
       'El catálogo más amplio de la app: más de 15.000 productos del supermercado online, con ficha detallada.',
     intro:
@@ -98,9 +98,9 @@ export const STORES = [
     slug: 'consum',
     name: 'Consum',
     logo: '/stores/consum.png',
-    title: 'Consum en QuéFalta — la lista de la compra con sus precios',
+    title: 'Catálogo y ofertas de Consum con precios por zona | QuéFalta',
     description:
-      'Haz la lista de la compra de Consum con en torno a 9.000 productos de su tienda online: precio, imagen y formato, actualizados cada semana. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo de Consum, con en torno a 9.000 productos de su tienda online: precio, imagen y formato, actualizados cada semana. Y haz tu lista compartida, gratis.',
     summary:
       'En torno a 9.000 productos de la tienda online, con precio y formato siempre visibles.',
     intro:
@@ -125,9 +125,9 @@ export const STORES = [
     slug: 'dia',
     name: 'Dia',
     logo: '/stores/dia.png',
-    title: 'Dia en QuéFalta — la lista de la compra con sus precios',
+    title: 'Catálogo de Dia: más de 5.000 productos con precio | QuéFalta',
     description:
-      'Haz la lista de la compra de Dia con más de 5.000 productos de su catálogo online, marcas propias incluidas: precios semanales y ficha con ingredientes y nutrición. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo de Dia, con más de 5.000 productos de su catálogo online, marcas propias incluidas: precios semanales y ficha con ingredientes y nutrición. Y haz tu lista compartida, gratis.',
     summary:
       'Más de 5.000 productos, marcas propias incluidas, con ficha de ingredientes y nutrición.',
     intro:
@@ -151,29 +151,34 @@ export const STORES = [
   {
     slug: 'bonpreu',
     name: 'Bonpreu i Esclat',
+    updated: '2026-11-13',
     logo: '/stores/bonpreuesclat.png',
-    title: 'Catálogo y precios de Bonpreu i Esclat en la app QuéFalta',
-    heading: 'Catálogo y precios de Bonpreu i Esclat en QuéFalta',
+    title: 'Catálogo y ofertas de Bonpreu i Esclat de esta semana | QuéFalta',
+    // h1 del catálogo de arriba; el bloque informativo usa «… en QuéFalta».
+    catalogHeading: 'Catálogo y ofertas de Bonpreu i Esclat',
     description:
-      'Consulta productos y precios de Bonpreu i Esclat en la app QuéFalta. Prepara una lista compartida en catalán o castellano, para iPhone y Android.',
+      'Consulta el catálogo de Bonpreu i Esclat y todas sus ofertas de esta semana sin poner el código postal: precios rebajados, 2ª unidad, 3x2 y lotes. En catalán y castellano.',
     summary:
-      'El catálogo de la tienda online del grupo Bon Preu, en catalán y castellano de forma nativa.',
+      'El catálogo de la tienda online del grupo Bon Preu y sus ofertas de la semana, en catalán y castellano.',
     intro:
-      'Con QuéFalta puedes consultar productos y precios de referencia de Bonpreu i Esclat en el móvil y añadirlos a una lista de la compra compartida. El catálogo está disponible en catalán y castellano. Tu pareja, familia o compañeros de piso ven los cambios en tiempo real, desde iPhone o Android.',
-    notice: 'El catálogo se consulta dentro de la app QuéFalta. Esta página explica cómo usarlo; no es la tienda online ni el folleto oficial de Bonpreu i Esclat.',
+      'En QuéFalta puedes ver las ofertas de esta semana de Bonpreu i Esclat y navegar por todo su catálogo con precios, directamente en la web y sin poner el código postal. Con la app, además, añades los productos a una lista de la compra compartida que tu pareja, familia o compañeros de piso ven en tiempo real.',
+    links: [
+      { href: '/supermercados/bonpreu/ofertas/', label: 'Ver las ofertas de esta semana', primary: true },
+      { href: '#catalogo', label: 'Ver todo el catálogo' },
+    ],
     guide: {
       title: 'Cómo preparar tu lista de la compra de Bonpreu',
       steps: [
-        { title: 'Elige Bonpreu i Esclat', text: 'Instala QuéFalta, inicia sesión y selecciona Bonpreu i Esclat entre tus supermercados para encontrar sus productos en el catálogo.' },
-        { title: 'Busca y revisa los productos', text: 'Busca por nombre o navega por categorías. Comprueba el formato y el precio de referencia antes de añadir cada producto a la lista.' },
-        { title: 'Comparte la lista con tu grupo', text: 'Crea un grupo e invita a tu gente por enlace o por @usuario. Ajustad las cantidades y consultad el total estimado de la cesta.' },
+        { title: 'Mira las ofertas de la semana', text: 'En la <a href="/supermercados/bonpreu/ofertas/">página de ofertas de Bonpreu i Esclat</a> tienes todos los productos rebajados, con 2ª unidad con descuento, 3x2 o lotes, ordenados por sección.' },
+        { title: 'Busca y revisa los productos', text: 'Busca por nombre o navega por categorías en el <a href="#catalogo">catálogo de Bonpreu i Esclat</a> de arriba. Comprueba el formato y el precio antes de añadir cada producto a la lista.' },
+        { title: 'Comparte la lista con tu grupo', text: 'En la app QuéFalta, crea un grupo e invita a tu gente por enlace o por @usuario. Ajustad las cantidades y consultad el total estimado de la cesta.' },
         { title: 'Marca lo que ya habéis recogido', text: 'En el supermercado, marcad los productos que ya están en el carrito. El resto del grupo verá los cambios en su móvil.' },
       ],
     },
     pricing: {
-      title: 'De dónde salen los precios y qué cobertura tienen',
+      title: 'De dónde salen los precios y las ofertas',
       paragraphs: [
-        'Los datos proceden de la tienda online del grupo Bon Preu y se sincronizan semanalmente. QuéFalta agrupa Bonpreu i Esclat en un único supermercado dentro de la app.',
+        'Los datos proceden de la tienda online del grupo Bon Preu y se actualizan cada semana, ofertas incluidas. QuéFalta agrupa Bonpreu i Esclat en un único supermercado.',
         'El catálogo online sirve como referencia para preparar la compra. No garantiza que cada producto esté disponible en todos los establecimientos, ni que el precio coincida con el de una tienda concreta. Comprueba siempre el precio y las condiciones de la promoción en el punto de venta.',
       ],
     },
@@ -184,8 +189,8 @@ export const STORES = [
     ],
     faqs: [
       {
-        q: '¿Dónde consulto el catálogo y los precios de Bonpreu en QuéFalta?',
-        a: 'Dentro de la app para iPhone o Android: selecciona Bonpreu i Esclat y busca los productos en el catálogo. Puedes ver el formato y el precio de referencia y añadirlos a una lista compartida. Esta web presenta la función; no muestra un catálogo de productos navegable.',
+        q: '¿Dónde consulto el catálogo y las ofertas de Bonpreu?',
+        a: 'Aquí mismo, en la web: el <a href="/supermercados/bonpreu/">catálogo de Bonpreu i Esclat</a> se navega por secciones y las <a href="/supermercados/bonpreu/ofertas/">ofertas de esta semana</a> tienen su propia página. No hace falta registrarse ni poner el código postal. En la app para iPhone o Android puedes, además, añadir los productos a una lista compartida.',
       },
       {
         q: '¿Puedo ver el catálogo de Bonpreu en catalán?',
@@ -196,8 +201,8 @@ export const STORES = [
         a: 'Sí. Las dos enseñas del grupo Bon Preu comparten tienda online, y QuéFalta las muestra como un único supermercado: miles de productos con su precio y su formato, actualizados cada semana.',
       },
       {
-        q: '¿Es el catálogo de productos lo mismo que el folleto de ofertas?',
-        a: 'No. El catálogo de QuéFalta te permite buscar productos y preparar tu lista. Si buscas el folleto vigente, las ofertas oficiales o un establecimiento concreto, consulta la <a href="https://www.bonpreuesclat.cat/">web oficial de Bonpreu i Esclat</a>. QuéFalta es una app independiente.',
+        q: '¿Dónde está el folleto de Bonpreu i Esclat de esta semana?',
+        a: 'Bonpreu i Esclat publica su folleto cada quince días en su <a href="https://ofertes.bonpreuesclat.cat/.ofertes/">visor oficial de ofertas</a>. En QuéFalta tienes las <a href="/supermercados/bonpreu/ofertas/">ofertas de esta semana de su tienda online</a> en una sola página, por secciones y con el precio que pagas, para compararlas con otros supermercados. QuéFalta es una app independiente.',
       },
       {
         q: '¿Puedo pagar o pedir la compra de Bonpreu desde QuéFalta?',
@@ -213,9 +218,9 @@ export const STORES = [
     slug: 'bonarea',
     name: 'bonÀrea',
     logo: '/stores/bonarea.png',
-    title: 'bonÀrea en QuéFalta — catálogo y ficha en castellano y catalán',
+    title: 'Catálogo de bonÀrea con ficha en castellano y catalán | QuéFalta',
     description:
-      'Haz la lista de la compra de bonÀrea con el catálogo de su tienda online: precio, imagen, formato y ficha bilingüe con ingredientes, alérgenos y nutrición. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo de la tienda online de bonÀrea: precio, imagen, formato y ficha bilingüe con ingredientes, alérgenos y nutrición. Y haz tu lista compartida, gratis.',
     summary:
       'Catálogo y ficha de producto bilingües (castellano y catalán), con ingredientes y nutrición.',
     intro:
@@ -240,9 +245,9 @@ export const STORES = [
     slug: 'sorli',
     name: 'Sorli',
     logo: '/stores/sorli.png',
-    title: 'Sorli en QuéFalta — más de 9.500 productos en castellano y catalán',
+    title: 'Catálogo y ofertas de Sorli: más de 9.500 productos | QuéFalta',
     description:
-      'Haz la lista de la compra de Sorli con más de 9.500 productos de Sorliclic: precios, formatos, ofertas y nombres en castellano y catalán. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo de Sorli, con más de 9.500 productos de Sorliclic: precios, formatos, ofertas y nombres en castellano y catalán. Y haz tu lista compartida, gratis.',
     summary:
       'Más de 9.500 productos de Sorliclic, en castellano y catalán, con precios y ofertas.',
     intro:
@@ -268,9 +273,9 @@ export const STORES = [
     slug: 'eroski',
     name: 'Eroski',
     logo: '/stores/eroski.png',
-    title: 'Eroski en QuéFalta — más de 22.000 productos con precio y ficha',
+    title: 'Catálogo y ofertas de Eroski: más de 22.000 productos | QuéFalta',
     description:
-      'Haz la lista de la compra de Eroski con más de 22.000 productos: precios, ofertas y fichas con ingredientes, nutrición y conservación. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo de Eroski, con más de 22.000 productos: precios, ofertas y fichas con ingredientes, nutrición y conservación. Y haz tu lista compartida, gratis.',
     summary:
       'Más de 22.000 productos, con ofertas y fichas de ingredientes, nutrición y conservación.',
     intro:
@@ -296,9 +301,9 @@ export const STORES = [
     slug: 'caprabo',
     name: 'Caprabo',
     logo: '/stores/caprabo.png',
-    title: 'Caprabo en QuéFalta — más de 12.000 productos con precio y ficha',
+    title: 'Catálogo y ofertas de Caprabo: más de 12.000 productos | QuéFalta',
     description:
-      'Haz la lista de la compra de Caprabo con más de 12.000 productos: precios, ofertas y fichas con ingredientes, nutrición y conservación. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo de Caprabo, con más de 12.000 productos: precios, ofertas y fichas con ingredientes, nutrición y conservación. Y haz tu lista compartida, gratis.',
     summary:
       'Más de 12.000 productos de Caprabo, con promociones y ficha detallada cuando está disponible.',
     intro:
@@ -324,9 +329,9 @@ export const STORES = [
     slug: 'condis',
     name: 'Condis',
     logo: '/stores/condis.png',
-    title: 'Condis en QuéFalta — más de 7.500 productos en castellano y catalán',
+    title: 'Catálogo y ofertas de Condis en castellano y catalán | QuéFalta',
     description:
-      'Haz la lista de la compra de Condis con más de 7.500 productos: precios, ofertas y fichas en castellano y catalán. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo de Condis, con más de 7.500 productos: precios, ofertas y fichas en castellano y catalán. Y haz tu lista compartida, gratis.',
     summary:
       'Más de 7.500 productos, bilingües y con ficha de ingredientes y nutrición cuando se publica.',
     intro:
@@ -352,9 +357,9 @@ export const STORES = [
     slug: 'ametller',
     name: 'Ametller Origen',
     logo: '/stores/ametller.png',
-    title: 'Ametller Origen en QuéFalta — más de 3.000 productos bilingües',
+    title: 'Catálogo y ofertas de Ametller Origen: más de 3.000 productos | QuéFalta',
     description:
-      'Haz la lista de la compra de Ametller Origen con más de 3.000 productos en castellano y catalán, precios, ofertas e información nutricional. Gratis y compartida.',
+      'Consulta gratis en la web el catálogo de Ametller Origen, con más de 3.000 productos en castellano y catalán, precios, ofertas e información nutricional. Y haz tu lista compartida, gratis.',
     summary:
       'Más de 3.000 productos en castellano y catalán, con ofertas y ficha nutricional detallada.',
     intro:
@@ -380,9 +385,9 @@ export const STORES = [
     slug: 'aldi',
     name: 'Aldi',
     logo: '/stores/aldi.png',
-    title: 'Aldi en QuéFalta — más de 1.800 productos y ofertas con precio',
+    title: 'Catálogo y ofertas de Aldi: más de 1.800 productos | QuéFalta',
     description:
-      'Haz la lista de la compra de Aldi con más de 1.800 productos de su catálogo online: precio, formato, precio por unidad y ofertas. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo de Aldi, con más de 1.800 productos de su catálogo online: precio, formato, precio por unidad y ofertas. Y haz tu lista compartida, gratis.',
     summary:
       'Más de 1.800 productos del catálogo online, con precio por unidad y ofertas identificadas.',
     intro:
@@ -408,9 +413,9 @@ export const STORES = [
     slug: 'hiperdino',
     name: 'HiperDino',
     logo: '/stores/hiperdino.jpg',
-    title: 'HiperDino en QuéFalta — más de 14.000 productos para Canarias',
+    title: 'Catálogo y ofertas de HiperDino para Canarias | QuéFalta',
     description:
-      'Haz la lista de la compra de HiperDino con más de 14.000 productos de su supermercado online para Canarias: precios, formatos y ofertas. Compartida y gratis.',
+      'Consulta gratis en la web el catálogo de HiperDino, con más de 14.000 productos de su supermercado online para Canarias: precios, formatos y ofertas. Y haz tu lista compartida, gratis.',
     summary:
       'Más de 14.000 productos del supermercado online de referencia en Canarias, con precios y ofertas.',
     intro:
@@ -436,9 +441,9 @@ export const STORES = [
     slug: 'alcampo',
     name: 'Alcampo',
     logo: '/stores/alcampo.png',
-    title: 'Alcampo en QuéFalta — más de 16.000 productos con precio y ficha',
+    title: 'Catálogo de Alcampo: más de 16.000 productos con precio | QuéFalta',
     description:
-      'Haz la lista de la compra de Alcampo con más de 16.000 productos: precios, ofertas y fichas con ingredientes, nutrición y origen. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo de Alcampo, con más de 16.000 productos: precios, ofertas y fichas con ingredientes, nutrición y origen. Y haz tu lista compartida, gratis.',
     summary:
       'Más de 16.000 productos, con ofertas y fichas de ingredientes, nutrición, conservación y origen.',
     intro:
@@ -464,9 +469,9 @@ export const STORES = [
     slug: 'plusfresc',
     name: 'Plusfresc',
     logo: '/stores/plusfresc.png',
-    title: 'Plusfresc en QuéFalta — cerca de 8.000 productos en castellano y catalán',
+    title: 'Catálogo y ofertas de Plusfresc en castellano y catalán | QuéFalta',
     description:
-      'Haz la lista de la compra de Plusfresc con cerca de 8.000 productos en castellano y catalán, precios por zona, ofertas y ficha nutricional. Gratis y compartida.',
+      'Consulta gratis en la web el catálogo de Plusfresc, con cerca de 8.000 productos en castellano y catalán, precios por zona, ofertas y ficha nutricional. Y haz tu lista compartida, gratis.',
     summary:
       'Cerca de 8.000 productos bilingües, con surtido y precios adaptados al centro de compra.',
     intro:
@@ -492,9 +497,9 @@ export const STORES = [
     slug: 'gadis',
     name: 'Gadis',
     logo: '/stores/gadis.png',
-    title: 'Gadis en QuéFalta — más de 10.000 productos con precios y ofertas',
+    title: 'Catálogo de Gadis: más de 10.000 productos con precio | QuéFalta',
     description:
-      'Haz la lista de la compra de Gadis con más de 10.000 productos de Gadisline: precios, formatos, ofertas y precio por kilo, litro o unidad. Compartida y gratis.',
+      'Consulta gratis en la web el catálogo de Gadis, con más de 10.000 productos de Gadisline: precios, formatos, ofertas y precio por kilo, litro o unidad. Y haz tu lista compartida, gratis.',
     summary:
       'Más de 10.000 productos de Gadisline, con precios, formatos y promociones para Galicia y Castilla y León.',
     intro:
@@ -520,9 +525,9 @@ export const STORES = [
     slug: 'froiz',
     name: 'Froiz',
     logo: '/stores/froiz.jpg',
-    title: 'Froiz en QuéFalta — más de 6.800 productos con precios y ofertas',
+    title: 'Catálogo y ofertas de Froiz: más de 6.800 productos | QuéFalta',
     description:
-      'Haz la lista de la compra de Froiz con más de 6.800 productos: precios, imágenes, categorías, formatos y promociones. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo de Froiz, con más de 6.800 productos: precios, imágenes, categorías, formatos y promociones. Y haz tu lista compartida, gratis.',
     summary:
       'Más de 6.800 productos con imágenes, categorías, precios y promociones en cuatro comunidades.',
     intro:
@@ -548,9 +553,9 @@ export const STORES = [
     slug: 'ahorramas',
     name: 'Ahorramás',
     logo: '/stores/ahorramas.jpg',
-    title: 'Ahorramás en QuéFalta — más de 7.400 productos y ofertas',
+    title: 'Catálogo y ofertas de Ahorramás: más de 7.400 productos | QuéFalta',
     description:
-      'Haz la lista de la compra de Ahorramás con más de 7.400 productos: precios, formatos, precio por unidad y ofertas. Compartida en tiempo real y gratis.',
+      'Consulta gratis en la web el catálogo de Ahorramás, con más de 7.400 productos: precios, formatos, precio por unidad y ofertas. Y haz tu lista compartida, gratis.',
     summary:
       'Más de 7.400 productos con precios, formatos y promociones para Madrid y las dos Castillas.',
     intro:
@@ -576,7 +581,7 @@ export const STORES = [
     slug: 'bm',
     name: 'BM',
     logo: '/stores/bm.png',
-    title: 'BM en QuéFalta — catálogo, precios y ofertas por zona',
+    title: 'Catálogo y ofertas de BM Supermercados por zona | QuéFalta',
     description:
       'Consulta el catálogo de BM en QuéFalta: productos, precios y ofertas de la zona de referencia de tu código postal. Prepara tu lista de la compra compartida.',
     summary:
@@ -604,7 +609,7 @@ export const STORES = [
     slug: 'eljamon',
     name: 'El Jamón',
     logo: '/stores/eljamon.png',
-    title: 'El Jamón en QuéFalta — catálogo, precios y promociones',
+    title: 'Catálogo y ofertas de Supermercados El Jamón | QuéFalta',
     description:
       'Consulta productos, precios y promociones de Supermercados El Jamón en QuéFalta. Catálogo de referencia para Andalucía y lista de la compra compartida.',
     summary:

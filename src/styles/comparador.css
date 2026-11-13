@@ -58,6 +58,9 @@ html.cmp-locked, html.cmp-locked body { overflow: hidden; }
 }
 .cmp-badge-best { color: #fff; background: var(--cmp-ok); }
 .cmp-badge-mine { color: var(--accent); background: var(--accent-light); }
+.cmp-badge-offer { color: #fff; background: #e0412f; }
+.cmp-card-media .cmp-badge.cmp-badge-offer { top: auto; right: auto; bottom: 12px; left: 12px; font-size: 12px; box-shadow: 0 6px 14px -6px rgba(224, 65, 47, 0.7); }
+.cmp-card-price s { font-size: 13.5px; font-weight: 600; color: var(--ink-faint); }
 
 .cmp-logo {
   display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center;
@@ -145,6 +148,9 @@ html.cmp-locked, html.cmp-locked body { overflow: hidden; }
 }
 .cmp-suggest button svg { color: var(--ink-faint); }
 .cmp-suggest button:hover { background: var(--paper-2); }
+.cmp-suggest .cmp-suggest-store { font-weight: 700; }
+.cmp-suggest-store img { width: 22px; height: 22px; object-fit: contain; border-radius: 6px; background: var(--cmp-logo-bg); }
+.cmp-suggest .cmp-suggest-store .cmp-suggest-go { margin-left: auto; color: var(--accent); }
 
 .cmp-popular { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin-top: 18px; }
 .cmp-popular > span { font-size: 13.5px; color: var(--ink-faint); margin-right: 2px; }
@@ -614,6 +620,133 @@ html.cmp-locked, html.cmp-locked body { overflow: hidden; }
 .cmp-store-main .cmp-grid-cards { margin-top: 20px; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); }
 .cmp-store-main .cmp-empty { margin-top: 20px; }
 
+/* Banner de ofertas de la semana (vista de súper): rotulado tipo folleto con
+   fotos de productos básicos como pegatinas. Rojo en claro y en oscuro. */
+.cmp-promo {
+  --red: #e3262f;
+  --red-deep: #a90f19;
+  --yellow: #ffd23f;
+  position: relative; isolation: isolate; overflow: hidden;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: center;
+  min-height: 250px; margin-bottom: 26px; padding: 26px 0 26px 34px; border-radius: 26px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 74% 46%, #ff6a55 0, rgba(255, 106, 85, 0) 52%),
+    linear-gradient(135deg, var(--red) 0%, #d11d27 45%, var(--red-deep) 100%);
+  box-shadow: 0 22px 48px -26px rgba(169, 15, 25, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+/* Rayos de sol detrás de las fotos y confeti de puntos. */
+.cmp-promo-rays {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: repeating-conic-gradient(from 0deg at 74% 50%, rgba(255, 255, 255, 0.10) 0deg 7deg, rgba(255, 255, 255, 0) 7deg 15deg);
+  -webkit-mask-image: radial-gradient(circle at 74% 50%, #000 0, transparent 70%);
+          mask-image: radial-gradient(circle at 74% 50%, #000 0, transparent 70%);
+}
+.cmp-promo-dots {
+  position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0.55;
+  background-image:
+    radial-gradient(circle, var(--yellow) 0 2.5px, transparent 3px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.85) 0 2px, transparent 2.5px);
+  background-size: 70px 70px, 46px 46px;
+  background-position: 12px 18px, 30px 6px;
+  -webkit-mask-image: linear-gradient(100deg, #000 0%, transparent 38%, transparent 62%, #000 100%);
+          mask-image: linear-gradient(100deg, #000 0%, transparent 38%, transparent 62%, #000 100%);
+}
+
+.cmp-promo-copy { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; }
+.cmp-promo-ribbon {
+  display: inline-block; rotate: -5deg; margin-left: 4px;
+  padding: 7px 20px 7px 16px; background: var(--yellow); color: var(--red-deep);
+  font: 800 13px/1 var(--geo); letter-spacing: 0.08em; text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 50%, 100% 100%, 0 100%);
+  box-shadow: 0 6px 14px -8px rgba(0, 0, 0, 0.5);
+}
+.cmp-promo-title { display: flex; flex-direction: column; margin-top: 6px; rotate: -5deg; transform-origin: left center; }
+.cmp-promo-big {
+  font: 800 clamp(58px, 7.2vw, 96px)/0.9 var(--geo); letter-spacing: -0.045em; text-transform: uppercase;
+  color: #fff;
+  text-shadow: 2px 2px 0 var(--red-deep), 4px 4px 0 var(--red-deep), 6px 6px 0 #7d0a12, 10px 14px 22px rgba(0, 0, 0, 0.28);
+}
+.cmp-promo-small {
+  align-self: flex-end; margin: 2px -6px 0 0; transform: skewX(-12deg);
+  font: italic 800 clamp(24px, 2.6vw, 34px)/1 var(--geo); letter-spacing: -0.02em; color: var(--yellow);
+  text-shadow: 2px 2px 0 var(--red-deep), 4px 5px 0 rgba(0, 0, 0, 0.18);
+}
+.cmp-promo-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; margin-top: 26px; }
+.cmp-promo-btn {
+  cursor: pointer; min-height: 46px; padding: 0 22px; border: 0; border-radius: 14px;
+  background: #fff; color: var(--red); font: 800 15px/1 var(--geo);
+  box-shadow: 0 4px 0 #f1b7b7, 0 12px 22px -12px rgba(0, 0, 0, 0.55);
+  transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+.cmp-promo-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #f1b7b7, 0 16px 26px -12px rgba(0, 0, 0, 0.55); }
+.cmp-promo-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #f1b7b7, 0 8px 16px -10px rgba(0, 0, 0, 0.5); }
+.cmp-promo.is-on .cmp-promo-btn { background: var(--yellow); color: var(--red-deep); box-shadow: 0 4px 0 #c79a12, 0 12px 22px -12px rgba(0, 0, 0, 0.55); }
+.cmp-promo-link { font: 700 14.5px/1.2 var(--geo); color: #fff; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(255, 255, 255, 0.5); }
+.cmp-promo-link:hover { text-decoration-color: #fff; }
+
+/* Fotos como pegatinas ladeadas, flotando un poco. */
+.cmp-promo-art { position: relative; height: 250px; margin: -26px 0; }
+.cmp-promo-sticker {
+  --s: 124px;
+  position: absolute; width: var(--s); height: var(--s); padding: 9px;
+  background: #fff; border-radius: 20px;
+  box-shadow: 0 16px 28px -14px rgba(60, 0, 6, 0.75), 0 0 0 3px rgba(255, 255, 255, 0.35);
+  animation: cmp-promo-float 4.8s ease-in-out infinite;
+}
+.cmp-promo-sticker img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.cmp-promo-sticker.is-1 { --s: 136px; left: 2%;  top: 22%; rotate: -9deg; animation-delay: -0.4s; z-index: 2; }
+.cmp-promo-sticker.is-2 { --s: 122px; left: 27%; top: 3%;  rotate: 6deg;  animation-delay: -1.6s; }
+.cmp-promo-sticker.is-3 { --s: 132px; left: 49%; top: 40%; rotate: -5deg; animation-delay: -2.8s; z-index: 3; }
+.cmp-promo-sticker.is-4 { --s: 108px; left: 24%; top: 58%; rotate: 10deg; animation-delay: -3.4s; z-index: 1; }
+.cmp-promo-sticker.is-5 { --s: 112px; left: 57%; top: 2%;  rotate: 13deg; animation-delay: -1s; }
+@keyframes cmp-promo-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -7px; } }
+
+.cmp-promo-burst {
+  position: absolute; z-index: 4; right: 18px; bottom: 22px; width: 122px; height: 122px; rotate: 12deg;
+  display: grid; place-items: center; filter: drop-shadow(0 10px 14px rgba(60, 0, 6, 0.45));
+  animation: cmp-promo-pulse 2.6s ease-in-out infinite;
+}
+.cmp-promo-burst svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cmp-promo-burst polygon { fill: var(--yellow); stroke: #fff; stroke-width: 2.5; stroke-linejoin: round; }
+.cmp-promo-burst > span { position: relative; display: flex; flex-direction: column; align-items: center; color: var(--red-deep); text-align: center; }
+.cmp-promo-burst strong { font: 800 27px/1 var(--geo); letter-spacing: -0.04em; }
+.cmp-promo-burst em { font: 800 11.5px/1.1 var(--geo); font-style: normal; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+@keyframes cmp-promo-pulse { 0%, 100% { scale: 1; } 50% { scale: 1.06; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .cmp-promo-sticker, .cmp-promo-burst { animation: none; }
+}
+
+/* Tablet: menos pegatinas para que no tapen el texto. */
+@media (max-width: 1100px) {
+  .cmp-promo { grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); }
+  .cmp-promo-sticker.is-5 { display: none; }
+  .cmp-promo-sticker.is-3 { left: 46%; }
+}
+/* Móvil: rotulado arriba y una tira de pegatinas debajo. */
+@media (max-width: 640px) {
+  .cmp-promo { grid-template-columns: 1fr; min-height: 0; padding: 24px 20px 0; border-radius: 22px; }
+  .cmp-promo-big { font-size: clamp(50px, 15vw, 66px); }
+  .cmp-promo-small { font-size: 24px; }
+  .cmp-promo-actions { margin-top: 20px; width: 100%; }
+  .cmp-promo-btn { flex: 1 1 100%; }
+  .cmp-promo-rays {
+    background: repeating-conic-gradient(from 0deg at 50% 88%, rgba(255, 255, 255, 0.10) 0deg 7deg, rgba(255, 255, 255, 0) 7deg 15deg);
+    -webkit-mask-image: radial-gradient(circle at 50% 88%, #000 0, transparent 70%);
+            mask-image: radial-gradient(circle at 50% 88%, #000 0, transparent 70%);
+  }
+  .cmp-promo-art { height: 150px; margin: 14px -20px 0; }
+  .cmp-promo-sticker, .cmp-promo-sticker[class*='is-'] { --s: 88px; padding: 7px; border-radius: 16px; }
+  .cmp-promo-sticker.is-1 { left: 4%;  top: 24%; }
+  .cmp-promo-sticker.is-2 { left: 26%; top: 8%; }
+  .cmp-promo-sticker.is-3 { left: 48%; top: 30%; }
+  .cmp-promo-sticker.is-4 { display: none; }
+  .cmp-promo-burst { width: 98px; height: 98px; right: 10px; bottom: 26px; }
+  .cmp-promo-burst strong { font-size: 22px; }
+  .cmp-promo-burst em { font-size: 10px; }
+}
+
 .cmp-side-open {
   display: none; width: 100%; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 18px;
   min-height: 48px; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface);
@@ -672,4 +805,59 @@ html.cmp-locked, html.cmp-locked body { overflow: hidden; }
 .cmp-picker-note {
   margin: 16px auto 0; max-width: 620px; padding: 10px 14px; border-radius: 12px;
   background: var(--accent-light); font-size: 14px; font-weight: 600; color: var(--ink);
+}
+
+/* El botón del banner también es enlace (a la página /ofertas/<slug>/). */
+a.cmp-promo-btn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+
+/* Variante verde del banner (bajadas de precio) y su etiqueta en las tarjetas. */
+.cmp-promo.is-green {
+  --red: #23a55a;
+  --red-deep: #11733a;
+  --yellow: #fff36b;
+  background:
+    radial-gradient(circle at 74% 46%, #5fd68f 0, rgba(95, 214, 143, 0) 52%),
+    linear-gradient(135deg, #2bb563 0%, #1f9d55 45%, #11733a 100%);
+  box-shadow: 0 22px 48px -26px rgba(17, 115, 58, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+.cmp-promo.is-green .cmp-promo-btn { box-shadow: 0 4px 0 #b6e5c8, 0 12px 22px -12px rgba(0, 0, 0, 0.45); }
+.cmp-badge-offer.is-drop { background: #1f9d55; }
+.cmp-card-media .cmp-badge.cmp-badge-offer.is-drop { box-shadow: 0 6px 14px -6px rgba(31, 157, 85, 0.7); }
+
+/* Banner verde «Bajadas de precio» encima de las categorías (vista de súper). */
+.cmp-drops {
+  position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px;
+  min-height: 118px; margin-bottom: 10px; padding: 16px 14px 16px 16px; border-radius: 16px;
+  color: #0f5c30; text-decoration: none;
+  background:
+    repeating-linear-gradient(135deg, rgba(31, 157, 85, 0.07) 0 10px, rgba(31, 157, 85, 0) 10px 20px),
+    linear-gradient(135deg, #e3f7ea 0%, #cdf0da 100%);
+  border: 1px solid #a9e2bf;
+  transition: transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+.cmp-drops:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -16px rgba(17, 115, 58, 0.7); }
+.cmp-drops-arrow {
+  flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 14px; rotate: -6deg;
+  background: #1f9d55; color: #fff; box-shadow: 0 8px 16px -8px rgba(17, 115, 58, 0.8);
+}
+.cmp-drops-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.cmp-drops-title {
+  display: inline-block; rotate: -3deg; transform-origin: left center;
+  font: 800 21px/1 var(--geo); letter-spacing: -0.03em; text-transform: uppercase; color: #11733a;
+  text-shadow: 1px 1px 0 #fff, 2px 2px 0 rgba(17, 115, 58, 0.15);
+}
+.cmp-drops-sub { font: 600 13px/1.3 var(--geo); color: #1a6b3d; }
+.cmp-drops-go { flex: none; color: #11733a; transition: transform 0.18s var(--ease); }
+.cmp-drops:hover .cmp-drops-go { transform: translateX(3px); }
+.cmp-drops.is-mobile { display: none; }
+[data-theme="dark"] .cmp-drops {
+  color: #c9f3d8; border-color: #23633f;
+  background:
+    repeating-linear-gradient(135deg, rgba(95, 214, 143, 0.06) 0 10px, rgba(95, 214, 143, 0) 10px 20px),
+    linear-gradient(135deg, #133524 0%, #0f2a1c 100%);
+}
+[data-theme="dark"] .cmp-drops-title { color: #7fe0a6; text-shadow: none; }
+[data-theme="dark"] .cmp-drops-sub, [data-theme="dark"] .cmp-drops-go { color: #a6ecc0; }
+@media (max-width: 820px) {
+  .cmp-drops.is-mobile { display: flex; min-height: 96px; margin-bottom: 14px; }
 }

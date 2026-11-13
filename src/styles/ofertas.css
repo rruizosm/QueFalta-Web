@@ -1,0 +1,102 @@
+/* Páginas /supermercados/<súper>/ofertas/ y /ca/supermercats/<súper>/ofertes/. Reutilizan el comparador
+   (comparador.css: banner .cmp-promo, lateral .cmp-side, tarjetas .cmp-card);
+   aquí solo va lo propio de la página. Mismo ancho que la vista de súper. */
+
+.of-wrap, .ofb-top { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+
+.of-crumbs { padding-top: 22px; }
+.of-crumbs ol { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; font-size: 13px; color: var(--ink-faint); }
+.of-crumbs li + li::before { content: '›'; margin-right: 6px; }
+.of-crumbs a:hover { color: var(--accent); }
+
+.of-head { display: flex; align-items: center; gap: 16px; margin: 18px 0 22px; }
+.of-logo { flex: none; width: 48px; height: 48px; object-fit: contain; border-radius: 12px; background: #fff; border: 1px solid var(--border); padding: 3px; }
+.of-head > div { flex: 1; min-width: 0; }
+.of-head h1 { font-size: clamp(26px, 3.4vw, 36px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.1; }
+.of-head p { margin-top: 4px; font-size: 14.5px; color: var(--ink-soft); }
+.of-head p strong { color: var(--ink); }
+.of-catalog { flex: none; font-size: 14.5px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+.of-catalog:hover { text-decoration: underline; }
+
+/* Banner del folleto: el de la vista de súper con un enlace por botón. */
+.of-flyer { margin-bottom: 0; }
+.of-flyer .cmp-promo-btn { display: inline-flex; align-items: center; text-decoration: none; }
+.of-flyer .cmp-promo-burst strong { font-size: 25px; }
+
+/* Mayores rebajas: bloque aparte, una fila deslizable. */
+.ofb-top { margin-top: 40px; }
+.ofb-top-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.ofb-top-head h2 { font-size: clamp(22px, 2.6vw, 28px); font-weight: 800; letter-spacing: -0.03em; }
+.ofb-top-head p { margin-top: 4px; font-size: 14px; color: var(--ink-faint); }
+.ofb-top-arrows { display: flex; gap: 8px; }
+.ofb-top-arrows button {
+  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface); color: var(--ink);
+  transition: border-color 0.15s, color 0.15s;
+}
+.ofb-top-arrows button:hover { border-color: var(--accent); color: var(--accent); }
+.ofb-top-row {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 220px; gap: 16px;
+  margin: 16px -24px 0; padding: 4px 24px 18px; overflow-x: auto; scroll-snap-type: x mandatory;
+  scroll-padding: 0 24px; scrollbar-width: none;
+}
+.ofb-top-row::-webkit-scrollbar { display: none; }
+.ofb-top-row > * { scroll-snap-align: start; }
+
+/* Lateral: tipo de oferta y categorías, plegables y con recuento. */
+.ofb-layout { margin-top: 12px; }
+.ofb-nav { display: flex; flex-direction: column; gap: 6px; }
+.ofb-nav-title { font: 700 12px/1 var(--geo); letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-faint); }
+.ofb-sec + .ofb-sec { padding-top: 6px; border-top: 1px solid var(--border); }
+.ofb-sec.is-open { padding-bottom: 6px; }
+.ofb-sec-head {
+  width: 100%; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 11px;
+  border: 0; border-radius: 11px; background: none; cursor: pointer; text-align: left;
+  transition: background 0.14s;
+}
+.ofb-sec-head:hover { background: var(--paper-2); }
+.ofb-sec-head .ofb-nav-title { flex: none; }
+.ofb-sec-head .cmp-side-chev { margin-left: auto; }
+.ofb-sec.is-open .ofb-sec-head .cmp-side-chev { transform: rotate(90deg); }
+.ofb-sec-sel {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: 600 13px/1.2 var(--geo); font-style: normal; color: var(--accent);
+}
+.ofb-count {
+  flex: none; font-style: normal; font-size: 12px; font-weight: 700; color: var(--ink-faint);
+  background: var(--paper-2); border-radius: 999px; padding: 3px 8px; min-width: 28px; text-align: center;
+}
+.ofb .is-on .ofb-count { color: var(--accent); background: var(--surface); }
+.ofb .cmp-side-root.is-empty { opacity: 0.45; }
+
+/* Preguntas plegadas al final. */
+.of-faq { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 28px; }
+.of-faq h2 { font-size: 21px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+.of-faq details { border-bottom: 1px solid var(--border); }
+.of-faq summary {
+  cursor: pointer; list-style: none; padding: 15px 28px 15px 0; position: relative;
+  font: 700 15.5px/1.35 var(--geo); color: var(--ink);
+}
+.of-faq summary::-webkit-details-marker { display: none; }
+.of-faq summary::after { content: '+'; position: absolute; right: 4px; top: 12px; font-size: 22px; font-weight: 500; color: var(--ink-faint); }
+.of-faq details[open] summary::after { content: '−'; }
+.of-faq details p { padding: 0 0 16px; max-width: 820px; font-size: 15px; line-height: 1.6; color: var(--ink-soft); }
+.of-faq a { color: var(--accent); font-weight: 600; }
+.of-disclaimer { margin: 22px 0 8px; font-size: 12.5px; line-height: 1.5; color: var(--ink-faint); }
+
+@media (max-width: 640px) {
+  .of-wrap, .ofb-top { padding: 0 16px; }
+  .of-head { flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
+  .of-logo { width: 42px; height: 42px; }
+  .of-catalog { width: 100%; }
+  .of-flyer .cmp-promo-btn { width: 100%; justify-content: center; text-align: center; padding: 12px 16px; line-height: 1.25; }
+  .ofb-top-arrows { display: none; }
+  .ofb-top-row { grid-auto-columns: 46%; gap: 10px; margin: 14px -16px 0; padding: 4px 16px 16px; scroll-padding: 0 16px; }
+}
+
+/* Precio, tachado y €/kg no caben en una línea: el €/kg baja. */
+.ofb .cmp-card-price { flex-wrap: wrap; column-gap: 8px; row-gap: 0; }
+.ofb .cmp-card-price span { flex-basis: 100%; }
+
+/* Destino del botón del banner («Ver las N ofertas ↓»). */
+.of-anchor { scroll-margin-top: 70px; }

@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { STORES, STORE_BY_KEY, regionFromPostalCode, storesForPostalCode } from '../../data/comparadorZonas.js';
+import { REFERENCE_CP, STORES, STORE_BY_KEY, regionFromPostalCode, storesForPostalCode } from '../../data/comparadorZonas.js';
 import { apiConfigured, norm, searchAllStores } from '../../lib/comparadorApi.js';
+import { storeIntent } from '../../lib/storeIntent.js';
+import { catalogPath } from '../../lib/rutas.js';
+import { offersPagePath } from '../../lib/ofertas.js';
 import { Icon, ProductCard, SkeletonCard } from './ui.jsx';
 import StoreBrowser from './StoreBrowser.jsx';
 import PostalModal, { readCp, saveCp } from './PostalModal.jsx';
@@ -9,15 +12,20 @@ import { LangProvider, useT } from './i18n.jsx';
 // Comparador de precios entre supermercados (isla React de / y /ca/comparador/).
 // Busca en los catálogos reales de Supabase (comparadorApi.js) solo en los
 // súper del código postal del usuario. La portada se ve sin CP (un aviso que
-// tape la página perjudica en Google): se pide al buscar o elegir súper, y se
-// recuerda en este navegador (`qf-cp`).
+// tape la página perjudica en Google): se pide al buscar en todos los súper, y
+// se recuerda en este navegador (`qf-cp`). Un súper se abre sin CP con los
+// precios de su zona de referencia (REFERENCE_CP): quien llega buscando «ofertas
+// Bonpreu» quiere ver productos, no un formulario.
 
-// La vista de súper (?super=…&cat=…) y la búsqueda (?q=…) viven en la URL:
+// Cada súper tiene su página de catálogo (catalogPath): /supermercados/<slug>/ y,
+// en catalán, /ca/supermercats/<slug>/. La portada enlaza ahí y las direcciones
+// antiguas /?super=… (y /ca/comparador/?super=…) saltan a ella.
+// La vista de súper (?super=…&cat=…&ofertas=1) y la búsqueda (?q=…) viven en la URL:
 // atrás del navegador (también al volver de una ficha de producto) y los
 // enlaces compartidos funcionan.
 function readRoute() {
   const q = new URLSearchParams(window.location.search);
-  return { store: q.get('super'), cat: q.get('cat'), q: q.get('q') };
+  return { store: q.get('super'), cat: q.get('cat'), offers: q.get('ofertas') === '1', q: q.get('q') };
 }
 
 /* ───────────────────────────── Página ───────────────────────────── */
@@ -40,11 +48,17 @@ function ComparadorPage() {
   const [failed, setFailed] = useState([]);
   const [visible, setVisible] = useState(PAGE);
   const [scrollTick, setScrollTick] = useState(0);
-  const [route, setRoute] = useState({ store: null, cat: null });
+  const [route, setRoute] = useState({ store: null, cat: null, offers: false });
   const searchRef = useRef(null);
   const resultsRef = useRef(null);
 
   useEffect(() => {
+    // Enlace antiguo a un súper en la portada → su página de catálogo.
+    const old = readRoute();
+    if (old.store && STORE_BY_KEY[old.store]) {
+      window.location.replace(catalogPath(old.store, t.lang, { cat: old.cat, offers: old.offers }));
+      return undefined;
+    }
     setCp(readCp());
     setRoute(readRoute());
     setReady(true);
@@ -68,24 +82,32 @@ function ComparadorPage() {
     return () => window.removeEventListener('popstate', onPop);
   }, []);
 
-  const navigate = (store, cat = null) => {
+  const navigate = (store, cat = null, offers = false) => {
+    if (store) {
+      window.location.assign(catalogPath(store, t.lang, { cat, offers }));
+      return;
+    }
     const q = new URLSearchParams();
     if (store) q.set('super', store);
     if (cat) q.set('cat', cat);
+    if (store && offers) q.set('ofertas', '1');
     const search = q.toString();
     window.history.pushState(null, '', `${window.location.pathname}${search ? `?${search}` : ''}`);
-    setRoute({ store, cat });
+    setRoute({ store, cat, offers });
   };
 
-  // Sin CP no se puede cumplir lo pedido (buscar, abrir un súper): se pide aquí.
-  const needsCp = ready && !cp && (!!route.store || !!submitted);
+  // Sin CP no se puede buscar en todos los súper de la zona: se pide aquí.
+  const needsCp = ready && !cp && !!submitted;
   const showModal = ready && (editingCp || needsCp);
   const region = cp ? regionFromPostalCode(cp) : null;
   const zoneStores = useMemo(() => (cp ? storesForPostalCode(cp) : []), [cp]);
   const zoneKeys = useMemo(() => new Set(zoneStores.map((s) => s.key)), [zoneStores]);
   const activeKeys = storeFilter ?? zoneKeys;
-  // Un súper de la URL que no opera en esta zona no se abre.
-  const storeKey = route.store && zoneKeys.has(route.store) ? route.store : null;
+  // Un súper de la URL que no opera en esta zona no se abre. Sin CP se abre
+  // cualquiera, con los precios de su CP de referencia.
+  const storeKey = !route.store || !STORE_BY_KEY[route.store] ? null
+    : !cp || zoneKeys.has(route.store) ? route.store : null;
+  const storeCp = cp ?? (storeKey ? REFERENCE_CP[storeKey] : null);
   const outOfZone = cp && route.store && !storeKey ? STORE_BY_KEY[route.store]?.name : null;
 
   // Bloquea el scroll del fondo con el modal abierto.
@@ -120,6 +142,9 @@ function ComparadorPage() {
     if (q.length < 2) return [];
     return t.suggestions.filter((l) => norm(l).includes(q) && norm(l) !== q).slice(0, 6);
   }, [query, t]);
+  // Si lo escrito es una cadena («bonpreu», «ofertas mercadona»), la primera
+  // sugerencia abre su catálogo.
+  const intent = useMemo(() => (query.trim().length >= 2 ? storeIntent(query) : null), [query]);
 
   const results = useMemo(() => {
     const list = Object.entries(byStore)
@@ -152,9 +177,24 @@ function ComparadorPage() {
   const loading = pending.length > 0;
   const answered = zoneStores.length - pending.length;
 
+  const openStore = ({ store, offers }) => {
+    setFocused(false);
+    searchRef.current?.blur();
+    setQuery('');
+    setSubmitted('');
+    // «ofertas mercadona» → su página de ofertas, si la tiene.
+    const offersPage = offers ? offersPagePath(store, t.lang) : null;
+    if (offersPage) { window.location.assign(offersPage); return; }
+    navigate(store, null, offers);
+    window.scrollTo({ top: 0 });
+  };
+
   const runSearch = (text) => {
     const t = text.trim();
     if (t.length < 2) return;
+    // Buscar el nombre de un súper lleva a su catálogo, no a productos que lo mencionen.
+    const wanted = storeIntent(t);
+    if (wanted) { openStore(wanted); return; }
     setQuery(text);
     setSubmitted(t);
     setSearchId((n) => n + 1);
@@ -188,12 +228,13 @@ function ComparadorPage() {
     else setTimeout(() => searchRef.current?.focus(), 60);
   };
 
-  // Cerrar sin CP cancela lo que lo pedía y deja la portada, sin nada en la URL.
+  // Cerrar sin CP cancela la búsqueda que lo pedía; la vista de súper sigue
+  // abierta (funciona con el CP de referencia).
   const closeZone = () => {
     setEditingCp(false);
-    if (cp) return;
+    if (cp || route.store) return;
     setSubmitted('');
-    setRoute({ store: null, cat: null });
+    setRoute({ store: null, cat: null, offers: false });
     if (window.location.search) window.history.replaceState(null, '', window.location.pathname);
   };
 
@@ -204,9 +245,11 @@ function ComparadorPage() {
           key={storeKey}
           storeKey={storeKey}
           categoryId={route.cat}
-          cp={cp}
+          offersOnly={route.offers}
+          cp={storeCp}
+          referenceZone={!cp}
           onBack={() => { navigate(null); window.scrollTo({ top: 0 }); }}
-          onCategory={(cat) => navigate(storeKey, cat)}
+          onCategory={(cat, offers = route.offers) => navigate(storeKey, cat, offers)}
           onEditZone={() => setEditingCp(true)}
         />
       ) : (
@@ -261,8 +304,17 @@ function ComparadorPage() {
               <span>{t.compare}</span>
               <Icon.arrow width="18" height="18" />
             </button>
-            {focused && suggestions.length > 0 && (
+            {focused && (intent || suggestions.length > 0) && (
               <ul className="cmp-suggest" role="listbox">
+                {intent && (
+                  <li>
+                    <button type="button" role="option" aria-selected="true" className="cmp-suggest-store" onMouseDown={(e) => e.preventDefault()} onClick={() => openStore(intent)}>
+                      <img src={STORE_BY_KEY[intent.store].logo} alt="" width="22" height="22" />
+                      {intent.offers ? t.goOffers(STORE_BY_KEY[intent.store].name) : t.goCatalog(STORE_BY_KEY[intent.store].name)}
+                      <Icon.arrow width="15" height="15" className="cmp-suggest-go" />
+                    </button>
+                  </li>
+                )}
                 {suggestions.map((s) => (
                   <li key={s}>
                     <button type="button" role="option" aria-selected="false" onMouseDown={(e) => e.preventDefault()} onClick={() => runSearch(s)}>
@@ -287,16 +339,12 @@ function ComparadorPage() {
             {outOfZone && <p className="cmp-picker-note" role="status">{t.notInZone(outOfZone)}</p>}
             <div className="cmp-picks">
               {(cp ? zoneStores : STORES).map((s) => (
-                <button
-                  type="button"
-                  key={s.key}
-                  className="cmp-pick"
-                  onClick={() => { navigate(s.key); if (cp) window.scrollTo({ top: 0 }); }}
-                >
+                // Enlace de verdad (lo siguen los buscadores) a la página del catálogo.
+                <a key={s.key} className="cmp-pick" href={catalogPath(s.key, t.lang)}>
                   <span className="cmp-pick-logo"><img src={s.logo} alt="" width="52" height="52" /></span>
                   <span className="cmp-pick-name">{s.name}</span>
                   <Icon.arrow width="17" height="17" className="cmp-pick-go" />
-                </button>
+                </a>
               ))}
             </div>
           </div>
