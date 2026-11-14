@@ -1,0 +1,16 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import KitchenPicks from '../../../components/comparador/KitchenPicks.jsx';
+import '../../../styles/comparador.css';
+---
+
+<Layout
+  title="Productes per a la llar que ajuden a estalviar | QuéFalta"
+  description="Tuppers, bàscula de cuina, pots per al rebost, bosses reutilitzables i més: estris per endreçar la compra i llençar menys."
+  lang="ca"
+  alternates={{ es: '/cocina/', ca: '/ca/cuina/' }}
+>
+  <div class="cmp"><div class="cmp-body" style="padding-bottom: 56px">
+    <KitchenPicks lang="ca" heading="h1" client:load />
+  </div></div>
+</Layout>

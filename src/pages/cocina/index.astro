@@ -1,0 +1,15 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import KitchenPicks from '../../components/comparador/KitchenPicks.jsx';
+import '../../styles/comparador.css';
+---
+
+<Layout
+  title="Productos para el hogar que ayudan a ahorrar | QuéFalta"
+  description="Tuppers, báscula de cocina, botes para la despensa, bolsas reutilizables y más: utensilios para organizar la compra y desperdiciar menos."
+  alternates={{ es: '/cocina/', ca: '/ca/cuina/' }}
+>
+  <div class="cmp"><div class="cmp-body" style="padding-bottom: 56px">
+    <KitchenPicks lang="es" heading="h1" client:load />
+  </div></div>
+</Layout>

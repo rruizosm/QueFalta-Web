@@ -59,13 +59,15 @@ const T = lang === 'ca'
       precios: 'Preus', productos: 'Productes', novedades: 'Novetats', supermercados: 'Supermercats', preguntas: 'Preguntes',
       preguntasHref: '/ca/preguntes/', apoyar: 'Donar suport', privacidad: 'Privacitat',
       condiciones: 'Condicions', cookies: 'Cookies', cookieSettings: 'Configura les cookies',
-      contacto: 'Contacte', copy: 'Fet a Espanya',
+      contacto: 'Contacte', copy: 'Fet a Espanya', cocina: 'Productes per a la llar', cocinaHref: '/ca/cuina/',
+      amazon: "Com a Afiliat d'Amazon, QuéFalta obté ingressos per les compres adscrites que compleixen els requisits.",
     }
   : {
       precios: 'Precios', productos: 'Productos', novedades: 'Novedades', supermercados: 'Supermercados', preguntas: 'Preguntas',
       preguntasHref: '/preguntas/', apoyar: 'Apoyar', privacidad: 'Privacidad',
       condiciones: 'Condiciones', cookies: 'Cookies', cookieSettings: 'Configurar cookies',
-      contacto: 'Contacto', copy: 'Hecho en España',
+      contacto: 'Contacto', copy: 'Hecho en España', cocina: 'Productos para el hogar', cocinaHref: '/cocina/',
+      amazon: 'Como Afiliado de Amazon, QuéFalta obtiene ingresos por las compras adscritas que cumplen los requisitos.',
     };
 
 // Identidad del sitio para los buscadores, presente en todas las páginas. A esto
@@ -186,6 +188,7 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
             <a href={lang === 'ca' ? '/ca/supermercats/bonpreu/ofertes/' : '/supermercados/bonpreu/ofertas/'}>{lang === 'ca' ? 'Ofertes Bonpreu' : 'Ofertas Bonpreu'}</a>
             <a href="/productos/">{T.productos}</a>
             <a href="/novedades/">{T.novedades}</a>
+            <a href={T.cocinaHref}>{T.cocina}</a>
             <a href={lang === 'ca' ? '/ca/supermercats/' : '/supermercados/'}>{T.supermercados}</a>
             <a href={T.preguntasHref}>{T.preguntas}</a>
             <a href="/apoyar/">{T.apoyar}</a>
@@ -196,6 +199,7 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
             <a href="mailto:contacto@quefalta.es">{T.contacto}</a>
           </nav>
           <p class="footer-copy">© {new Date().getFullYear()} QuéFalta · {T.copy}</p>
+          <p class="footer-copy footer-affiliate">{T.amazon}</p>
         </div>
       </footer>
     )}

@@ -6,6 +6,7 @@ import { catalogPath } from '../../lib/rutas.js';
 import { offersPagePath } from '../../lib/ofertas.js';
 import { Icon, ProductCard, SkeletonCard } from './ui.jsx';
 import StoreBrowser from './StoreBrowser.jsx';
+import KitchenPicks from './KitchenPicks.jsx';
 import PostalModal, { readCp, saveCp } from './PostalModal.jsx';
 import { LangProvider, useT } from './i18n.jsx';
 
@@ -450,6 +451,8 @@ function ComparadorPage() {
           </section>
         ) : (
           <>
+            <KitchenPicks lang={t.lang} limit={4} />
+
             <section className="cmp-section">
               <div className="cmp-section-head">
                 <span className="cmp-eyebrow">{t.exploreEyebrow}</span>

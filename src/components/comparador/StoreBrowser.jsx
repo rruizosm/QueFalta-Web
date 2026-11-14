@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { STORE_BY_KEY, regionFromPostalCode } from '../../data/comparadorZonas.js';
+import { COCINA_TEXT } from '../../data/cocina.js';
 import { categoryIds, countDrops, countOffers, fetchBannerImages, fetchCategoryTree, fetchStoreProducts, lidlStoreFor, searchStore } from '../../lib/comparadorApi.js';
 import { CATALOG_OFFERS, offersPagePath } from '../../lib/ofertas.js';
 import { dropsPagePath, hasDrops } from '../../lib/bajadas.js';
@@ -331,18 +332,14 @@ export default function StoreBrowser({ storeKey, heading, categoryId, offersOnly
               {lidlLabel && <p className="cmp-store-sub">{t.refStore(lidlLabel)}</p>}
             </div>
           </div>
-          <form className="cmp-store-search" role="search" onSubmit={submitSearch}>
-            <Icon.search width="18" height="18" />
-            <input
-              type="search"
-              value={query}
-              maxLength={80}
-              placeholder={t.searchIn(store.name)}
-              aria-label={t.searchIn(store.name)}
-              enterKeyHint="search"
-              onChange={(e) => { setQuery(e.target.value); if (!e.target.value) setSearched(''); }}
-            />
-          </form>
+          <a className="cmp-store-kitchen" href={COCINA_TEXT[t.lang]?.href ?? COCINA_TEXT.es.href}>
+            <span className="cmp-store-kitchen-emoji" aria-hidden="true">🍳</span>
+            <span>
+              <strong>{(COCINA_TEXT[t.lang] ?? COCINA_TEXT.es).eyebrow}</strong>
+              <em>{(COCINA_TEXT[t.lang] ?? COCINA_TEXT.es).title}</em>
+            </span>
+            <Icon.arrow width="17" height="17" />
+          </a>
         </div>
       </header>
 
@@ -371,6 +368,19 @@ export default function StoreBrowser({ storeKey, heading, categoryId, offersOnly
               <h2 aria-live="polite">{title}</h2>
               {total != null && status === 'done' && <p className="cmp-store-count">{t.products(total)}</p>}
             </div>
+            <div className="cmp-store-tools">
+            <form className="cmp-store-search" role="search" onSubmit={submitSearch}>
+              <Icon.search width="18" height="18" />
+              <input
+                type="search"
+                value={query}
+                maxLength={80}
+                placeholder={t.searchIn(store.name)}
+                aria-label={t.searchIn(store.name)}
+                enterKeyHint="search"
+                onChange={(e) => { setQuery(e.target.value); if (!e.target.value) setSearched(''); }}
+              />
+            </form>
             {!searched && (
               <label className="cmp-sort">
                 <span>{t.sort}</span>
@@ -381,6 +391,7 @@ export default function StoreBrowser({ storeKey, heading, categoryId, offersOnly
                 </select>
               </label>
             )}
+            </div>
           </div>
 
           {status === 'error' ? (
