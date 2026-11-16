@@ -2,6 +2,7 @@
 import CookieConsent from '../components/CookieConsent.astro';
 import AppStoreHelp from '../components/AppStoreHelp.astro';
 import SiteNav from '../components/SiteNav.astro';
+import AmazonPromo from '../components/AmazonPromo.astro';
 
 interface Props {
   title?: string;
@@ -205,6 +206,7 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     )}
 
     <AppStoreHelp lang={lang} />
+    <AmazonPromo lang={lang} />
 
     <style is:global>
       :root {
