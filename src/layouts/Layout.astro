@@ -25,6 +25,10 @@ interface Props {
   /** Rutas de las versiones de idioma de ESTA página → hreflang recíprocos
       (es ↔ ca + x-default apuntando a la versión es). Solo en páginas con par. */
   alternates?: { es: string; ca: string };
+  /** false = sin AdSense, CMP, Google Analytics ni promo de Amazon. Para páginas
+      cuya URL lleva un dato privado (p. ej. /join/<id de grupo>): esos scripts
+      envían la URL completa a terceros. */
+  thirdParty?: boolean;
 }
 const {
   title = 'QuéFalta — La compra compartida, sin líos',
@@ -38,6 +42,7 @@ const {
   jsonld,
   lang = 'es',
   alternates,
+  thirdParty = true,
 } = Astro.props;
 // Todas las páginas usan URLs de directorio. Los ficheros conservan su ruta.
 const pageUrl = (path: string) => {
@@ -93,6 +98,17 @@ const siteSchema = {
   inLanguage: lang === 'ca' ? 'ca' : 'es-ES',
 };
 const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? jsonld : [jsonld]) : [])];
+// JSON.stringify no escapa `<`: un nombre o descripción de producto (llegan de
+// los syncs de cada súper) con `</script>` cerraría la etiqueta y ejecutaría
+// HTML. Se escapan `<`, `>`, `&` y los separadores de línea U+2028/U+2029,
+// que en JSON siguen siendo el mismo valor. (Con replaceAll y cadenas: el
+// compilador de Astro confunde `/>` de una regex con el cierre de una etiqueta.)
+const jsonLdText = (value: unknown) => JSON.stringify(value)
+  .replaceAll('<', '\\u003c')
+  .replaceAll('>', '\\u003e')
+  .replaceAll('&', '\\u0026')
+  .replaceAll(String.fromCharCode(0x2028), '\\u2028')
+  .replaceAll(String.fromCharCode(0x2029), '\\u2029');
 ---
 
 <!doctype html>
@@ -145,10 +161,10 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     />
     <title>{title}</title>
     {schemas.map((s) => (
-      <script type="application/ld+json" set:html={JSON.stringify(s)} />
+      <script type="application/ld+json" set:html={jsonLdText(s)} />
     ))}
     <!-- Modo de consentimiento + AdSense (incluye la CMP de Google). -->
-    <CookieConsent />
+    {thirdParty && <CookieConsent />}
     <!-- Extras de <head> por página (p. ej. preload de la imagen LCP en la home). -->
     <slot name="head" />
     <!-- Aplica el tema (claro/oscuro) y el color de acento guardados antes de
@@ -206,7 +222,7 @@ const schemas = [orgSchema, siteSchema, ...(jsonld ? (Array.isArray(jsonld) ? js
     )}
 
     <AppStoreHelp lang={lang} />
-    <AmazonPromo lang={lang} />
+    {thirdParty && <AmazonPromo lang={lang} />}
 
     <style is:global>
       :root {
