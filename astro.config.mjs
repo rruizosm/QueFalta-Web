@@ -10,16 +10,25 @@ import { fileURLToPath } from 'node:url';
 // HTML ya compilado: el sitemap se escribe al final de la compilación.
 const DIST = new URL('./dist/', import.meta.url);
 const LD_JSON = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g;
-async function productImage(pageUrl) {
+const NOINDEX = /<meta[^>]*name="robots"[^>]*content="[^"]*noindex/;
+
+async function readPage(pageUrl) {
   const path = new URL(pageUrl).pathname;
-  if (!/^\/producto\/[^/]+\/[^/]+\/$/.test(path)) return null;
   try {
-    const html = await readFile(fileURLToPath(new URL(`.${decodeURI(path)}index.html`, DIST)), 'utf8');
+    return await readFile(fileURLToPath(new URL(`.${decodeURI(path)}index.html`, DIST)), 'utf8');
+  } catch {
+    return '';
+  }
+}
+
+function productImage(pageUrl, html) {
+  if (!/^\/producto\/[^/]+\/[^/]+\/$/.test(new URL(pageUrl).pathname)) return null;
+  try {
     for (const [, json] of html.matchAll(LD_JSON)) {
       const data = JSON.parse(json);
       if (data['@type'] === 'Product' && typeof data.image === 'string') return data.image;
     }
-  } catch { /* ficha sin HTML o JSON-LD ilegible: sin imagen */ }
+  } catch { /* JSON-LD ilegible: sin imagen */ }
   return null;
 }
 
@@ -41,8 +50,14 @@ export default defineConfig({
     sitemap({
       filter: (page) => !page.includes('/join') && !page.includes('/inicio') && !page.includes('/404')
         && !page.endsWith('/producto/') && !page.includes('/ca/producte/'),
+      // Además, fuera toda página que salga con noindex. Algunas dependen de los
+      // datos de la semana (ofertas o bajadas con pocos productos, ver
+      // OfertasPage/BajadasPage) y no se pueden filtrar por la URL: devolver
+      // undefined descarta la entrada.
       serialize: async (item) => {
-        const image = await productImage(item.url);
+        const html = await readPage(item.url);
+        if (NOINDEX.test(html)) return undefined;
+        const image = productImage(item.url, html);
         return image ? { ...item, img: [{ url: image }] } : item;
       },
     }),
