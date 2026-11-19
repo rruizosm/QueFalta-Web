@@ -1,0 +1,114 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { STORE_BY_KEY } from '../../../../data/comparadorZonas.js';
+import { OWN_BRANDS, loadOwnBrandPages } from '../../../../lib/productoSeo.js';
+import { productPath } from '../../../../lib/productoApi.js';
+import { euro, fechaLarga } from '../../../../lib/preciosFormato.js';
+import '../../../../styles/precios.css';
+import '../../../../styles/productos.css';
+
+// Marca blanca de una cadena (/supermercados/<slug>/marca-blanca/): todas sus
+// fichas de marca propia indexables, por sección. Enlaza cada ficha con un
+// enlace normal (no solo por el sitemap) y responde a «marca blanca de X».
+// Solo cadenas con entrada en OWN_BRANDS (ver lib/productoSeo.js).
+
+export async function getStaticPaths() {
+  if (import.meta.env.DEV) return [];
+  const pages = await loadOwnBrandPages();
+  const byStore = new Map();
+  for (const p of pages) {
+    if (!byStore.has(p.store)) byStore.set(p.store, []);
+    byStore.get(p.store).push(p);
+  }
+  return [...byStore].map(([key, list]) => ({
+    params: { store: key === 'esclat' ? 'bonpreu' : key },
+    props: { storeKey: key, pages: list },
+  }));
+}
+
+const { storeKey, pages } = Astro.props;
+const storeName = STORE_BY_KEY[storeKey].name;
+const slug = storeKey === 'esclat' ? 'bonpreu' : storeKey;
+const brands = OWN_BRANDS[storeKey].map(([name]) => name);
+const brandList = brands.length > 1 ? `${brands.slice(0, -1).join(', ')} y ${brands.at(-1)}` : brands[0];
+const updated = new Date().toISOString().slice(0, 10);
+const total = pages.length;
+const cheapest = pages.filter((p) => p.cheaperStores === 0).length;
+const n = (v) => v.toLocaleString('es-ES');
+
+// Secciones de la cadena, por orden alfabético; dentro, productos por nombre.
+const sections = new Map();
+for (const p of [...pages].sort((a, b) => a.detail.label.localeCompare(b.detail.label, 'es'))) {
+  const c = p.detail.category || 'Otros';
+  if (!sections.has(c)) sections.set(c, []);
+  sections.get(c).push(p);
+}
+const groups = [...sections].sort((a, b) => a[0].localeCompare(b[0], 'es'));
+const ppuOf = (d) => `${euro(d.ppu)}/${d.unit}`;
+
+const pageUrl = new URL(`/supermercados/${slug}/marca-blanca/`, Astro.site).href;
+const schemas = [{
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Comparador', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: storeName, item: new URL(`/supermercados/${slug}/`, Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: 'Marca blanca', item: pageUrl },
+  ],
+}];
+---
+
+<Layout
+  title={`Marca blanca de ${storeName}: precios y alternativas de ${n(total)} productos | QuéFalta`}
+  description={`${n(total)} productos ${brandList} de ${storeName} comparados por precio por kilo o litro con productos parecidos de otros supermercados. En ${n(cheapest)} sale más barato ${storeName}.`}
+  jsonld={schemas}
+>
+  <div class="pr container">
+    <nav class="pr-crumbs" aria-label="Ruta de navegación">
+      <ol>
+        <li><a href="/">Comparador</a></li>
+        <li><a href={`/supermercados/${slug}/`}>{storeName}</a></li>
+        <li><span aria-current="page">Marca blanca</span></li>
+      </ol>
+    </nav>
+
+    <header class="pr-head">
+      <span class="pr-eyebrow">{storeName} · marca blanca</span>
+      <h1>Marca blanca de {storeName}, comparada con otros supermercados</h1>
+      <p class="pr-answer">
+        <strong>{n(total)} productos {brandList}</strong> con su precio en {storeName} y las alternativas
+        parecidas de otras cadenas, ordenadas por precio por kilo, litro o unidad. Una marca blanca solo se
+        vende en su cadena, así que no comparamos el mismo producto, sino productos del mismo tipo:
+        en <strong>{n(cheapest)}</strong> de ellos, el de {storeName} es el más barato por kilo o litro.
+      </p>
+      <p class="pr-updated">Actualizado el <time datetime={updated}>{fechaLarga(updated)}</time> · precios de referencia de cada cadena</p>
+    </header>
+
+    <nav class="pdir-sections" aria-label="Secciones">
+      {groups.map(([name], i) => (
+        <a href={`#s${i}`}>{name}<span>{sections.get(name).length}</span></a>
+      ))}
+    </nav>
+
+    {groups.map(([name, list], i) => (
+      <section id={`s${i}`} class="pdir-section">
+        <h2>{name}</h2>
+        <ul class="pdir-list">
+          {list.map((p) => (
+            <li>
+              <a href={productPath(p.store, p.id)}>
+                <span class="pdir-name">{p.detail.label}{p.detail.format ? ` · ${p.detail.format}` : ''}</span>
+                <span class="pdir-meta">
+                  <b>{euro(p.detail.price)}</b>{` · ${ppuOf(p.detail)} · `}
+                  {p.cheaperStores === 0
+                    ? `lo más barato frente a ${p.similarStores} cadenas`
+                    : `${p.cheaperStores} de ${p.similarStores} cadenas tienen algo parecido más barato`}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</Layout>

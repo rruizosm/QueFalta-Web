@@ -108,6 +108,57 @@ function SameProduct({ rows, zoned, product }) {
   );
 }
 
+/**
+ * Marca propia (ficha generada al compilar): alternativas PARECIDAS de otras
+ * cadenas, por precio por kilo, litro o unidad. Nunca se presentan como el
+ * mismo producto (eso es SameProduct, por EAN).
+ */
+function SimilarProducts({ rows, product, total, cheaper }) {
+  const t = useT();
+  if (!rows?.length || product.ppu == null) return null;
+  const low = rows[0];
+  const summary = t.pdSimilarSummary({
+    name: (product.label ?? '').replace(/[.\s]+$/, ''),
+    ppu: ppuText(product),
+    store: STORE_BY_KEY[product.store].name,
+    unitWord: t.pdUnitWord[product.unit] ?? product.unit,
+    n: total ?? rows.length,
+    cheaper: cheaper ?? rows.filter((r) => r.ppu < product.ppu - 0.005).length,
+    low: ppuText(low),
+    lowName: (low.label ?? '').replace(/[.\s]+$/, ''),
+    lowStore: STORE_BY_KEY[low.store].name,
+  });
+  return (
+    <section className="pd-card pd-same pd-similar" aria-labelledby="pd-similar-title">
+      <h2 id="pd-similar-title">{t.pdSimilarTitle}</h2>
+      <p className="pd-summary-text">{summary}</p>
+      <p className="pd-card-lead">{t.pdSimilarLead}</p>
+      <ul>
+        {rows.map((r, i) => (
+          <li key={r.uid}>
+            <a href={productLink(r.store, r.id, t.lang)}>
+              <StoreLogo store={r.store} size={34} />
+              <span className="pd-same-info">
+                <strong>{STORE_BY_KEY[r.store].name}</strong>
+                <span>{r.label}{r.format ? ` · ${r.format}` : ''}</span>
+              </span>
+              <span className="pd-same-price">
+                <strong>{ppuText(r)}</strong>
+                {i === 0 && r.ppu < product.ppu - 0.005 ? <em>{t.pdCheapestSame}</em> : <small>{fmt(r.price)}</small>}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p className="cmp-note">{t.pdSimilarRef}</p>
+      {/* El listado de marca blanca solo existe en castellano. */}
+      <a className="pd-related-all" href={`${catalogPath(product.store, 'es')}marca-blanca/`}>
+        {t.pdOwnBrandAll(STORE_BY_KEY[product.store].name)} →
+      </a>
+    </section>
+  );
+}
+
 function Skeleton() {
   return (
     <div className="pd-hero" aria-hidden="true">
@@ -122,7 +173,9 @@ function Skeleton() {
   );
 }
 
-function ProductView({ store: storeProp, id: idProp, initial, initialSame, related = [] }) {
+function ProductView({
+  store: storeProp, id: idProp, initial, initialSame, initialSimilar, similarStores, cheaperStores, related = [],
+}) {
   const t = useT();
   const [route, setRoute] = useState(storeProp ? { store: storeProp, id: idProp } : null);
   const [ready, setReady] = useState(false);
@@ -350,6 +403,7 @@ function ProductView({ store: storeProp, id: idProp, initial, initialSame, relat
               ))}
 
               <SameProduct rows={same} zoned={sameZoned} product={d} />
+              <SimilarProducts rows={initialSimilar} product={d} total={similarStores} cheaper={cheaperStores} />
 
               <section className="pd-card">
                 <h2>{t.pdDetails}</h2>
@@ -368,7 +422,7 @@ function ProductView({ store: storeProp, id: idProp, initial, initialSame, relat
                           <span className="pd-related-img"><ProductImage src={r.image} /></span>
                           <span className="pd-related-info">
                             <strong>{r.label}</strong>
-                            <small>{t.pdRelatedMeta(r.stores, fmt(r.low))}</small>
+                            <small>{r.kind === 'own' ? t.pdRelatedOwnMeta(r.alternatives) : t.pdRelatedMeta(r.stores, fmt(r.low))}</small>
                           </span>
                         </a>
                       </li>

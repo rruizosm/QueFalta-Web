@@ -14,6 +14,17 @@
 .pdir-letters-small strong { font-size: 16px; }
 .pdir-letters-small span[aria-current] { background: var(--accent); border-color: var(--accent); color: #fff; }
 
+/* Índice de secciones (marca blanca): etiquetas con nombre largo y recuento. */
+.pdir-sections { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 26px; }
+.pdir-sections a {
+  display: inline-flex; align-items: baseline; gap: 6px; padding: 6px 12px; border-radius: 99px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--ink); font-size: 13.5px; font-weight: 600;
+  text-decoration: none; transition: border-color 0.18s;
+}
+.pdir-sections a:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); }
+.pdir-sections a span { font-size: 12px; font-weight: 500; color: var(--ink-faint); }
+.pdir-section { scroll-margin-top: 80px; }
+
 .pdir-stores { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .pdir-stores a {
   display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px 8px 8px; border-radius: 99px;

@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import StoreCatalog from '../../components/comparador/StoreCatalog.jsx';
 import { STORES, UPDATED } from '../../data/supermercados.js';
-import { loadProductPages, linkItem } from '../../lib/productoSeo.js';
+import { OWN_BRANDS, loadOwnBrandPages, loadProductPages, linkItem } from '../../lib/productoSeo.js';
 import { productPath } from '../../lib/productoApi.js';
 import { euro } from '../../lib/preciosFormato.js';
 import { CATALOG_OFFERS } from '../../lib/ofertas.js';
@@ -34,6 +34,14 @@ const compared = productPages
   .slice(0, 24)
   .map((p) => ({ ...linkItem(p), here: [p.detail, ...p.same].find((o) => o.store === storeKey) }));
 const comparedTotal = productPages.filter((p) => p.store === storeKey || p.same.some((s) => s.store === storeKey)).length;
+// Marca blanca de la cadena (si tiene fichas): enlace a su listado y una muestra.
+const ownPages = import.meta.env.DEV || !OWN_BRANDS[storeKey]
+  ? []
+  : (await loadOwnBrandPages()).filter((p) => p.store === storeKey);
+const ownBrandNames = (OWN_BRANDS[storeKey] ?? []).map(([name]) => name);
+const ownPicks = [...ownPages]
+  .sort((a, b) => b.similarStores - a.similarStores || a.detail.label.localeCompare(b.detail.label, 'es'))
+  .slice(0, 12);
 const hasOffers = !!CATALOG_OFFERS[storeKey];
 const catalogHeading = store.catalogHeading ?? `Catálogo${hasOffers ? ' y ofertas' : ''} de ${store.name}`;
 // Pregunta «¿dónde veo el catálogo?» (la que hace quien llega desde Google),
@@ -180,6 +188,27 @@ const fmt = (iso) => {
           ))}
         </ul>
         <p class="st-copy"><a href="/productos/">Ver todos los productos comparados</a></p>
+      </section>
+    )}
+
+    {ownPages.length > 0 && (
+      <section class="st-block">
+        <h2 class="st-h2">Marca blanca de {store.name}</h2>
+        <p class="st-copy">
+          {ownPages.length.toLocaleString('es-ES')} productos {ownBrandNames.join(', ')} comparados por precio por kilo o
+          litro con productos parecidos de otras cadenas. Estos son algunos:
+        </p>
+        <ul class="pdir-picks">
+          {ownPicks.map((p) => (
+            <li>
+              <a href={productPath(p.store, p.id)}>
+                {p.detail.label}
+                <small>{euro(p.detail.price)} · alternativas en {p.similarStores} cadenas</small>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <p class="st-copy"><a href={`/supermercados/${store.slug}/marca-blanca/`}>Ver toda la marca blanca de {store.name}</a></p>
       </section>
     )}
 

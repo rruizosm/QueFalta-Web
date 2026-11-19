@@ -164,8 +164,17 @@ const es = {
   pdSummary: ({ name, price, store, n, low, lowStore, high, highStore, pct, here }) => (here
     ? `${name} cuesta ${price} en ${store}, el precio más bajo de las ${n} cadenas que lo venden. En ${highStore} cuesta ${high}, un ${pct} % más.`
     : `${name} cuesta ${price} en ${store}. Es el mismo producto que venden ${n - 1} cadenas más: el precio más bajo es ${low} en ${lowStore} y el más alto, ${high} en ${highStore}, hasta un ${pct} % de diferencia.`),
+  pdSimilarTitle: 'Alternativas parecidas en otros supermercados',
+  pdSimilarLead: 'Productos del mismo tipo con otra marca o formato: no son el mismo producto. Ordenados por precio por kilo, litro o unidad.',
+  pdSimilarRef: 'Precios de referencia de cada cadena, emparejados por nombre y tipo de producto: revisa el formato antes de decidir. Elige tu código postal para comparar con los súper de tu zona.',
+  pdUnitWord: { kg: 'kilo', l: 'litro', ud: 'unidad' },
+  pdSimilarSummary: ({ name, ppu, store, unitWord, n, cheaper, low, lowName, lowStore }) => (cheaper === 0
+    ? `Por precio por ${unitWord}, ${name} (${ppu} en ${store}) es la opción más barata frente a las alternativas parecidas que hemos encontrado en ${n} cadenas.`
+    : `Por precio por ${unitWord}, ${name} sale a ${ppu} en ${store}. De las alternativas parecidas que hemos encontrado en ${n} cadenas, ${cheaper === 1 ? '1 es más barata' : `${cheaper} son más baratas`}: la que menos cuesta es «${lowName}» en ${lowStore}, a ${low}.`),
   pdRelated: 'Otros productos comparados',
   pdRelatedMeta: (n, low) => `${n} cadenas · desde ${low}`,
+  pdRelatedOwnMeta: (n) => `Alternativas en ${n} cadenas`,
+  pdOwnBrandAll: (store) => `Ver más productos de marca blanca de ${store}`,
   pdAllProducts: 'Ver todos los productos',
   fi: {
     title: 'Índice alimentario',
@@ -388,8 +397,17 @@ const ca = {
   pdSummary: ({ name, price, store, n, low, lowStore, high, highStore, pct, here }) => (here
     ? `${name} costa ${price} a ${store}, el preu més baix de les ${n} cadenes que el venen. A ${highStore} costa ${high}, un ${pct} % més.`
     : `${name} costa ${price} a ${store}. És el mateix producte que venen ${n - 1} cadenes més: el preu més baix és ${low} a ${lowStore} i el més alt, ${high} a ${highStore}, fins a un ${pct} % de diferència.`),
+  pdSimilarTitle: 'Alternatives semblants en altres supermercats',
+  pdSimilarLead: "Productes del mateix tipus amb una altra marca o format: no són el mateix producte. Ordenats per preu per quilo, litre o unitat.",
+  pdSimilarRef: 'Preus de referència de cada cadena, aparellats per nom i tipus de producte: revisa el format abans de decidir. Tria el teu codi postal per comparar amb els súpers de la teva zona.',
+  pdUnitWord: { kg: 'quilo', l: 'litre', ud: 'unitat' },
+  pdSimilarSummary: ({ name, ppu, store, unitWord, n, cheaper, low, lowName, lowStore }) => (cheaper === 0
+    ? `Per preu per ${unitWord}, ${name} (${ppu} a ${store}) és l'opció més barata davant de les alternatives semblants que hem trobat en ${n} cadenes.`
+    : `Per preu per ${unitWord}, ${name} surt a ${ppu} a ${store}. De les alternatives semblants que hem trobat en ${n} cadenes, ${cheaper === 1 ? "1 és més barata" : `${cheaper} són més barates`}: la que menys costa és «${lowName}» a ${lowStore}, a ${low}.`),
   pdRelated: 'Altres productes comparats',
   pdRelatedMeta: (n, low) => `${n} cadenes · des de ${low}`,
+  pdRelatedOwnMeta: (n) => `Alternatives en ${n} cadenes`,
+  pdOwnBrandAll: (store) => `Veure més productes de marca blanca de ${store}`,
   pdAllProducts: 'Veure tots els productes',
   fi: {
     title: 'Índex alimentari',

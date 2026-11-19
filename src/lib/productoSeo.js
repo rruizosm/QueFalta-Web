@@ -11,7 +11,9 @@
 // mantiene la versión anterior publicada.
 
 import { REFERENCE_CP, STORES } from '../data/comparadorZonas.js';
-import { TABLES, apiConfigured, columnsFor, rest, restAll, toProduct, valid } from './comparadorApi.js';
+import {
+  TABLES, apiConfigured, columnsFor, isSimilar, keyWords, nameTokens, rest, restAll, toProduct, valid, variantsOf,
+} from './comparadorApi.js';
 import { EAN_STORES, detailColumns, detailScore, eanVariants, toDetail } from './productoApi.js';
 
 export const MIN_STORES = 3;
@@ -48,6 +50,27 @@ async function pool(tasks, size) {
 /** EAN normalizado (sin ceros a la izquierda) o null. */
 const eanKey = (ean) => eanVariants(ean)[0] ?? null;
 
+/** Fichas completas (uid → ficha) de los ids pedidos por cadena (store → ids). */
+async function fetchDetails(wanted) {
+  const details = new Map();
+  const tasks = [];
+  for (const [store, ids] of wanted) {
+    for (let i = 0; i < ids.length; i += BATCH) {
+      const chunk = ids.slice(i, i + BATCH);
+      tasks.push(async () => {
+        const list = encodeURIComponent(`(${chunk.map((id) => JSON.stringify(id)).join(',')})`);
+        const rows = await withRetries(() => rest(`${tableOf(store)}?select=${detailColumns(store, 'es')}&id=in.${list}&published=eq.true`));
+        for (const r of rows) {
+          const d = toDetail(store, r, REFERENCE_CP[store], 'es');
+          if (valid(d)) details.set(d.uid, d);
+        }
+      });
+    }
+  }
+  await pool(tasks, CONCURRENCY);
+  return details;
+}
+
 async function load() {
   if (!apiConfigured) {
     throw new Error('Faltan PUBLIC_SUPABASE_URL y PUBLIC_SUPABASE_ANON_KEY: no se pueden generar las fichas de /producto/.');
@@ -80,22 +103,7 @@ async function load() {
       wanted.get(store).push(p.id);
     }
   }
-  const details = new Map(); // uid → ficha
-  const tasks = [];
-  for (const [store, ids] of wanted) {
-    for (let i = 0; i < ids.length; i += BATCH) {
-      const chunk = ids.slice(i, i + BATCH);
-      tasks.push(async () => {
-        const list = encodeURIComponent(`(${chunk.map((id) => JSON.stringify(id)).join(',')})`);
-        const rows = await withRetries(() => rest(`${tableOf(store)}?select=${detailColumns(store, 'es')}&id=in.${list}&published=eq.true`));
-        for (const r of rows) {
-          const d = toDetail(store, r, REFERENCE_CP[store], 'es');
-          if (valid(d)) details.set(d.uid, d);
-        }
-      });
-    }
-  }
-  await pool(tasks, CONCURRENCY);
+  const details = await fetchDetails(wanted);
 
   // 3. Una página por EAN: la ficha más completa; el resto, su comparación.
   const pages = [];
@@ -123,6 +131,140 @@ export function loadProductPages() {
   return cached;
 }
 
+/* ─────────────────── Fichas de marca propia (marca blanca) ─────────────────── */
+// Una marca propia (Hacendado…) solo se vende en su cadena: nunca comparte EAN
+// y no entra en las fichas de arriba, aunque es lo que más se busca. Se publica
+// si tiene alternativas PARECIDAS (mismo tipo de producto, otra marca) en al
+// menos MIN_SIMILAR_STORES cadenas. El emparejado es el mismo, por nombre, que
+// usa el comparador público (keyWords + isSimilar), hecho en memoria con el
+// catálogo entero, y se compara por precio por kilo, litro o unidad. La ficha
+// lo dice claro: son productos parecidos, no el mismo (ver SimilarProducts).
+
+/** Marcas propias por cadena. Para añadir una cadena basta con su entrada. */
+export const OWN_BRANDS = {
+  mercadona: [['Hacendado', /\bhacendado\b/i], ['Deliplus', /\bdeliplus\b/i], ['Bosque Verde', /\bbosque verde\b/i], ['Compy', /\bcompy\b/i]],
+};
+export const MIN_SIMILAR_STORES = 3;
+const MAX_SIMILAR = 8;
+// Precio por unidad fuera de ×3 o ÷3 del producto: emparejado dudoso (otro
+// formato, un aparato frente a su recambio, un dato mal guardado…).
+const PPU_RATIO = 3;
+
+const ownBrandOf = (store, name) => OWN_BRANDS[store]?.find(([, re]) => re.test(name))?.[0] ?? null;
+
+// Más estricto que el comparador del navegador (2 palabras clave), porque esto
+// se publica para Google: 3 palabras clave, sin las submarcas de la cadena, y
+// estas variantes deben coincidir en los dos sentidos (salchichas de cerdo ≠ de
+// pollo, queso gouda ≠ fundido).
+const STRICT_KEYS = 3;
+const SUB_BRANDS = new Set(['fussion', 'hacendado', 'deliplus', 'compy', 'bosque', 'verde']);
+const STRICT_VARIANTS = [
+  'cerdo', 'pollo', 'pavo', 'ternera', 'vacuno', 'cordero', 'conejo', 'iberico', 'serrano', 'york',
+  'atun', 'salmon', 'merluza', 'bacalao', 'gamba', 'gambas', 'langostino', 'langostinos',
+  'gouda', 'manchego', 'emmental', 'edam', 'cheddar', 'mozzarella', 'brie', 'fundido', 'rallado', 'curado', 'semicurado', 'tierno',
+  'blanco', 'negro', 'leche', 'relleno', 'rellenas', 'rellenos',
+];
+const strictVariants = (name) => {
+  const t = new Set(nameTokens(name));
+  return STRICT_VARIANTS.filter((v) => t.has(v)).join(',');
+};
+const strictKeys = (name) => keyWords(name, STRICT_KEYS + SUB_BRANDS.size).filter((k) => !SUB_BRANDS.has(k)).slice(0, STRICT_KEYS);
+
+// Índice por las 4 primeras letras de cada palabra: isSimilar acepta palabras
+// que EMPIEZAN por la clave («galleta» → «galletas»).
+const PREFIX = 4;
+const prefixOf = (w) => w.slice(0, PREFIX);
+const words = (name) => [...new Set((name ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+  .replace(/[^a-z0-9ñ]+/g, ' ').split(/\s+/).filter(Boolean))];
+
+/** Alternativas parecidas de `p` en otras cadenas: la más barata por kg/l/ud de cada una. */
+function similarOf(p, index) {
+  if (p.ppu == null || !p.unit) return [];
+  const keys = strictKeys(p.name);
+  if (!keys.length) return [];
+  const sourceVariants = variantsOf(p.name);
+  const sourceStrict = strictVariants(p.name);
+  const best = new Map();
+  for (const c of index.get(prefixOf(keys[0])) ?? []) {
+    if (c.store === p.store || c.ppu == null || c.unit !== p.unit) continue;
+    const ratio = c.ppu / p.ppu;
+    if (!(ratio >= 1 / PPU_RATIO && ratio <= PPU_RATIO)) continue;
+    if (!isSimilar(p, c, keys, sourceVariants) || strictVariants(c.name) !== sourceStrict) continue;
+    const cur = best.get(c.store);
+    if (!cur || c.ppu < cur.ppu || (c.ppu === cur.ppu && c.price < cur.price)) best.set(c.store, c);
+  }
+  return [...best.values()].sort((a, b) => a.ppu - b.ppu || a.price - b.price);
+}
+
+async function loadOwnBrand() {
+  if (!apiConfigured) throw new Error('Faltan PUBLIC_SUPABASE_URL y PUBLIC_SUPABASE_ANON_KEY: no se pueden generar las fichas de marca propia.');
+
+  // 1. Catálogo entero en ligero de todas las cadenas (precio de referencia).
+  const catalogs = new Map();
+  await pool(STORES.map(({ key }) => async () => {
+    const rows = await withRetries(() => restAll(`${tableOf(key)}?select=${columnsFor(key, 'es')}&published=eq.true&order=id.asc`));
+    catalogs.set(key, rows.map((r) => toProduct(key, r, REFERENCE_CP[key], 'es')).filter(valid));
+  }), CONCURRENCY);
+
+  const index = new Map();
+  for (const list of catalogs.values()) {
+    for (const p of list) {
+      for (const w of words(p.name)) {
+        const k = prefixOf(w);
+        if (!index.has(k)) index.set(k, []);
+        index.get(k).push(p);
+      }
+    }
+  }
+  for (const [k, list] of index) index.set(k, [...new Set(list)]);
+
+  // 2. Productos de marca propia con alternativas en suficientes cadenas.
+  const chosen = [];
+  for (const store of Object.keys(OWN_BRANDS)) {
+    for (const p of catalogs.get(store) ?? []) {
+      const brand = ownBrandOf(store, p.name);
+      if (!brand) continue;
+      const similar = similarOf(p, index);
+      if (similar.length >= MIN_SIMILAR_STORES) chosen.push({ p, brand, similar });
+    }
+  }
+
+  // 3. Ficha completa del producto (las alternativas van en ligero).
+  const wanted = new Map();
+  for (const { p } of chosen) {
+    if (!wanted.has(p.store)) wanted.set(p.store, []);
+    wanted.get(p.store).push(p.id);
+  }
+  const details = await fetchDetails(wanted);
+  const pages = [];
+  for (const { p, brand, similar } of chosen) {
+    const detail = details.get(p.uid);
+    if (!detail) continue;
+    pages.push({
+      kind: 'own',
+      store: p.store,
+      id: p.id,
+      detail: { ...detail, brand: detail.brand || brand },
+      same: [],
+      similarStores: similar.length,
+      cheaperStores: similar.filter((c) => c.ppu < p.ppu - 0.005).length,
+      similar: similar.slice(0, MAX_SIMILAR).map(({ uid, id, store, label, format, price, ppu, unit, image }) => (
+        { uid, id, store, label, format, price, ppu, unit, image }
+      )),
+    });
+  }
+  if (!pages.length) throw new Error('/producto/: no ha salido ninguna ficha de marca propia con alternativas.');
+  return pages;
+}
+
+let ownCached = null;
+
+/** Fichas de marca propia que se generan en HTML. Una sola carga por compilación. */
+export function loadOwnBrandPages() {
+  ownCached ??= loadOwnBrand().catch((error) => { ownCached = null; throw error; });
+  return ownCached;
+}
+
 /* ───────────────────── Enlazado interno de las fichas ───────────────────── */
 // Google da poco valor a una página que solo está en el sitemap: cada ficha
 // indexable recibe enlaces normales desde el directorio /productos/, desde la
@@ -145,6 +287,10 @@ export const linkItem = (page) => ({
   image: page.detail.image,
   stores: page.same.length + 1,
   low: Math.min(page.detail.price, ...page.same.map((s) => s.price)),
+  // Marca propia: nº de cadenas con alternativa y precio por unidad del producto.
+  ...(page.kind === 'own' ? {
+    kind: 'own', alternatives: page.similarStores, ppu: page.detail.ppu, unit: page.detail.unit, category: page.detail.category,
+  } : {}),
 });
 
 /** Directorio A-Z: [{ letter, items }] ordenado. */

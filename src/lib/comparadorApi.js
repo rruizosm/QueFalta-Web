@@ -288,20 +288,23 @@ function dropLeadingBrand(name) {
   return words.slice(i).join(' ');
 }
 
-/** Palabras clave de un producto: las 2 primeras que describen qué es. */
-export function keyWords(name) {
+/** Palabras clave de un producto: las `n` primeras (2 en el comparador) que describen qué es. */
+export function keyWords(name, n = 2) {
   return tokens(dropLeadingBrand(name))
     .filter((t) => t.length > 1 && !NOISE.has(t) && !/^\d/.test(t))
-    .slice(0, 2);
+    .slice(0, n);
 }
 
-function variantsOf(name) {
+/** Palabras del nombre ya normalizadas (minúsculas, sin acentos). */
+export const nameTokens = (name) => tokens(name);
+
+export function variantsOf(name) {
   const t = new Set(tokens(name));
   return VARIANTS.filter((v) => t.has(v));
 }
 
 /** ¿`candidate` es el mismo tipo de producto que `source`? */
-function isSimilar(source, candidate, keys, sourceVariants) {
+export function isSimilar(source, candidate, keys, sourceVariants) {
   if (source.unit && candidate.unit && source.unit !== candidate.unit) return false;
   const t = new Set(tokens(candidate.name));
   if (!keys.every((k) => t.has(k) || [...t].some((w) => w.startsWith(k)))) return false;

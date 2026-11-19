@@ -2,21 +2,27 @@
 import Layout from '../../../layouts/Layout.astro';
 import ProductPage from '../../../components/comparador/ProductPage.jsx';
 import { STORE_BY_KEY } from '../../../data/comparadorZonas.js';
-import { loadProductPages, relatedPages } from '../../../lib/productoSeo.js';
+import { loadOwnBrandPages, loadProductPages, relatedPages } from '../../../lib/productoSeo.js';
 import { largeImage, productImageAlt, productParams, productPath } from '../../../lib/productoApi.js';
 import { euro } from '../../../lib/preciosFormato.js';
 import '../../../styles/comparador.css';
 import '../../../styles/producto.css';
 
-// Fichas que se indexan: el mismo producto (EAN) en varias cadenas, generadas
-// en HTML al compilar con precios de referencia (ver lib/productoSeo.js). El
-// resto de fichas las sirve pages/producto/index.astro (noindex).
+// Fichas que se indexan, generadas en HTML al compilar con precios de referencia
+// (ver lib/productoSeo.js). Dos tipos:
+//  · el mismo producto (EAN) en varias cadenas: comparación exacta.
+//  · marca propia (Hacendado…), que no comparte EAN con nadie: alternativas
+//    parecidas de otras cadenas por precio por kilo, litro o unidad.
+// El resto de fichas las sirve pages/producto/index.astro (noindex).
 
 export async function getStaticPaths() {
   // En `astro dev` no se generan: cargarlas tarda ~40 s y bloquearía cada
   // primer clic. Las fichas se ven igual por la página 404 (ProductFallback).
   if (import.meta.env.DEV) return [];
-  const { pages, updated } = await loadProductPages();
+  const [{ pages: eanPages, updated }, ownLoaded] = await Promise.all([loadProductPages(), loadOwnBrandPages()]);
+  const taken = new Set(eanPages.map((p) => `${p.store}:${p.id}`));
+  const ownPages = ownLoaded.filter((p) => !taken.has(`${p.store}:${p.id}`));
+  const pages = [...eanPages, ...ownPages];
   // Nombre para el <title>: con la marca si el nombre no la lleva («Cerveza 33 cl»
   // de BM → «Mahou Maestra Cerveza 33 cl»). Si aun así dos fichas coinciden, se
   // añade el formato para que cada <title> sea único (guía de Google).
@@ -30,38 +36,76 @@ export async function getStaticPaths() {
   return pages.map((page, i) => {
     const format = page.detail.format;
     const titleName = seen.get(named[i].toLowerCase()) > 1 && format ? `${named[i]} (${format})` : named[i];
+    const related = relatedPages(page.kind === 'own' ? ownPages : eanPages, page);
     return {
       params: productParams(page.store, page.id),
-      props: { ...page, titleName, updated, related: relatedPages(pages, page) },
+      props: { ...page, titleName, updated, related },
     };
   });
 }
 
-const { store, id, detail: d, same, related, titleName } = Astro.props;
+const { kind, store, id, detail: d, same, similar = [], similarStores, cheaperStores, related, titleName } = Astro.props;
+const own = kind === 'own';
 // Página de la cadena en /supermercados/ (Bonpreu i Esclat usa otra clave).
 const storeSlug = store === 'esclat' ? 'bonpreu' : store;
 const storeName = STORE_BY_KEY[store].name;
-const offers = [d, ...same];
-const prices = offers.map((o) => o.price);
-const low = Math.min(...prices);
-const high = Math.max(...prices);
-const cheapest = offers.find((o) => o.price === low);
-const otherNames = same.map((o) => STORE_BY_KEY[o.store].name);
-const listNames = otherNames.length > 1 ? `${otherNames.slice(0, -1).join(', ')} y ${otherNames.at(-1)}` : otherNames[0];
-
 const name = d.label.replace(/[.\s]+$/, '');
-const title = `${titleName ?? name}: precio en ${storeName} y ${same.length} supermercados más | QuéFalta`;
-// Meta description corta (1–2 frases, guía de Google): sin repetir la cadena
-// cuando ella misma es la más barata, y el extra de la ficha solo si cabe.
-const cheapestName = STORE_BY_KEY[cheapest.store].name;
 const descName = (titleName ?? name).replace(/ \([^)]*\)$/, '');
 const joinNames = (list) => list.length > 1 ? `${list.slice(0, -1).join(', ')} y ${list.at(-1)}` : list[0];
-const tiedNames = same.filter((o) => o.price === low).map((o) => STORE_BY_KEY[o.store].name);
-const restNames = same.filter((o) => o !== cheapest).map((o) => STORE_BY_KEY[o.store].name);
-const baseDescription = cheapest === d
-  ? `${descName} a ${euro(d.price)} en ${storeName}, ${tiedNames.length ? `el precio más bajo junto a ${joinNames(tiedNames)}` : `más barato que en ${listNames}`}.`
-  : [`${descName} a ${euro(d.price)} en ${storeName}. Más barato en ${cheapestName}: ${euro(low)}`]
-      .map((s) => (restNames.length && s.length < 120 ? `${s}; también lo comparamos en ${joinNames(restNames)}.` : `${s}.`))[0];
+const UNIT_WORD = { kg: 'kilo', l: 'litro', ud: 'unidad' };
+const ppuOf = (p) => `${euro(p.ppu)}/${p.unit}`;
+
+let title;
+let baseDescription;
+let offersSchema;
+if (own) {
+  // Marca propia: precio y precio por unidad en su cadena + la alternativa
+  // parecida más barata (nunca «el mismo producto»).
+  title = `${titleName ?? name}: precio en ${storeName} y alternativas | QuéFalta`;
+  const cheapest = similar[0];
+  baseDescription = cheaperStores > 0
+    ? `${descName} a ${euro(d.price)} (${ppuOf(d)}) en ${storeName}. Alternativa parecida más barata en ${STORE_BY_KEY[cheapest.store].name}: ${ppuOf(cheapest)}.`
+    : `${descName} a ${euro(d.price)} (${ppuOf(d)}) en ${storeName}: lo más barato por ${UNIT_WORD[d.unit] ?? d.unit} frente a alternativas de ${similarStores} cadenas.`;
+  offersSchema = {
+    '@type': 'Offer',
+    price: d.price.toFixed(2),
+    priceCurrency: 'EUR',
+    url: new URL(productPath(store, id), Astro.site).href,
+    seller: { '@type': 'Organization', name: storeName },
+  };
+} else {
+  const offers = [d, ...same];
+  const prices = offers.map((o) => o.price);
+  const low = Math.min(...prices);
+  const high = Math.max(...prices);
+  const cheapest = offers.find((o) => o.price === low);
+  const otherNames = same.map((o) => STORE_BY_KEY[o.store].name);
+  const listNames = otherNames.length > 1 ? `${otherNames.slice(0, -1).join(', ')} y ${otherNames.at(-1)}` : otherNames[0];
+  title = `${titleName ?? name}: precio en ${storeName} y ${same.length} supermercados más | QuéFalta`;
+  // Meta description corta (1–2 frases, guía de Google): sin repetir la cadena
+  // cuando ella misma es la más barata, y el extra de la ficha solo si cabe.
+  const cheapestName = STORE_BY_KEY[cheapest.store].name;
+  const tiedNames = same.filter((o) => o.price === low).map((o) => STORE_BY_KEY[o.store].name);
+  const restNames = same.filter((o) => o !== cheapest).map((o) => STORE_BY_KEY[o.store].name);
+  baseDescription = cheapest === d
+    ? `${descName} a ${euro(d.price)} en ${storeName}, ${tiedNames.length ? `el precio más bajo junto a ${joinNames(tiedNames)}` : `más barato que en ${listNames}`}.`
+    : [`${descName} a ${euro(d.price)} en ${storeName}. Más barato en ${cheapestName}: ${euro(low)}`]
+        .map((s) => (restNames.length && s.length < 120 ? `${s}; también lo comparamos en ${joinNames(restNames)}.` : `${s}.`))[0];
+  offersSchema = {
+    '@type': 'AggregateOffer',
+    priceCurrency: 'EUR',
+    lowPrice: low.toFixed(2),
+    highPrice: high.toFixed(2),
+    offerCount: offers.length,
+    offers: offers.map((o) => ({
+      '@type': 'Offer',
+      price: o.price.toFixed(2),
+      priceCurrency: 'EUR',
+      ...(o === d ? { url: new URL(productPath(store, id), Astro.site).href } : {}),
+      seller: { '@type': 'Organization', name: STORE_BY_KEY[o.store].name },
+    })),
+  };
+}
 const extra = ' Con ingredientes e información nutricional.';
 const description = d.info.ingredients && baseDescription.length + extra.length <= 160 ? baseDescription + extra : baseDescription;
 
@@ -73,15 +117,18 @@ const url = new URL(productPath(store, id), Astro.site).href;
 const image = largeImage(d.image);
 const imageAlt = productImageAlt(d, storeName);
 
+const crumbs = [
+  { name: 'Comparador', item: new URL('/', Astro.site).href },
+  { name: storeName, item: new URL(`/supermercados/${storeSlug}/`, Astro.site).href },
+  ...(own ? [{ name: 'Marca blanca', item: new URL(`/supermercados/${storeSlug}/marca-blanca/`, Astro.site).href }] : []),
+  { name: d.label, item: url },
+];
+
 const schemas = [
   {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      { name: 'Comparador', item: new URL('/', Astro.site).href },
-      { name: storeName, item: new URL(`/supermercados/${storeSlug}/`, Astro.site).href },
-      { name: d.label, item: url },
-    ].map((c, i) => ({ '@type': 'ListItem', position: i + 1, ...c })),
+    itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, ...c })),
   },
   {
     '@context': 'https://schema.org',
@@ -93,20 +140,7 @@ const schemas = [
     description: d.info.description ?? description,
     ...gtin,
     url,
-    offers: {
-      '@type': 'AggregateOffer',
-      priceCurrency: 'EUR',
-      lowPrice: low.toFixed(2),
-      highPrice: high.toFixed(2),
-      offerCount: offers.length,
-      offers: offers.map((o) => ({
-        '@type': 'Offer',
-        price: o.price.toFixed(2),
-        priceCurrency: 'EUR',
-        ...(o === d ? { url } : {}),
-        seller: { '@type': 'Organization', name: STORE_BY_KEY[o.store].name },
-      })),
-    },
+    offers: offersSchema,
   },
 ];
 ---
@@ -117,5 +151,15 @@ const schemas = [
   jsonld={schemas}
   {...(image ? { image, imageAlt, twitterCard: 'summary' } : {})}
 >
-  <ProductPage client:load store={store} id={id} initial={d} initialSame={same} related={related} />
+  <ProductPage
+    client:load
+    store={store}
+    id={id}
+    initial={d}
+    initialSame={same}
+    initialSimilar={own ? similar : undefined}
+    similarStores={similarStores}
+    cheaperStores={cheaperStores}
+    related={related}
+  />
 </Layout>
