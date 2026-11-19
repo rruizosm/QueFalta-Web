@@ -3,7 +3,8 @@ import { catalogPath } from '../../lib/rutas.js';
 import { REFERENCE_CP, STORES, STORE_BY_KEY, regionFromPostalCode, storesForPostalCode } from '../../data/comparadorZonas.js';
 import { apiConfigured } from '../../lib/comparadorApi.js';
 import {
-  fetchProductDetail, findSameEan, nutritionTable, parseProductPath, parseProductQuery, productLink, productPath,
+  fetchProductDetail, findSameEan, largeImage, nutritionTable, parseProductPath, parseProductQuery, productImageAlt, productLink,
+  productPath,
 } from '../../lib/productoApi.js';
 import { Icon, ProductImage, StoreLogo, fmt, ppuText } from './ui.jsx';
 import CompareAside from './CompareAside.jsx';
@@ -280,7 +281,13 @@ function ProductView({ store: storeProp, id: idProp, initial, initialSame, relat
           {!d ? <Skeleton /> : (
             <div className="pd-hero">
               <div className="pd-media">
-                <ProductImage src={d.image} />
+                <ProductImage
+                  key={d.image ?? 'none'}
+                  src={largeImage(d.image)}
+                  fallback={d.image}
+                  alt={productImageAlt(d, storeInfo?.name, t.lang)}
+                  priority
+                />
                 {d.promo && <span className="pd-promo">{d.promo}</span>}
               </div>
               <div className="pd-summary">

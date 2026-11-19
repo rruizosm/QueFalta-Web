@@ -3,7 +3,7 @@ import Layout from '../../../layouts/Layout.astro';
 import ProductPage from '../../../components/comparador/ProductPage.jsx';
 import { STORE_BY_KEY } from '../../../data/comparadorZonas.js';
 import { loadProductPages, relatedPages } from '../../../lib/productoSeo.js';
-import { productParams, productPath } from '../../../lib/productoApi.js';
+import { largeImage, productImageAlt, productParams, productPath } from '../../../lib/productoApi.js';
 import { euro } from '../../../lib/preciosFormato.js';
 import '../../../styles/comparador.css';
 import '../../../styles/producto.css';
@@ -68,6 +68,10 @@ const description = d.info.ingredients && baseDescription.length + extra.length 
 const digits = (d.ean ?? '').replace(/\D/g, '');
 const gtin = digits.length === 13 ? { gtin13: digits } : digits.length === 8 ? { gtin8: digits } : digits.length === 14 ? { gtin14: digits } : digits ? { gtin: digits } : {};
 const url = new URL(productPath(store, id), Astro.site).href;
+// Misma URL de foto en la página, el schema, og:image y el sitemap de imágenes
+// (astro.config.mjs la lee del schema Product al generar el sitemap).
+const image = largeImage(d.image);
+const imageAlt = productImageAlt(d, storeName);
 
 const schemas = [
   {
@@ -83,7 +87,7 @@ const schemas = [
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: d.label,
-    ...(d.image ? { image: d.image } : {}),
+    ...(image ? { image } : {}),
     ...(d.brand ? { brand: { '@type': 'Brand', name: d.brand } } : {}),
     ...(d.category ? { category: d.category } : {}),
     description: d.info.description ?? description,
@@ -107,6 +111,11 @@ const schemas = [
 ];
 ---
 
-<Layout title={title} description={description} jsonld={schemas}>
+<Layout
+  title={title}
+  description={description}
+  jsonld={schemas}
+  {...(image ? { image, imageAlt, twitterCard: 'summary' } : {})}
+>
   <ProductPage client:load store={store} id={id} initial={d} initialSame={same} related={related} />
 </Layout>

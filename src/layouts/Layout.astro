@@ -11,9 +11,11 @@ interface Props {
   bare?: boolean;
   /** Imagen para previews al compartir (ruta absoluta dentro del sitio). */
   image?: string;
-  /** Dimensiones reales de la imagen social. */
+  /** Dimensiones reales de la imagen social (se omiten si no se conocen). */
   imageWidth?: number;
   imageHeight?: number;
+  /** Texto alternativo de la imagen social (por defecto, el título). */
+  imageAlt?: string;
   /** `summary` favorece una miniatura cuadrada en lugar de una tarjeta grande. */
   twitterCard?: 'summary' | 'summary_large_image';
   /** Pide a los buscadores que no indexen la página (p. ej. páginas-puente). */
@@ -35,8 +37,9 @@ const {
   description = 'Organiza la compra en grupo: lista compartida en tiempo real, carrito por grupos y catálogo de veintiún supermercados. ¿Qué falta?',
   bare = false,
   image = '/og.png',
-  imageWidth = 1200,
-  imageHeight = 630,
+  imageWidth = image === '/og.png' ? 1200 : undefined,
+  imageHeight = image === '/og.png' ? 630 : undefined,
+  imageAlt,
   twitterCard = 'summary_large_image',
   noindex = false,
   jsonld,
@@ -54,6 +57,10 @@ const pageUrl = (path: string) => {
 };
 const canonical = pageUrl(Astro.url.pathname);
 const ogImage = new URL(image, Astro.site).href;
+// Tipo por la extensión: las fichas usan la foto (JPG) de la cadena.
+const ogImageType = /\.png(\?|$)/i.test(ogImage) ? 'image/png'
+  : /\.jpe?g(\?|$)/i.test(ogImage) ? 'image/jpeg'
+  : /\.webp(\?|$)/i.test(ogImage) ? 'image/webp' : null;
 const ogLocale = lang === 'ca' ? 'ca_ES' : 'es_ES';
 const ogLocaleAlt = alternates ? (lang === 'ca' ? 'es_ES' : 'ca_ES') : null;
 
@@ -141,10 +148,10 @@ const jsonLdText = (value: unknown) => JSON.stringify(value)
     <meta property="og:image" content={ogImage} />
     <!-- Dimensiones reales para que cada cliente pueda elegir entre miniatura
          cuadrada o tarjeta panorámica sin recortar la imagen incorrectamente. -->
-    <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content={String(imageWidth)} />
-    <meta property="og:image:height" content={String(imageHeight)} />
-    <meta property="og:image:alt" content={title} />
+    {ogImageType && <meta property="og:image:type" content={ogImageType} />}
+    {imageWidth && <meta property="og:image:width" content={String(imageWidth)} />}
+    {imageHeight && <meta property="og:image:height" content={String(imageHeight)} />}
+    <meta property="og:image:alt" content={imageAlt ?? title} />
     <meta name="twitter:card" content={twitterCard} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />

@@ -19,6 +19,42 @@ const decodeId = (id) => id.replace(/~/g, '*');
 
 export const productPath = (store, id, lang = 'es') => `${PRODUCT_BASE[lang] ?? PRODUCT_BASE.es}${store}/${encodeId(id)}/`;
 
+/* ───────────────────────────── Imagen ───────────────────────────── */
+
+/**
+ * Foto grande de la ficha: la que se ve en la página y la que se declara a los
+ * buscadores (schema Product, og:image, sitemap de imágenes), siempre la MISMA
+ * URL para que Google la asocie a la ficha. El catálogo guarda miniaturas de
+ * 300–350 px; solo se agrandan las CDN cuyo tamaño mayor está comprobado
+ * (2026-11-19). Consum y BM dan 404 en cualquier otro tamaño y Ametller ya
+ * sirve el original (1200 px): se quedan como están.
+ */
+export function largeImage(url) {
+  if (!url) return url;
+  // Mercadona (imgix): redimensiona a demanda.
+  if (url.startsWith('https://prod-mercadona.imgix.net/')) {
+    return url.replace(/([?&])h=300(?=&|$)/, '$1h=600').replace(/([?&])w=300(?=&|$)/, '$1w=600');
+  }
+  // Carrefour: hd_1500x_ existe y pesa menos que hd_700x_.
+  if (url.startsWith('https://static.carrefour.es/hd_350x_/')) return url.replace('/hd_350x_/', '/hd_1500x_/');
+  // Alcampo (Ocado): solo admite tamaños de una lista; 640x640 es el mayor probado.
+  if (url.startsWith('https://www.compraonline.alcampo.es/images-v3/')) return url.replace(/\/300x300\.jpg$/, '/640x640.jpg');
+  return url;
+}
+
+/** Texto alternativo de la foto: «Leche entera Hacendado 1 L de Mercadona». */
+export function productImageAlt(d, storeName, lang = 'es') {
+  if (!d?.label) return '';
+  const label = d.label.replace(/[.\s]+$/, '');
+  const brand = d.brand?.trim();
+  const named = brand && !label.toLowerCase().includes(brand.toLowerCase()) ? `${label} ${brand}` : label;
+  const format = d.format?.trim();
+  const full = format && !named.toLowerCase().includes(format.toLowerCase()) ? `${named} ${format}` : named;
+  if (!storeName) return full;
+  const of = lang === 'ca' && /^[aeiouàèéíòóúh]/i.test(storeName) ? "d'" : 'de ';
+  return `${full} ${of}${storeName}`;
+}
+
 /**
  * Enlace a una ficha desde la interfaz (comparador, lateral, «mismo producto»).
  * Solo ~3.200 fichas tienen página propia; el resto lo pinta la página base

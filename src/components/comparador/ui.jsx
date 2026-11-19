@@ -53,10 +53,18 @@ export function StoreLogo({ store, size = 28 }) {
 
 /* ───────────────────────── Tarjeta de producto ───────────────────────── */
 
-export function ProductImage({ src }) {
-  const [broken, setBroken] = useState(!src);
-  if (broken) return <span className="cmp-noimg" aria-hidden="true"><Icon.basket width="34" height="34" /></span>;
-  return <img src={src} alt="" loading="lazy" onError={() => setBroken(true)} />;
+/**
+ * Foto de producto. `fallback`: miniatura a la que volver si falla `src` (la
+ * versión grande de la ficha). `priority`: imagen principal de la página, se
+ * descarga enseguida en lugar de en diferido.
+ */
+export function ProductImage({ src, fallback, alt = '', priority = false }) {
+  const [current, setCurrent] = useState(src || fallback || null);
+  if (!current) return <span className="cmp-noimg" aria-hidden="true"><Icon.basket width="34" height="34" /></span>;
+  const onError = () => setCurrent(fallback && current !== fallback ? fallback : null);
+  return priority
+    ? <img src={current} alt={alt} width="600" height="600" decoding="async" fetchpriority="high" onError={onError} />
+    : <img src={current} alt={alt} loading="lazy" onError={onError} />;
 }
 
 export const ppuText = (p) => (p.ppu != null ? `${fmt(p.ppu)}/${UNIT_LABEL[p.unit]}` : null);
