@@ -15,9 +15,9 @@ export const STORES = [
     slug: 'mercadona',
     name: 'Mercadona',
     logo: '/stores/mercadona.png',
-    title: 'Catálogo de Mercadona con todos sus precios reales | QuéFalta',
+    title: 'Productos y precios de Mercadona: catálogo completo | QuéFalta',
     description:
-      'Consulta gratis en la web el catálogo completo de Mercadona: precios reales, ficha con ingredientes y alérgenos, y nombres también en catalán. Y haz tu lista compartida, gratis.',
+      'Todos los productos de Mercadona con su precio real, por secciones y con buscador. Ficha con ingredientes y alérgenos, y nombres también en catalán. Gratis y sin registro.',
     summary:
       'El catálogo completo con precios reales, la ficha de producto más detallada y nombres también en catalán.',
     intro:

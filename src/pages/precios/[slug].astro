@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import { STORE_BY_KEY } from '../../data/comparadorZonas.js';
 import { loadPrecios } from '../../lib/preciosSeo.js';
 import { CATEGORIES } from '../../data/preciosProductos.js';
+import { TITLE_TEST_SLUGS } from '../../data/preciosTituloTest.js';
 import { euro, fechaLarga, mesAnio, UNIT_NAME } from '../../lib/preciosFormato.js';
 import '../../styles/precios.css';
 
@@ -25,6 +26,11 @@ const unit = UNIT_NAME[p.unit];
 const isCheapest = (r) => r.ppu <= p.best.ppu + 0.0001;
 const ties = p.rows.filter(isCheapest).length;
 const category = CATEGORIES.find((c) => c.id === p.category);
+
+// Prueba de título en curso: ver src/data/preciosTituloTest.js.
+const title = TITLE_TEST_SLUGS.has(p.slug)
+  ? `Precio de ${p.name.toLowerCase()}: desde ${euro(p.best.ppu)}/${p.unit} en ${best.name} | QuéFalta`
+  : `Precio de ${p.name.toLowerCase()} en ${p.rows.length} supermercados (${mesAnio(updated)}) | QuéFalta`;
 
 const faqs = [
   {
@@ -68,7 +74,7 @@ const schemas = [
 ---
 
 <Layout
-  title={`Precio de ${p.name.toLowerCase()} en ${p.rows.length} supermercados (${mesAnio(updated)}) | QuéFalta`}
+  title={title}
   description={`Compara el precio de ${p.name.toLowerCase()} en ${p.rows.length} supermercados. Desde ${euro(p.best.ppu)}/${p.unit} en ${best.name}. Hasta un ${p.spreadPct} % de diferencia entre cadenas.`}
   jsonld={schemas}
 >
