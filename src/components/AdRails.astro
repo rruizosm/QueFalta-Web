@@ -1,0 +1,91 @@
+---
+// Anuncios laterales de AdSense (160×600 y 300×600) a los lados del contenido.
+//
+// - Solo en pantallas anchas: el contenido llega a 1320 px. El izquierdo
+//   (160 px) cabe desde 1680 px; el derecho (300 px) desde 1960 px. Cada uno
+//   se muestra y se pide solo si cabe (no se carga ningún anuncio oculto).
+// - `after`: selector CSS de un elemento tras el cual empiezan los laterales.
+//   En la portada es la sección de bienvenida (`.cmp-hero`): mientras se ve,
+//   no hay anuncios; cuando sale de la pantalla, aparecen.
+// - El anuncio solo se pide la primera vez que el lateral es visible.
+// - Los laterales van en el margen, sin tapar contenido.
+interface Props {
+  after?: string;
+}
+const { after } = Astro.props;
+
+const CLIENT = 'ca-pub-9749911986318862';
+const SLOT_LEFT = '5392204033';
+const SLOT_RIGHT = '3037503430'; // 300×600
+---
+
+<aside class="qf-rail qf-rail-left" aria-label="Publicidad" data-after={after} hidden>
+  <ins
+    class="adsbygoogle"
+    style="display:inline-block;width:160px;height:600px"
+    data-ad-client={CLIENT}
+    data-ad-slot={SLOT_LEFT}
+  ></ins>
+</aside>
+<aside class="qf-rail qf-rail-right" aria-label="Publicidad" data-after={after} hidden>
+  <ins
+    class="adsbygoogle"
+    style="display:inline-block;width:300px;height:600px"
+    data-ad-client={CLIENT}
+    data-ad-slot={SLOT_RIGHT}
+  ></ins>
+</aside>
+
+<style is:global>
+  .qf-rail {
+    position: fixed;
+    top: 84px;
+    width: 160px;
+    height: 600px;
+    z-index: 5;
+  }
+  .qf-rail[hidden] { display: none; }
+  .qf-rail-left { left: calc(50% - 832px); }
+  .qf-rail-right { width: 300px; right: calc(50% - 972px); }
+  @media (max-width: 1679px) {
+    .qf-rail-left { display: none !important; }
+  }
+  @media (max-width: 1959px) {
+    .qf-rail-right { display: none !important; }
+  }
+</style>
+
+<script>
+  (function () {
+    const rails = Array.from(document.querySelectorAll<HTMLElement>('.qf-rail'));
+    if (!rails.length) return;
+    const pushed = new WeakSet<HTMLElement>();
+    const after = rails[0].dataset.after;
+
+    function show(on: boolean) {
+      for (const r of rails) {
+        r.hidden = !on;
+        if (on && getComputedStyle(r).display !== 'none' && !pushed.has(r)) {
+          pushed.add(r);
+          try {
+            ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+          } catch (e) {}
+        }
+      }
+    }
+
+    function update() {
+      if (!after) return show(true);
+      const el = document.querySelector(after);
+      // Sin la sección de referencia (otra vista de la home) no hay laterales.
+      if (!el) return show(false);
+      show(el.getBoundingClientRect().bottom < 90);
+    }
+
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    // La home pinta su contenido con React: reintenta cuando cambia el DOM.
+    if (after) new MutationObserver(update).observe(document.querySelector('main') || document.body, { childList: true, subtree: true });
+    update();
+  })();
+</script>
