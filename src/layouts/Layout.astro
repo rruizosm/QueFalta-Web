@@ -2,7 +2,6 @@
 import CookieConsent from '../components/CookieConsent.astro';
 import AppStoreHelp from '../components/AppStoreHelp.astro';
 import SiteNav from '../components/SiteNav.astro';
-import AmazonPromo from '../components/AmazonPromo.astro';
 import AdRails from '../components/AdRails.astro';
 
 interface Props {
@@ -238,7 +237,6 @@ const jsonLdText = (value: unknown) => JSON.stringify(value)
     )}
 
     <AppStoreHelp lang={lang} />
-    {thirdParty && <AmazonPromo lang={lang} />}
     {showAdRails && <AdRails after={isHome ? '.cmp-hero' : undefined} />}
 
     <style is:global>
