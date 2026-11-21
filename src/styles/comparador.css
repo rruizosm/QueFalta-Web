@@ -219,6 +219,8 @@ html.cmp-locked, html.cmp-locked body { overflow: hidden; }
 .cmp-filter button.is-on { color: var(--accent); border-color: var(--accent); background: var(--accent-light); }
 
 .cmp-grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+/* Anuncio entre productos: ocupa una fila entera de la cuadrícula. */
+.cmp-ad-feed { grid-column: 1 / -1; min-height: 120px; overflow: hidden; text-align: center; }
 .cmp-card {
   position: relative; display: flex; flex-direction: column; overflow: hidden;
   border-radius: 20px; background: var(--surface); border: 1px solid var(--border);

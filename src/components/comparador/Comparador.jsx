@@ -7,6 +7,7 @@ import { offersPagePath } from '../../lib/ofertas.js';
 import { Icon, ProductCard, SkeletonCard } from './ui.jsx';
 import StoreBrowser from './StoreBrowser.jsx';
 import KitchenPicks from './KitchenPicks.jsx';
+import { withAds } from './AdInFeed.jsx';
 import PostalModal, { readCp, saveCp } from './PostalModal.jsx';
 import { LangProvider, useT } from './i18n.jsx';
 
@@ -413,14 +414,14 @@ function ComparadorPage() {
             {results.length > 0 ? (
               <>
                 <div className="cmp-grid-cards">
-                  {results.slice(0, visible).map((p, i) => (
+                  {withAds(results.slice(0, visible).map((p, i) => (
                     <ProductCard
                       key={p.uid}
                       index={i}
                       product={p}
                       isBest={p.ppu != null && results.length > 1 && p.ppu <= bestPpu[p.unit] + 0.0001}
                     />
-                  ))}
+                  )))}
                   {loading && results.length < 8 && Array.from({ length: 4 }, (_, i) => <SkeletonCard key={`sk${i}`} />)}
                 </div>
                 {results.length > visible && (

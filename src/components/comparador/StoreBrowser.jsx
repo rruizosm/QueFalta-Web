@@ -6,6 +6,7 @@ import { CATALOG_OFFERS, offersPagePath } from '../../lib/ofertas.js';
 import { dropsPagePath, hasDrops } from '../../lib/bajadas.js';
 import { Icon, ProductCard, SkeletonCard, StoreLogo } from './ui.jsx';
 import { useT } from './i18n.jsx';
+import { withAds } from './AdInFeed.jsx';
 
 // Vista de un supermercado: navegador de categorías a la izquierda y sus
 // productos a la derecha. La categoría va en la URL (la gestiona Comparador,
@@ -413,9 +414,9 @@ export default function StoreBrowser({ storeKey, heading, categoryId, offersOnly
           ) : (
             <>
               <div className="cmp-grid-cards">
-                {items.map((p, i) => (
+                {withAds(items.map((p, i) => (
                   <ProductCard key={p.uid} index={i % PAGE} product={p} isBest={false} />
-                ))}
+                )))}
               </div>
               {hasMore && (
                 <div className="cmp-more">
