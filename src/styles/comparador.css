@@ -383,6 +383,8 @@ html.cmp-locked, html.cmp-locked body { overflow: hidden; }
 .cmp-sheet-sub span { font-size: 12.5px; font-weight: 500; color: var(--ink-faint); }
 
 .cmp-rank { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+/* Anuncio móvil 320×100 dentro del ranking: centrado, sin desbordar. */
+.cmp-ad-compare { display: flex; justify-content: center; min-height: 100px; overflow: hidden; }
 .cmp-rank-row {
   display: flex; align-items: center; gap: 12px; padding: 12px 14px 12px 10px; border-radius: 16px;
   border: 1px solid var(--border); background: var(--surface);

@@ -36,28 +36,71 @@ export function useGridColumns(fallback = 2) {
   return [cols, setEl];
 }
 
-// variant="card": hueco del tamaño de una tarjeta de producto dentro de una fila
-// deslizable (p. ej. «Las mayores bajadas»); pide un rectángulo en vez de una franja.
+// variant="card": hueco de 300×250 dentro de una fila deslizable (p. ej. «Las
+// mayores bajadas / rebajas»), con su propia unidad fija en AdSense.
+const AD_CARD_SLOT = '2120378713';
 export default function AdInFeed({ variant = 'row' }) {
   const ref = useRef(null);
   const card = variant === 'card';
+  const slot = card ? AD_CARD_SLOT : AD_FEED_SLOT;
   useEffect(() => {
-    if (!AD_FEED_SLOT || !ref.current) return;
+    if (!slot || !ref.current) return;
     try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
   }, []);
-  if (!AD_FEED_SLOT) return null;
+  if (!slot) return null;
   return (
     <aside className={card ? 'cmp-ad-feed cmp-ad-card' : 'cmp-ad-feed'} aria-label="Publicidad">
+      {card ? (
+        <ins
+          ref={ref}
+          className="adsbygoogle"
+          style={{ display: 'inline-block', width: '300px', height: '250px' }}
+          data-ad-client={AD_CLIENT}
+          data-ad-slot={slot}
+        />
+      ) : (
+        <ins
+          ref={ref}
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-client={AD_CLIENT}
+          data-ad-slot={slot}
+          data-ad-format="auto"
+          data-full-width-responsive="true"
+        />
+      )}
+    </aside>
+  );
+}
+
+// Banner fijo 320×100 solo para móvil (≤640 px), dentro del ranking «Comparar
+// precios» de la ficha de producto. No se pide ni se pinta en pantallas anchas.
+const AD_COMPARE_SLOT = '6362876059';
+export function AdCompareMobile() {
+  const ref = useRef(null);
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)');
+    const on = () => setMobile(mq.matches);
+    on();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  useEffect(() => {
+    if (!mobile || !ref.current) return;
+    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+  }, [mobile]);
+  if (!mobile) return null;
+  return (
+    <li className="cmp-ad-compare" aria-label="Publicidad">
       <ins
         ref={ref}
         className="adsbygoogle"
-        style={{ display: 'block' }}
+        style={{ display: 'inline-block', width: '320px', height: '100px' }}
         data-ad-client={AD_CLIENT}
-        data-ad-slot={AD_FEED_SLOT}
-        data-ad-format={card ? 'rectangle' : 'auto'}
-        data-full-width-responsive={card ? 'false' : 'true'}
+        data-ad-slot={AD_COMPARE_SLOT}
       />
-    </aside>
+    </li>
   );
 }
 

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
+import { AdCompareMobile } from './AdInFeed.jsx';
 import { STORE_BY_KEY } from '../../data/comparadorZonas.js';
 import { findSimilar, keyWords } from '../../lib/comparadorApi.js';
 import { productLink } from '../../lib/productoApi.js';
@@ -102,13 +103,15 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
         </h3>
 
         <ol className="cmp-rank">
+          <AdCompareMobile key="ad-top" />
           {rows.map((r, i) => {
             const diff = r.ppu != null && best.ppu != null ? r.ppu - best.ppu : 0;
             const isBest = done && rows.length > 1 && r.ppu != null && diff < 0.0001;
             const selected = r.uid === product.uid;
             const Row = selected ? 'div' : 'a';
             return (
-              <li key={r.uid} className={`cmp-rank-row${isBest ? ' is-best' : ''}${selected ? ' is-selected' : ' is-link'}`}>
+              <Fragment key={r.uid}>
+              <li className={`cmp-rank-row${isBest ? ' is-best' : ''}${selected ? ' is-selected' : ' is-link'}`}>
                 <Row className="cmp-rank-link" {...(selected ? {} : { href: productLink(r.store, r.id, t.lang) })}>
                   <span className="cmp-rank-pos">{i + 1}</span>
                   <div className="cmp-rank-thumb">
@@ -136,6 +139,8 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
                   </div>
                 </Row>
               </li>
+              {i === 1 && rows.length > 2 && <AdCompareMobile key="ad-mid" />}
+              </Fragment>
             );
           })}
           {status === 'loading' && Array.from({ length: 3 }, (_, i) => (
