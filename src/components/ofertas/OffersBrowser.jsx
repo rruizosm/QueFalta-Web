@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { LangProvider } from '../comparador/i18n.jsx';
 import { Icon, ProductCard, SkeletonCard } from '../comparador/ui.jsx';
+import { withAds, withCardAds, useGridColumns } from '../comparador/AdInFeed.jsx';
 import { KIND_LABEL, KIND_ORDER, byDiscount, unpackOffer } from '../../lib/ofertas.js';
 
 // Ofertas de un súper en /ofertas/<slug>/: bloque de mayores rebajas y, debajo,
@@ -182,13 +183,14 @@ function TopRow({ c, items }) {
         </div>
       </div>
       <div className="ofb-top-row" ref={ref}>
-        {items.map((p, i) => <ProductCard key={p.uid} index={i} product={p} isBest={false} />)}
+        {withCardAds(items.map((p, i) => <ProductCard key={p.uid} index={i} product={p} isBest={false} />), 2)}
       </div>
     </section>
   );
 }
 
 function Browser({ lang, store, categories, kinds, top, initial, total, dataUrl, mode = 'ofertas' }) {
+  const [gridCols, gridRef] = useGridColumns();
   const base = COPY[lang] ?? COPY.es;
   const c = mode === 'bajadas' ? { ...base, ...(DROP_COPY[lang] ?? DROP_COPY.es) } : base;
   const [rows, setRows] = useState(null);
@@ -328,8 +330,8 @@ function Browser({ lang, store, categories, kinds, top, initial, total, dataUrl,
             </div>
           ) : (
             <>
-              <div className="cmp-grid-cards">
-                {shown.map((p, i) => <ProductCard key={p.uid} index={i % PAGE} product={p} isBest={false} />)}
+              <div className="cmp-grid-cards" ref={gridRef}>
+                {withAds(shown.map((p, i) => <ProductCard key={p.uid} index={i % PAGE} product={p} isBest={false} />), gridCols)}
               </div>
               {hasMore && (
                 <div className="cmp-more">

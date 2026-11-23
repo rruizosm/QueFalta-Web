@@ -36,12 +36,14 @@
 }
 .ofb-top-arrows button:hover { border-color: var(--accent); color: var(--accent); }
 .ofb-top-row {
-  display: grid; grid-auto-flow: column; grid-auto-columns: 220px; gap: 16px;
+  display: flex; gap: 16px;
   margin: 16px -24px 0; padding: 4px 24px 18px; overflow-x: auto; scroll-snap-type: x mandatory;
   scroll-padding: 0 24px; scrollbar-width: none;
 }
 .ofb-top-row::-webkit-scrollbar { display: none; }
-.ofb-top-row > * { scroll-snap-align: start; }
+.ofb-top-row > * { scroll-snap-align: start; flex: 0 0 220px; }
+/* Anuncio dentro de la fila: ocupa el hueco de una tarjeta, pero con ancho para un 300×250. */
+.ofb-top-row > .cmp-ad-card { flex-basis: 300px; min-height: 0; align-self: stretch; display: flex; align-items: center; justify-content: center; }
 
 /* Lateral: tipo de oferta y categorías, plegables y con recuento. */
 .ofb-layout { margin-top: 12px; }
@@ -91,7 +93,9 @@
   .of-catalog { width: 100%; }
   .of-flyer .cmp-promo-btn { width: 100%; justify-content: center; text-align: center; padding: 12px 16px; line-height: 1.25; }
   .ofb-top-arrows { display: none; }
-  .ofb-top-row { grid-auto-columns: 46%; gap: 10px; margin: 14px -16px 0; padding: 4px 16px 16px; scroll-padding: 0 16px; }
+  .ofb-top-row > * { flex-basis: 46%; }
+  .ofb-top-row > .cmp-ad-card { flex-basis: 300px; }
+  .ofb-top-row { gap: 10px; margin: 14px -16px 0; padding: 4px 16px 16px; scroll-padding: 0 16px; }
 }
 
 /* Precio, tachado y €/kg no caben en una línea: el €/kg baja. */

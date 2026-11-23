@@ -6,7 +6,7 @@ import { CATALOG_OFFERS, offersPagePath } from '../../lib/ofertas.js';
 import { dropsPagePath, hasDrops } from '../../lib/bajadas.js';
 import { Icon, ProductCard, SkeletonCard, StoreLogo } from './ui.jsx';
 import { useT } from './i18n.jsx';
-import { withAds } from './AdInFeed.jsx';
+import { withAds, useGridColumns } from './AdInFeed.jsx';
 
 // Vista de un supermercado: navegador de categorías a la izquierda y sus
 // productos a la derecha. La categoría va en la URL (la gestiona Comparador,
@@ -173,6 +173,7 @@ function DropsBanner({ storeKey, count, className = '' }) {
 
 export default function StoreBrowser({ storeKey, heading, categoryId, offersOnly = false, cp, referenceZone = false, onBack, onCategory, onEditZone }) {
   const t = useT();
+  const [gridCols, gridRef] = useGridColumns();
   const store = STORE_BY_KEY[storeKey];
   const [tree, setTree] = useState([]);
   const [treeStatus, setTreeStatus] = useState('loading');
@@ -413,10 +414,10 @@ export default function StoreBrowser({ storeKey, heading, categoryId, offersOnly
             </div>
           ) : (
             <>
-              <div className="cmp-grid-cards">
+              <div className="cmp-grid-cards" ref={gridRef}>
                 {withAds(items.map((p, i) => (
                   <ProductCard key={p.uid} index={i % PAGE} product={p} isBest={false} />
-                )))}
+                )), gridCols)}
               </div>
               {hasMore && (
                 <div className="cmp-more">
