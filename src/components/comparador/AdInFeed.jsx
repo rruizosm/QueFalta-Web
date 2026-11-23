@@ -73,33 +73,40 @@ export default function AdInFeed({ variant = 'row' }) {
   );
 }
 
-// Banner fijo 320×100 solo para móvil (≤640 px), dentro del ranking «Comparar
-// precios» de la ficha de producto. No se pide ni se pinta en pantallas anchas.
+// Banner fijo 320×100 dentro del ranking «Comparar precios» de la ficha de
+// producto (móvil y web). Solo se pide si el ranking mide al menos 320 px de
+// ancho: en el lateral de escritorio más estrecho no cabe y no se pinta.
 const AD_COMPARE_SLOT = '6362876059';
-export function AdCompareMobile() {
-  const ref = useRef(null);
-  const [mobile, setMobile] = useState(false);
+const AD_COMPARE_W = 320;
+export function AdCompare() {
+  const liRef = useRef(null);
+  const insRef = useRef(null);
+  const [fit, setFit] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 640px)');
-    const on = () => setMobile(mq.matches);
-    on();
-    mq.addEventListener('change', on);
-    return () => mq.removeEventListener('change', on);
+    const el = liRef.current;
+    if (!el) return;
+    const measure = () => setFit(el.clientWidth >= AD_COMPARE_W);
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
   useEffect(() => {
-    if (!mobile || !ref.current) return;
+    if (!fit || !insRef.current) return;
     try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-  }, [mobile]);
-  if (!mobile) return null;
+  }, [fit]);
   return (
-    <li className="cmp-ad-compare" aria-label="Publicidad">
-      <ins
-        ref={ref}
-        className="adsbygoogle"
-        style={{ display: 'inline-block', width: '320px', height: '100px' }}
-        data-ad-client={AD_CLIENT}
-        data-ad-slot={AD_COMPARE_SLOT}
-      />
+    <li ref={liRef} className={`cmp-ad-compare${fit ? ' is-on' : ''}`} aria-label="Publicidad">
+      {fit && (
+        <ins
+          ref={insRef}
+          className="adsbygoogle"
+          style={{ display: 'inline-block', width: `${AD_COMPARE_W}px`, height: '100px' }}
+          data-ad-client={AD_CLIENT}
+          data-ad-slot={AD_COMPARE_SLOT}
+        />
+      )}
     </li>
   );
 }

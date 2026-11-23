@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
-import { AdCompareMobile } from './AdInFeed.jsx';
+import { AdCompare } from './AdInFeed.jsx';
 import { STORE_BY_KEY } from '../../data/comparadorZonas.js';
 import { findSimilar, keyWords } from '../../lib/comparadorApi.js';
 import { productLink } from '../../lib/productoApi.js';
@@ -103,7 +103,7 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
         </h3>
 
         <ol className="cmp-rank">
-          <AdCompareMobile key="ad-top" />
+          <AdCompare key="ad-top" />
           {rows.map((r, i) => {
             const diff = r.ppu != null && best.ppu != null ? r.ppu - best.ppu : 0;
             const isBest = done && rows.length > 1 && r.ppu != null && diff < 0.0001;
@@ -139,7 +139,8 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
                   </div>
                 </Row>
               </li>
-              {i === 1 && rows.length > 2 && <AdCompareMobile key="ad-mid" />}
+              {/* Anuncio tras cada 2 precios y tras el último (si ya cargó y hay comparación). */}
+              {((i + 1) % 2 === 0 || (done && rows.length > 1 && i === rows.length - 1)) && <AdCompare key="ad-after" />}
               </Fragment>
             );
           })}
