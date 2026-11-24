@@ -163,7 +163,7 @@ const es = {
   pdSameBadge: 'Mismo producto',
   pdSummary: ({ name, price, store, n, low, lowStore, high, highStore, pct, here }) => (here
     ? `${name} cuesta ${price} en ${store}, el precio más bajo de las ${n} cadenas que lo venden. En ${highStore} cuesta ${high}, un ${pct} % más.`
-    : `${name} cuesta ${price} en ${store}. Es el mismo producto que venden ${n - 1} cadenas más: el precio más bajo es ${low} en ${lowStore} y el más alto, ${high} en ${highStore}, hasta un ${pct} % de diferencia.`),
+    : `${name} cuesta ${price} en ${store}. Es el mismo producto que venden ${n - 1 === 1 ? '1 cadena más' : `${n - 1} cadenas más`}: el precio más bajo es ${low} en ${lowStore} y el más alto, ${high} en ${highStore}, hasta un ${pct} % de diferencia.`),
   pdSimilarTitle: 'Alternativas parecidas en otros supermercados',
   pdSimilarLead: 'Productos del mismo tipo con otra marca o formato: no son el mismo producto. Ordenados por precio por kilo, litro o unidad.',
   pdSimilarRef: 'Precios de referencia de cada cadena, emparejados por nombre y tipo de producto: revisa el formato antes de decidir. Elige tu código postal para comparar con los súper de tu zona.',
@@ -396,7 +396,7 @@ const ca = {
   pdSameBadge: 'Mateix producte',
   pdSummary: ({ name, price, store, n, low, lowStore, high, highStore, pct, here }) => (here
     ? `${name} costa ${price} a ${store}, el preu més baix de les ${n} cadenes que el venen. A ${highStore} costa ${high}, un ${pct} % més.`
-    : `${name} costa ${price} a ${store}. És el mateix producte que venen ${n - 1} cadenes més: el preu més baix és ${low} a ${lowStore} i el més alt, ${high} a ${highStore}, fins a un ${pct} % de diferència.`),
+    : `${name} costa ${price} a ${store}. És el mateix producte que venen ${n - 1 === 1 ? '1 cadena més' : `${n - 1} cadenes més`}: el preu més baix és ${low} a ${lowStore} i el més alt, ${high} a ${highStore}, fins a un ${pct} % de diferència.`),
   pdSimilarTitle: 'Alternatives semblants en altres supermercats',
   pdSimilarLead: "Productes del mateix tipus amb una altra marca o format: no són el mateix producte. Ordenats per preu per quilo, litre o unitat.",
   pdSimilarRef: 'Preus de referència de cada cadena, aparellats per nom i tipus de producte: revisa el format abans de decidir. Tria el teu codi postal per comparar amb els súpers de la teva zona.',

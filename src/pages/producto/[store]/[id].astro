@@ -81,7 +81,7 @@ if (own) {
   const cheapest = offers.find((o) => o.price === low);
   const otherNames = same.map((o) => STORE_BY_KEY[o.store].name);
   const listNames = otherNames.length > 1 ? `${otherNames.slice(0, -1).join(', ')} y ${otherNames.at(-1)}` : otherNames[0];
-  title = `${titleName ?? name}: precio en ${storeName} y ${same.length} supermercados más | QuéFalta`;
+  title = `${titleName ?? name}: precio en ${storeName} y ${same.length} ${same.length === 1 ? 'supermercado más' : 'supermercados más'} | QuéFalta`;
   // Meta description corta (1–2 frases, guía de Google): sin repetir la cadena
   // cuando ella misma es la más barata, y el extra de la ficha solo si cabe.
   const cheapestName = STORE_BY_KEY[cheapest.store].name;

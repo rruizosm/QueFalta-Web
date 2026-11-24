@@ -16,7 +16,7 @@ import {
 } from './comparadorApi.js';
 import { EAN_STORES, detailColumns, detailScore, eanVariants, toDetail } from './productoApi.js';
 
-export const MIN_STORES = 3;
+export const MIN_STORES = 2;
 const BATCH = 100;
 const CONCURRENCY = 4;
 const RETRIES = 3;
