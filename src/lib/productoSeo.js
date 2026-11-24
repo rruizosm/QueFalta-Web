@@ -19,7 +19,9 @@ import { EAN_STORES, detailColumns, detailScore, eanVariants, toDetail } from '.
 export const MIN_STORES = 2;
 const BATCH = 100;
 const CONCURRENCY = 4;
-const RETRIES = 3;
+// Supabase puede dar 500/timeout puntuales (p. ej. mientras corren los syncs):
+// se espera lo bastante (3+6+9+12+15 s) antes de rendirse y romper el build.
+const RETRIES = 6;
 const STORE_ORDER = STORES.map((s) => s.key);
 
 // Ficha de la cadena (no la de una tienda concreta) para Lidl y BM.
@@ -31,7 +33,7 @@ async function withRetries(fn) {
       return await fn();
     } catch (error) {
       if (attempt >= RETRIES) throw error;
-      await new Promise((resolve) => setTimeout(resolve, 800 * attempt));
+      await new Promise((resolve) => setTimeout(resolve, 3000 * attempt));
     }
   }
 }
