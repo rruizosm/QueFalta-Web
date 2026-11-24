@@ -309,3 +309,37 @@
   .pd-aside-head { padding-bottom: 10px; }
   .pd-aside-body { padding-top: 12px; }
 }
+
+/* Escritorio y tableta (>640 px): ni el botón «opción más económica» ni el
+   resumen del índice bajo la foto; el índice completo sigue en su bloque. */
+@media (min-width: 641px) {
+  .pd-cheaper, .pd-mediarow .pd-fi-badge { display: none; }
+}
+
+/* Anuncio horizontal entre el navbar y las migas (solo pantallas anchas):
+   todo el ancho del contenido, de la foto al lateral de comparar. */
+.pd-ad-wide { display: none; }
+@media (min-width: 780px) {
+  .pd-ad-wide { display: flex; justify-content: center; min-height: 250px; margin-top: 14px; overflow: hidden; }
+  .pd-ad-wide > * { flex: 1; }
+  .pd-ad-wide .cmp-ad-ph { width: 100%; height: 250px; }
+}
+
+/* Migas dentro de la columna de la ficha: el lateral «Comparar precios»
+   empieza a su misma altura. */
+.pd-top .pd-crumbs ol { padding: 0 0 14px; }
+.pd-layout { margin-top: 18px; }
+
+/* «Comparar precios» compacto: cabecera y contenido sin separación. */
+.pd-aside-head { padding: 16px 18px 6px; border-bottom: 0; }
+.pd-aside-head h2 { margin-top: 2px; font-size: 18px; }
+.pd-aside-body { padding: 8px 18px 16px; }
+.pd-aside-body .cmp-rank { gap: 6px; }
+.pd-aside-body .cmp-verdict { margin-bottom: 10px; }
+.pd-aside-foot { padding: 12px 18px 14px; }
+@media (max-width: 640px) {
+  .pd-layout { margin-top: 4px; }
+  .pd-top .pd-crumbs ol { padding: 0 0 4px; }
+  .pd-aside-head { padding: 14px 16px 4px; }
+  .pd-aside-body { padding: 8px 16px 14px; }
+}

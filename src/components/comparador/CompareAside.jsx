@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import { AdCompare } from './AdInFeed.jsx';
 import { STORE_BY_KEY } from '../../data/comparadorZonas.js';
-import { findSimilar, keyWords } from '../../lib/comparadorApi.js';
+import { findSimilar } from '../../lib/comparadorApi.js';
 import { productLink } from '../../lib/productoApi.js';
 import { Icon, ProductImage, StoreLogo, fmt, ppuText } from './ui.jsx';
 import { useT } from './i18n.jsx';
@@ -72,7 +72,7 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
     return <>{head}<div className="pd-aside-body"><NeedZone onEditZone={onEditZone} /></div></>;
   }
 
-  const { status, failed, keys } = state;
+  const { status, failed } = state;
   const done = status === 'done';
   // El mismo producto (EAN) entra en las cadenas donde el nombre no encontró nada.
   const exactUids = new Set(exact.map((r) => r.uid));
@@ -83,11 +83,7 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
   const comparable = rows.filter((r) => r.ppu != null);
   const best = comparable[0] ?? rows[0];
   const max = Math.max(...comparable.map((r) => r.ppu), 0.0001);
-  const unitWord = t.units[product.unit] ?? null;
   const missing = done ? zoneStores.filter((s) => !rows.some((r) => r.store === s.key) && !failed.includes(s.key)) : [];
-  // Las claves salen del nombre canónico (castellano); el título, del que se ve.
-  const shownKeys = keys.length ? keyWords(product.label) : [];
-  const title = shownKeys.length ? shownKeys.join(' ') : product.label;
 
   // Solo se avisa mientras carga o si falla; el resultado (más barato, ahorro…)
   // ya se ve en el propio ranking, sin bloque de veredicto.
@@ -112,11 +108,6 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
             {verdict.retry && <button type="button" className="cmp-chip" onClick={() => setAttempt((n) => n + 1)}>{t.retry}</button>}
           </div>
         )}
-
-        <h3 className="cmp-sheet-sub">
-          {done ? t.cmpCount(rows.length, title) : t.results}
-          {unitWord && <span>{t.cmpSubtitle(unitWord)}</span>}
-        </h3>
 
         <ol className="cmp-rank">
           <AdCompare key="ad-top" />

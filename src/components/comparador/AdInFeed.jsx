@@ -73,19 +73,26 @@ export default function AdInFeed({ variant = 'row' }) {
   );
 }
 
-// Banner fijo 320×100 dentro del ranking «Comparar precios» de la ficha de
-// producto (móvil y web). Solo se pide si el ranking mide al menos 320 px de
-// ancho: en el lateral de escritorio más estrecho no cabe y no se pinta.
+// Anuncio dentro del ranking «Comparar precios» de la ficha de producto (móvil
+// y web), del mismo ancho que las filas de producto y 100 px de alto.
+// · Con AD_COMPARE_FLUID_SLOT (unidad de display ADAPTABLE de AdSense, sin
+//   data-ad-format): caja al 100 % del ancho; Google sirve lo que mejor quepa.
+// · Sin él, se sigue usando la unidad fija 320×100 (centrada), que solo se
+//   pide si la fila mide al menos 320 px.
+// En localhost (AdSense no sirve) sale un marcador del ancho completo.
 const AD_COMPARE_SLOT = '6362876059';
 const AD_COMPARE_W = 320;
+const AD_COMPARE_FLUID_SLOT = '7254596375'; // «Comparar precios» (adaptable)
 export function AdCompare() {
   const liRef = useRef(null);
   const insRef = useRef(null);
   const [fit, setFit] = useState(false);
+  const dev = import.meta.env.DEV;
+  const fluid = dev || !!AD_COMPARE_FLUID_SLOT;
   useEffect(() => {
     const el = liRef.current;
     if (!el) return;
-    const measure = () => setFit(el.clientWidth >= AD_COMPARE_W);
+    const measure = () => setFit(el.clientWidth >= (fluid ? 250 : AD_COMPARE_W));
     measure();
     if (typeof ResizeObserver === 'undefined') return;
     const ro = new ResizeObserver(measure);
@@ -93,18 +100,22 @@ export function AdCompare() {
     return () => ro.disconnect();
   }, []);
   useEffect(() => {
-    if (!fit || !insRef.current) return;
+    if (dev || !fit || !insRef.current) return;
     try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
   }, [fit]);
   return (
-    <li ref={liRef} className={`cmp-ad-compare${fit ? ' is-on' : ''}`} aria-label="Publicidad">
-      {fit && (
+    <li ref={liRef} className={`cmp-ad-compare${fit ? ' is-on' : ''}${fluid ? ' is-fluid' : ''}`} aria-label="Publicidad">
+      {/* En localhost AdSense no sirve: marcador para ver dónde cae cada anuncio. */}
+      {fit && dev && <span className="cmp-ad-ph">Anuncio · ancho de la fila × 100</span>}
+      {fit && !dev && (
         <ins
           ref={insRef}
           className="adsbygoogle"
-          style={{ display: 'inline-block', width: `${AD_COMPARE_W}px`, height: '100px' }}
+          style={fluid
+            ? { display: 'block', width: '100%', height: '100px' }
+            : { display: 'inline-block', width: `${AD_COMPARE_W}px`, height: '100px' }}
           data-ad-client={AD_CLIENT}
-          data-ad-slot={AD_COMPARE_SLOT}
+          data-ad-slot={fluid ? AD_COMPARE_FLUID_SLOT : AD_COMPARE_SLOT}
         />
       )}
     </li>
@@ -140,6 +151,45 @@ export function AdTop({ className = 'pd-ad' }) {
           style={{ display: 'inline-block', width: `${AD_COMPARE_W}px`, height: '100px' }}
           data-ad-client={AD_CLIENT}
           data-ad-slot={AD_COMPARE_SLOT}
+        />
+      )}
+    </aside>
+  );
+}
+
+// Banner horizontal entre el navbar y las migas de la ficha de producto, solo
+// en pantallas anchas (≥780 px). Ocupa todo el ancho del contenido (de la foto
+// al lateral de comparar) con 250 px de alto fijos por CSS: unidad de display
+// ADAPTABLE de AdSense sin data-ad-format, así Google sirve el anuncio
+// que mejor quepa (970×250 «Billboard», 970×90, 728×90…) sin mover la página.
+// Poner aquí su data-ad-slot; vacío, en producción no se pinta nada y en
+// desarrollo sale un marcador.
+const AD_WIDE_SLOT = '2748054353'; // «Franja superior supermercado» (adaptable)
+export function AdWide({ className = 'pd-ad-wide' }) {
+  const insRef = useRef(null);
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 780px)');
+    const on = () => setWide(mq.matches);
+    on();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  const dev = import.meta.env.DEV;
+  useEffect(() => {
+    if (dev || !AD_WIDE_SLOT || !wide || !insRef.current) return;
+    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+  }, [wide]);
+  if (!dev && !AD_WIDE_SLOT) return null;
+  return (
+    <aside className={className} aria-label="Publicidad">
+      {dev ? <span className="cmp-ad-ph">Anuncio · todo el ancho × 250</span> : wide && (
+        <ins
+          ref={insRef}
+          className="adsbygoogle"
+          style={{ display: 'block', width: '100%', height: '250px' }}
+          data-ad-client={AD_CLIENT}
+          data-ad-slot={AD_WIDE_SLOT}
         />
       )}
     </aside>

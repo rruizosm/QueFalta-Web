@@ -1099,3 +1099,7 @@ a.cmp-promo-btn { display: inline-flex; align-items: center; justify-content: ce
   .cmp-store .cmp-store-tools .cmp-sort { justify-content: flex-end; gap: 6px; font-size: 11.5px; }
   .cmp-store .cmp-sort select { padding: 6px 28px 6px 10px; font-size: 12px; border-radius: 9px; background-position: right 10px center; }
 }
+
+/* Anuncio del ranking a todo el ancho de la fila (unidad adaptable). */
+.cmp-ad-compare.is-fluid > * { flex: 1; min-width: 0; }
+.cmp-ad-compare.is-fluid .cmp-ad-ph { width: 100%; border-radius: 16px; }

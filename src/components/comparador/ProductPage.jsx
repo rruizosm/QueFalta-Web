@@ -9,7 +9,7 @@ import {
 } from '../../lib/productoApi.js';
 import { Icon, ProductImage, StoreLogo, fmt, ppuText } from './ui.jsx';
 import CompareAside from './CompareAside.jsx';
-import { AdTop } from './AdInFeed.jsx';
+import { AdTop, AdWide } from './AdInFeed.jsx';
 import FoodIndexCard, { FoodIndexBadge } from './FoodIndexCard.jsx';
 import { fetchOffFoodIndex } from '../../lib/indiceAlimentario.js';
 import PostalModal, { readCp, saveCp } from './PostalModal.jsx';
@@ -338,17 +338,19 @@ function ProductView({
 
   return (
     <div className="cmp pd">
-      <nav className="pd-crumbs" aria-label={t.pdCrumbs}>
-        <ol>
-          <li><a href={t.pdHomeHref}>{t.pdHome}</a></li>
-          {storeInfo && <li><a href={storeHref}>{storeInfo.name}</a></li>}
-          {d?.category && <li><span>{d.category}</span></li>}
-        </ol>
-      </nav>
+      <AdWide />
 
       {/* Ficha · lateral · resto de la ficha: en móvil la comparación va tras el precio. */}
       <div className="pd-layout">
         <div className="pd-top">
+          {/* Las migas van dentro de la columna: así el lateral de comparar empieza a su altura. */}
+          <nav className="pd-crumbs" aria-label={t.pdCrumbs}>
+            <ol>
+              <li><a href={t.pdHomeHref}>{t.pdHome}</a></li>
+              {storeInfo && <li><a href={storeHref}>{storeInfo.name}</a></li>}
+              {d?.category && <li><span>{d.category}</span></li>}
+            </ol>
+          </nav>
           {!d ? <Skeleton /> : (
             <div className="pd-hero">
               <AdTop />
