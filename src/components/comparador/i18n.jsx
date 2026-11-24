@@ -241,7 +241,7 @@ const es = {
   promoRibbon: 'Ahorra en tu compra',
   promoBig: 'Ofertas',
   dropsTitle: 'Bajadas de precio',
-  dropsSub: (n) => `${n.toLocaleString('es-ES')} ${n === 1 ? 'producto más barato' : 'productos más baratos'} esta semana`,
+  dropsSub: (n) => `${n.toLocaleString('de-DE')} ${n === 1 ? 'producto más barato' : 'productos más baratos'} esta semana`,
   promoSmall: 'de la semana',
   promoBurst: 'en oferta',
   searchIn: (store) => `Buscar en ${store}`,

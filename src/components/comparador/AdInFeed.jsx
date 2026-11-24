@@ -157,33 +157,36 @@ export function AdTop({ className = 'pd-ad' }) {
   );
 }
 
-// Banner horizontal entre el navbar y las migas de la ficha de producto, solo
-// en pantallas anchas (≥780 px). Ocupa todo el ancho del contenido (de la foto
-// al lateral de comparar) con 250 px de alto fijos por CSS: unidad de display
-// ADAPTABLE de AdSense sin data-ad-format, así Google sirve el anuncio
-// que mejor quepa (970×250 «Billboard», 970×90, 728×90…) sin mover la página.
-// Poner aquí su data-ad-slot; vacío, en producción no se pinta nada y en
-// desarrollo sale un marcador.
+// Franja de anuncio entre el navbar y las migas: todo el ancho del contenido ×
+// 250 px de alto fijos por CSS, con una unidad de display ADAPTABLE sin
+// data-ad-format (Google sirve lo que mejor quepa: 970×250, 728×90, 300×250…)
+// sin mover la página.
+// · Ficha de producto (pd-ad-wide, producto.css): solo ≥641 px; en móvil lleva
+//   su 320×100 encima de la foto (AdTop).
+// · Catálogo de cada súper (cmp-ad-wide, comparador.css, con `always`): a
+//   cualquier ancho, también en móvil, siempre en el mismo sitio.
+// En localhost (AdSense no sirve) sale un marcador.
 const AD_WIDE_SLOT = '2748054353'; // «Franja superior supermercado» (adaptable)
-export function AdWide({ className = 'pd-ad-wide' }) {
+export function AdWide({ className = 'pd-ad-wide', always = false }) {
   const insRef = useRef(null);
-  const [wide, setWide] = useState(false);
+  const [on, setOn] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia('(min-width: 780px)');
-    const on = () => setWide(mq.matches);
-    on();
-    mq.addEventListener('change', on);
-    return () => mq.removeEventListener('change', on);
-  }, []);
+    if (always) { setOn(true); return undefined; }
+    const mq = window.matchMedia('(min-width: 641px)');
+    const sync = () => setOn(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, [always]);
   const dev = import.meta.env.DEV;
   useEffect(() => {
-    if (dev || !AD_WIDE_SLOT || !wide || !insRef.current) return;
+    if (dev || !on || !insRef.current) return;
     try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-  }, [wide]);
-  if (!dev && !AD_WIDE_SLOT) return null;
+  }, [on]);
   return (
     <aside className={className} aria-label="Publicidad">
-      {dev ? <span className="cmp-ad-ph">Anuncio · todo el ancho × 250</span> : wide && (
+      {dev && on && <span className="cmp-ad-ph">Anuncio · todo el ancho × 250</span>}
+      {!dev && on && (
         <ins
           ref={insRef}
           className="adsbygoogle"

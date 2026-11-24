@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import StoreCatalog from '../../../components/comparador/StoreCatalog.jsx';
+import { AdWide } from '../../../components/comparador/AdInFeed.jsx';
 import { REGION_NAMES_CA } from '../../../components/comparador/i18n.jsx';
 import { STORE_REGIONS } from '../../../data/comparadorZonas.js';
 import { STORES } from '../../../data/supermercados.js';
@@ -100,6 +101,8 @@ const schemas = [
   alternates={{ es: `/supermercados/${store.slug}/`, ca: `/ca/supermercats/${store.slug}/` }}
   jsonld={schemas}
 >
+  <!-- Franja d'anunci: tot l'ample × 250 a qualsevol ample, sempre aquí. -->
+  <div class="cmp-ad-band"><AdWide client:load className="cmp-ad-wide" always /></div>
   <nav class="sc-crumbs" aria-label="Ruta de navegació">
     <ol>
       {breadcrumbs.map((c, i) => (

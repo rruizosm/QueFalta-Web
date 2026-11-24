@@ -319,7 +319,7 @@
 /* Anuncio horizontal entre el navbar y las migas (solo pantallas anchas):
    todo el ancho del contenido, de la foto al lateral de comparar. */
 .pd-ad-wide { display: none; }
-@media (min-width: 780px) {
+@media (min-width: 641px) {
   .pd-ad-wide { display: flex; justify-content: center; min-height: 250px; margin-top: 14px; overflow: hidden; }
   .pd-ad-wide > * { flex: 1; }
   .pd-ad-wide .cmp-ad-ph { width: 100%; height: 250px; }

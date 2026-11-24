@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { STORE_BY_KEY, regionFromPostalCode } from '../../data/comparadorZonas.js';
-import { categoryIds, countDrops, countOffers, fetchBannerImages, fetchCategoryTree, fetchStoreProducts, lidlStoreFor, searchStore } from '../../lib/comparadorApi.js';
+import { categoryIds, countDrops, countOffers, fetchCategoryTree, fetchStoreProducts, lidlStoreFor, searchStore } from '../../lib/comparadorApi.js';
 import { CATALOG_OFFERS, offersPagePath } from '../../lib/ofertas.js';
 import { dropsPagePath, hasDrops } from '../../lib/bajadas.js';
 import { Icon, ProductCard, SkeletonCard, StoreLogo } from './ui.jsx';
 import { useT } from './i18n.jsx';
-import { AdTop, withAds, useGridColumns } from './AdInFeed.jsx';
+import { withAds, useGridColumns } from './AdInFeed.jsx';
 import NavZoneChip, { useNavSlot } from './NavZoneChip.jsx';
 
 // Vista de un supermercado: navegador de categorías a la izquierda y sus
@@ -90,65 +90,30 @@ function CategoryNav({ tree, status, selected, expanded, onToggle, onSelect, onR
   );
 }
 
-// Estrella de 18 puntas (sello «2.393 productos») en un viewBox 0 0 100 100.
-const BURST = Array.from({ length: 36 }, (_, i) => {
-  const r = i % 2 ? 40 : 50;
-  const a = (Math.PI * i) / 18 - Math.PI / 2;
-  return `${(50 + r * Math.cos(a)).toFixed(1)},${(50 + r * Math.sin(a)).toFixed(1)}`;
-}).join(' ');
-
-/** Banner de ofertas de la semana (rotulado tipo folleto): activa el filtro y,
- *  si la cadena la tiene, enlaza a su página /ofertas/. Las fotos son
- *  decorativas (fetchBannerImages). */
-function OffersBanner({ storeKey, cp, count, active, onToggle }) {
+/** Bloque rojo «Ofertas» compacto, bajo el de bajadas en el lateral (mismo
+ *  formato): lleva a la página /ofertas/ de la cadena o, si no la tiene,
+ *  activa el filtro «solo ofertas». Sustituye al banner grande tipo folleto. */
+function OffersMini({ storeKey, count, active, onToggle, className = '' }) {
   const t = useT();
-  const [images, setImages] = useState([]);
-
-  useEffect(() => {
-    const ctrl = new AbortController();
-    fetchBannerImages(storeKey, ctrl.signal, cp).then(setImages).catch(() => {});
-    return () => ctrl.abort();
-  }, [storeKey, cp]);
-
   if (!count) return null;
-  return (
-    <section className={`cmp-promo${active ? ' is-on' : ''}`} aria-label={t.promoAria(count)}>
-      <span className="cmp-promo-rays" aria-hidden="true" />
-      <span className="cmp-promo-dots" aria-hidden="true" />
-
-      <div className="cmp-promo-copy">
-        <span className="cmp-promo-ribbon">{t.promoRibbon}</span>
-        <p className="cmp-promo-title">
-          <span className="cmp-promo-big">{t.promoBig}</span>
-          <span className="cmp-promo-small">{t.promoSmall}</span>
-        </p>
-        <div className="cmp-promo-actions">
-          {/* Cada cadena con ofertas tiene su página /ofertas/<slug>/ (OFFER_PAGES). */}
-          {offersPagePath(storeKey, t.lang) ? (
-            <a className="cmp-promo-btn" href={offersPagePath(storeKey, t.lang)}>{t.offersOnly} →</a>
-          ) : (
-            <button type="button" className="cmp-promo-btn" onClick={onToggle} aria-pressed={active}>
-              {active ? t.offersAll : t.offersOnly}
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="cmp-promo-art" aria-hidden="true">
-        <span className="cmp-promo-burst">
-          <svg viewBox="0 0 100 100"><polygon points={BURST} /></svg>
-          <span>
-            <strong>{count.toLocaleString(t.lang === 'ca' ? 'ca-ES' : 'de-DE')}</strong>
-            <em>{t.promoBurst}</em>
-          </span>
-        </span>
-        {images.map((src, i) => (
-          <span key={src} className={`cmp-promo-sticker is-${i + 1}`}>
-            <img src={src} alt="" loading="lazy" decoding="async" />
-          </span>
-        ))}
-      </div>
-    </section>
+  const href = offersPagePath(storeKey, t.lang);
+  const n = count.toLocaleString(t.lang === 'ca' ? 'ca-ES' : 'de-DE'); // de-DE: «3.649» (es-ES no agrupa 4 cifras)
+  const inner = (
+    <>
+      <span className="cmp-drops-arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z" /><circle cx="7.5" cy="7.5" r="1.5" /></svg>
+      </span>
+      <span className="cmp-drops-copy">
+        <span className="cmp-drops-title">{t.promoBig}</span>
+        <span className="cmp-drops-sub">{active && !href ? t.offersAll : `${n} ${t.promoBurst}`}</span>
+      </span>
+      <Icon.arrow width="16" height="16" className="cmp-drops-go" />
+    </>
+  );
+  return href ? (
+    <a className={`cmp-drops cmp-offers-mini ${className}`} href={href} aria-label={t.promoAria(count)}>{inner}</a>
+  ) : (
+    <button type="button" className={`cmp-drops cmp-offers-mini ${className}${active ? ' is-on' : ''}`} onClick={onToggle} aria-pressed={active} aria-label={t.promoAria(count)}>{inner}</button>
   );
 }
 
@@ -348,24 +313,23 @@ export default function StoreBrowser({ storeKey, heading, categoryId, offersOnly
               {lidlLabel && <p className="cmp-store-sub">{t.refStore(lidlLabel)}</p>}
             </div>
           </div>
+          {/* Tableta (641–820 px, sin lateral): bajadas y ofertas a la derecha del título. */}
+          <div className="cmp-store-head-promos">
+            <DropsBanner storeKey={storeKey} count={dropCount} />
+            {!searched && <OffersMini storeKey={storeKey} count={offerCount} active={showOffers} onToggle={toggleOffers} />}
+          </div>
         </div>
       </header>
 
       <div className="cmp-store-layout">
         <aside className="cmp-side">
           <DropsBanner storeKey={storeKey} count={dropCount} />
+          {!searched && <OffersMini storeKey={storeKey} count={offerCount} active={showOffers} onToggle={toggleOffers} />}
           {nav}
         </aside>
 
         <section className="cmp-store-main">
-          {/* En móvil el lateral no se ve: el banner va encima del botón de categorías. */}
-          <DropsBanner storeKey={storeKey} count={dropCount} className="is-mobile" />
-          {/* En móvil, en lugar de los banners de bajadas y ofertas (ocultos por CSS). */}
-          <AdTop className="cmp-store-ad" />
 
-          {!searched && (
-            <OffersBanner storeKey={storeKey} cp={cp} count={offerCount} active={showOffers} onToggle={toggleOffers} />
-          )}
 
           <div className="cmp-results-head">
             <div>

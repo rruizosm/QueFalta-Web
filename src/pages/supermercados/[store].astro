@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import StoreCatalog from '../../components/comparador/StoreCatalog.jsx';
+import { AdWide } from '../../components/comparador/AdInFeed.jsx';
 import { STORES, UPDATED } from '../../data/supermercados.js';
 import { OWN_BRANDS, loadOwnBrandPages, loadProductPages, linkItem } from '../../lib/productoSeo.js';
 import { productPath } from '../../lib/productoApi.js';
@@ -102,6 +103,8 @@ const fmt = (iso) => {
   alternates={{ es: `/supermercados/${store.slug}/`, ca: `/ca/supermercats/${store.slug}/` }}
   jsonld={[faqSchema, breadcrumbSchema]}
 >
+  <!-- Franja de anuncio: todo el ancho × 250 a cualquier ancho, siempre aquí. -->
+  <div class="cmp-ad-band"><AdWide client:load className="cmp-ad-wide" always /></div>
   <nav class="st-breadcrumbs st-breadcrumbs-top" aria-label="Ruta de navegación">
     <ol>
       {breadcrumbs.map((crumb, i) => (
