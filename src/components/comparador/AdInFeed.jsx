@@ -111,6 +111,39 @@ export function AdCompare() {
   );
 }
 
+// Banner 320×100 encima de la foto en la ficha de producto (solo móvil, ≤640 px;
+// en pantallas grandes no se pinta). Reutiliza la unidad 320×100 del ranking.
+// En desarrollo (localhost, donde AdSense no sirve) sale un marcador.
+export function AdProduct() {
+  const insRef = useRef(null);
+  const [mobile, setMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)');
+    const on = () => setMobile(mq.matches);
+    on();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  const dev = import.meta.env.DEV;
+  useEffect(() => {
+    if (dev || !mobile || !insRef.current) return;
+    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+  }, [mobile]);
+  return (
+    <aside className="pd-ad" aria-label="Publicidad">
+      {dev ? <span className="pd-ad-ph">Anuncio 320×100</span> : mobile && (
+        <ins
+          ref={insRef}
+          className="adsbygoogle"
+          style={{ display: 'inline-block', width: `${AD_COMPARE_W}px`, height: '100px' }}
+          data-ad-client={AD_CLIENT}
+          data-ad-slot={AD_COMPARE_SLOT}
+        />
+      )}
+    </aside>
+  );
+}
+
 // Filas deslizables: un anuncio-tarjeta cada `every` productos (también al final
 // de cada tramo, salvo tras el último producto).
 export function withCardAds(cards, every = 2, keyPrefix = 'adc') {

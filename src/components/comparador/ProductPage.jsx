@@ -8,6 +8,7 @@ import {
 } from '../../lib/productoApi.js';
 import { Icon, ProductImage, StoreLogo, fmt, ppuText } from './ui.jsx';
 import CompareAside from './CompareAside.jsx';
+import { AdProduct } from './AdInFeed.jsx';
 import FoodIndexCard, { FoodIndexBadge } from './FoodIndexCard.jsx';
 import { fetchOffFoodIndex } from '../../lib/indiceAlimentario.js';
 import PostalModal, { readCp, saveCp } from './PostalModal.jsx';
@@ -333,6 +334,7 @@ function ProductView({
         <div className="pd-top">
           {!d ? <Skeleton /> : (
             <div className="pd-hero">
+              <AdProduct />
               <div className="pd-media">
                 <ProductImage
                   key={d.image ?? 'none'}
@@ -342,25 +344,29 @@ function ProductView({
                   priority
                 />
                 {d.promo && <span className="pd-promo">{d.promo}</span>}
+                {foodIndex && <FoodIndexBadge info={foodIndex} href="#indice" />}
               </div>
               <div className="pd-summary">
                 <a className="pd-store" href={storeHref}>
                   <StoreLogo store={d.store} size={30} />
                   {storeInfo.name}
                 </a>
-                <h1>{d.label}</h1>
-                {(d.brand || d.format) && <p className="pd-sub">{[d.brand, d.format].filter(Boolean).join(' · ')}</p>}
+                <div className="pd-titlerow">
+                  <div className="pd-titlecol">
+                    <h1>{d.label}</h1>
+                    {(d.brand || d.format) && <p className="pd-sub">{[d.brand, d.format].filter(Boolean).join(' · ')}</p>}
+                  </div>
+                  <div className="pd-price">
+                    <strong>{fmt(d.price)}</strong>
+                    {d.offer?.was && <s className="pd-was">{fmt(d.offer.was)}</s>}
+                    {ppuText(d) && <span>{ppuText(d)}</span>}
+                  </div>
+                </div>
                 <div className="pd-badges">
                   {d.glutenFree && <span className="pd-pill">{t.pdGlutenFree}</span>}
                   {d.nutriScore && /^[A-E]$/.test(d.nutriScore) && (
                     <span className={`pd-nutriscore is-${d.nutriScore.toLowerCase()}`}>Nutri-Score <strong>{d.nutriScore}</strong></span>
                   )}
-                </div>
-                {foodIndex && <FoodIndexBadge info={foodIndex} href="#indice" />}
-                <div className="pd-price">
-                  <strong>{fmt(d.price)}</strong>
-                  {d.offer?.was && <s className="pd-was">{fmt(d.offer.was)}</s>}
-                  {ppuText(d) && <span>{ppuText(d)}</span>}
                 </div>
                 {d.promoText && <p className="pd-promo-text">{d.promoText}</p>}
                 <button type="button" className={`cmp-zone-chip pd-zone${cp && inZone ? '' : ' is-empty'}`} onClick={() => setEditingCp(true)}>
