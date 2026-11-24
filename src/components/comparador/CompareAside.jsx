@@ -25,8 +25,28 @@ function NeedZone({ onEditZone }) {
   );
 }
 
+// Anuncios intercalados en el ranking. En escritorio (>900 px) el ranking va en
+// una caja con scroll propio (.pd-aside-body) y los de en medio quedaban ocultos
+// dentro: solo se deja el de arriba. Con el ranking en el flujo de la página
+// (≤900 px, ver producto.css) va además uno cada AD_RANK_EVERY precios, con
+// carga diferida (no se piden hasta que el usuario llega a ellos).
+const AD_RANK_EVERY = 3;
+const INLINE_RANK_MQ = '(max-width: 900px)';
+function useInlineRank() {
+  const [inline, setInline] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(INLINE_RANK_MQ);
+    const sync = () => setInline(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+  return inline;
+}
+
 export default function CompareAside({ product, cp, zoneStores, exact = [], onEditZone, onCheaper }) {
   const t = useT();
+  const inlineRank = useInlineRank();
   const [state, setState] = useState({ status: 'loading', rows: [product], failed: [], keys: [] });
   const [attempt, setAttempt] = useState(0);
 
@@ -146,8 +166,8 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
                   </div>
                 </Row>
               </li>
-              {/* Anuncio tras cada 2 precios y tras el último (si ya cargó y hay comparación). */}
-              {((i + 1) % 2 === 0 || (done && rows.length > 1 && i === rows.length - 1)) && <AdCompare key="ad-after" />}
+              {/* Solo con el ranking en el flujo de la página: uno cada AD_RANK_EVERY precios (no tras el último). */}
+              {inlineRank && (i + 1) % AD_RANK_EVERY === 0 && i < rows.length - 1 && <AdCompare key="ad-after" />}
               </Fragment>
             );
           })}

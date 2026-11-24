@@ -13,7 +13,37 @@ const AD_CLIENT = 'ca-pub-9749911986318862';
 // Cada cuántas filas de productos va un anuncio. Como el número de columnas
 // cambia con el ancho (2 en móvil, más en pantallas grandes), se mide en la
 // cuadrícula con useGridColumns y los productos por anuncio = filas × columnas.
-export const AD_FEED_ROWS = 2;
+// (Antes 2: demasiados anuncios por página bajaban la visibilidad en AdSense.)
+export const AD_FEED_ROWS = 4;
+
+// Carga diferida: el <ins> no se pinta ni se pide hasta que su hueco está a
+// AD_NEAR de entrar en pantalla. AdSense cuenta la impresión al servir el
+// anuncio, pero solo la da por «visible» si se ve el 50 % durante 1 s: pedir
+// anuncios que nadie llega a ver hunde la visibilidad (Active View).
+// Ojo: adsbygoogle.push({}) rellena el primer <ins> aún sin procesar del
+// documento, así que el <ins> se inserta justo antes de su push (nunca antes).
+// IntersectionObserver tiene en cuenta el recorte de los contenedores con
+// scroll (filas deslizables, el lateral de la ficha): lo que queda oculto
+// dentro de ellos no cuenta como cerca hasta que se desplaza.
+const AD_NEAR = '300px 0px';
+export function useNearViewport(ref, enabled = true) {
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!enabled || near || !el) return undefined;
+    if (typeof IntersectionObserver === 'undefined') { setNear(true); return undefined; }
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { io.disconnect(); setNear(true); }
+    }, { rootMargin: AD_NEAR });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [enabled, near]);
+  return near;
+}
+
+function pushAd() {
+  try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+}
 
 // Cuenta las columnas reales de la cuadrícula. Devuelve [columnas, gridRef]:
 // gridRef es un ref de callback para el <div className="cmp-grid-cards">, que
@@ -40,17 +70,19 @@ export function useGridColumns(fallback = 2) {
 // mayores bajadas / rebajas»), con su propia unidad fija en AdSense.
 const AD_CARD_SLOT = '2120378713';
 export default function AdInFeed({ variant = 'row' }) {
+  const boxRef = useRef(null);
   const ref = useRef(null);
   const card = variant === 'card';
   const slot = card ? AD_CARD_SLOT : AD_FEED_SLOT;
+  const near = useNearViewport(boxRef, !!slot);
   useEffect(() => {
-    if (!slot || !ref.current) return;
-    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-  }, []);
+    if (!slot || !near || !ref.current) return;
+    pushAd();
+  }, [near]);
   if (!slot) return null;
   return (
-    <aside className={card ? 'cmp-ad-feed cmp-ad-card' : 'cmp-ad-feed'} aria-label="Publicidad">
-      {card ? (
+    <aside ref={boxRef} className={card ? 'cmp-ad-feed cmp-ad-card' : 'cmp-ad-feed'} aria-label="Publicidad">
+      {!near ? null : card ? (
         <ins
           ref={ref}
           className="adsbygoogle"
@@ -99,15 +131,16 @@ export function AdCompare() {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+  const near = useNearViewport(liRef, fit && !dev);
   useEffect(() => {
-    if (dev || !fit || !insRef.current) return;
-    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
-  }, [fit]);
+    if (dev || !fit || !near || !insRef.current) return;
+    pushAd();
+  }, [fit, near]);
   return (
     <li ref={liRef} className={`cmp-ad-compare${fit ? ' is-on' : ''}${fluid ? ' is-fluid' : ''}`} aria-label="Publicidad">
       {/* En localhost AdSense no sirve: marcador para ver dónde cae cada anuncio. */}
       {fit && dev && <span className="cmp-ad-ph">Anuncio · ancho de la fila × 100</span>}
-      {fit && !dev && (
+      {fit && near && !dev && (
         <ins
           ref={insRef}
           className="adsbygoogle"
@@ -199,17 +232,12 @@ export function AdWide({ className = 'pd-ad-wide', always = false }) {
   );
 }
 
-// Filas deslizables: un anuncio-tarjeta cada `every` productos (también al final
-// de cada tramo, salvo tras el último producto).
-export function withCardAds(cards, every = 2, keyPrefix = 'adc') {
-  const out = [];
-  cards.forEach((card, i) => {
-    out.push(card);
-    if ((i + 1) % every === 0 && i < cards.length - 1) {
-      out.push(<AdInFeed key={`${keyPrefix}${i}`} variant="card" />);
-    }
-  });
-  return out;
+// Filas deslizables: UN solo anuncio-tarjeta, tras los `after` primeros
+// productos (a la vista al cargar en escritorio). Antes iba uno cada 2 y los
+// de más a la derecha, fuera de pantalla, no los veía casi nadie.
+export function withCardAds(cards, after = 2, keyPrefix = 'adc') {
+  if (cards.length <= after) return cards;
+  return [...cards.slice(0, after), <AdInFeed key={`${keyPrefix}${after}`} variant="card" />, ...cards.slice(after)];
 }
 
 // Reparte los productos ya pintados metiendo un anuncio cada AD_FEED_ROWS filas
