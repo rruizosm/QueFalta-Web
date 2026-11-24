@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { catalogPath } from '../../lib/rutas.js';
 import { REFERENCE_CP, STORES, STORE_BY_KEY, regionFromPostalCode, storesForPostalCode } from '../../data/comparadorZonas.js';
 import { apiConfigured } from '../../lib/comparadorApi.js';
@@ -250,6 +251,31 @@ function ProductView({
   }, [ean]);
   const foodIndex = offIndex ?? detail?.nutritionIndex ?? null;
 
+  // Opción más barata en otra cadena (la calcula el ranking de CompareAside).
+  const [cheaper, setCheaper] = useState(null);
+  const goCheaper = () => {
+    const row = cheaper && document.getElementById(`cmp-row-${cheaper.row.uid}`);
+    if (!row) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    row.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    row.classList.remove('is-flash');
+    void row.offsetWidth; // reinicia la animación si se pulsa dos veces
+    row.classList.add('is-flash');
+  };
+
+  // En móvil y tableta (navbar con hamburguesa) el código postal va en el
+  // navbar, junto al logo (#qf-nav-slot de SiteNav); en escritorio, en la ficha.
+  const [navSlot, setNavSlot] = useState(null);
+  useEffect(() => {
+    const el = document.getElementById('qf-nav-slot');
+    if (!el) return undefined;
+    const mq = window.matchMedia('(max-width: 1120px)');
+    const on = () => setNavSlot(mq.matches ? el : null);
+    on();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+
   // En la página base el título llega con la ficha.
   useEffect(() => {
     if (!storeProp && detail) document.title = `${detail.label} · ${STORE_BY_KEY[detail.store].name} | QuéFalta`;
@@ -335,16 +361,26 @@ function ProductView({
           {!d ? <Skeleton /> : (
             <div className="pd-hero">
               <AdProduct />
-              <div className="pd-media">
-                <ProductImage
-                  key={d.image ?? 'none'}
-                  src={largeImage(d.image)}
-                  fallback={d.image}
-                  alt={productImageAlt(d, storeInfo?.name, t.lang)}
-                  priority
-                />
-                {d.promo && <span className="pd-promo">{d.promo}</span>}
+              <div className="pd-mediacol">
+              <div className={`pd-mediarow${foodIndex ? ' has-fi' : ''}`}>
                 {foodIndex && <FoodIndexBadge info={foodIndex} href="#indice" />}
+                <div className="pd-media">
+                  <ProductImage
+                    key={d.image ?? 'none'}
+                    src={largeImage(d.image)}
+                    fallback={d.image}
+                    alt={productImageAlt(d, storeInfo?.name, t.lang)}
+                    priority
+                  />
+                  {d.promo && <span className="pd-promo">{d.promo}</span>}
+                </div>
+              </div>
+              {cheaper && (
+                <button type="button" className="pd-cheaper" onClick={goCheaper}>
+                  <span className="pd-cheaper-text"><strong>{t.pdCheaper}</strong></span>
+                  <span className="pd-cheaper-go" aria-hidden="true"><Icon.arrow width="16" height="16" /></span>
+                </button>
+              )}
               </div>
               <div className="pd-summary">
                 <a className="pd-store" href={storeHref}>
@@ -369,11 +405,30 @@ function ProductView({
                   )}
                 </div>
                 {d.promoText && <p className="pd-promo-text">{d.promoText}</p>}
-                <button type="button" className={`cmp-zone-chip pd-zone${cp && inZone ? '' : ' is-empty'}`} onClick={() => setEditingCp(true)}>
-                  <Icon.pin width="15" height="15" />
-                  {zoneLabel}
-                  <span className="cmp-zone-chip-edit">{cp ? t.change : t.pdChooseZone}</span>
-                </button>
+                {navSlot ? createPortal(
+                  <button type="button" className="pd-navzone" onClick={() => setEditingCp(true)} title={zoneLabel} aria-label={`${zoneLabel}. ${cp ? t.change : t.pdChooseZone}`}>
+                    <Icon.pin width="14" height="14" />
+                    {cp && inZone ? (
+                      <span className="pd-navzone-text">
+                        <span className="pd-navzone-pre">{t.pdZonePrice(cp, '').split(cp)[0]}</span>
+                        <strong>{cp}</strong>
+                        <span className="pd-navzone-region"> · {t.region(regionFromPostalCode(cp))}</span>
+                      </span>
+                    ) : (
+                      <span className="pd-navzone-text">
+                        {cp ? <strong>{cp}</strong> : <span className="pd-navzone-region">{t.region(regionFromPostalCode(REFERENCE_CP[store] ?? '28013'))}</span>}
+                      </span>
+                    )}
+                    <span className="cmp-zone-chip-edit">{cp ? t.change : t.pdNavChooseZone}</span>
+                  </button>,
+                  navSlot,
+                ) : (
+                  <button type="button" className={`cmp-zone-chip pd-zone${cp && inZone ? '' : ' is-empty'}`} onClick={() => setEditingCp(true)}>
+                    <Icon.pin width="15" height="15" />
+                    {zoneLabel}
+                    <span className="cmp-zone-chip-edit">{cp ? t.change : t.pdChooseZone}</span>
+                  </button>
+                )}
                 {cp && !inZone && <p className="cmp-note">{t.pdOutOfZone(storeInfo.name)}</p>}
                 {d.storeUrl && (
                   <a className="pd-out" href={d.storeUrl} target="_blank" rel="noopener noreferrer nofollow">
@@ -389,7 +444,7 @@ function ProductView({
         <aside className="pd-aside" aria-label={t.cmpEyebrow}>
           <div className="pd-aside-inner" ref={asideRef}>
             {d ? (
-              <CompareAside product={d} cp={cp} zoneStores={zoneStores} exact={sameZoned ? same : []} onEditZone={() => setEditingCp(true)} />
+              <CompareAside product={d} cp={cp} zoneStores={zoneStores} exact={sameZoned ? same : []} onEditZone={() => setEditingCp(true)} onCheaper={setCheaper} />
             ) : (
               <div className="pd-aside-body"><span className="cmp-skel-block" style={{ width: '100%', height: 220, borderRadius: 18 }} /></div>
             )}

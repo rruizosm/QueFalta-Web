@@ -11,12 +11,9 @@ export function FoodIndexBadge({ info, href }) {
   const t = useT();
   const { score } = info.foodIndex;
   return (
-    <a className="pd-fi-badge" href={href}>
+    <a className="pd-fi-badge" href={href} aria-label={`${t.fi.title}: ${score} · ${t.fi.levels[foodIndexLevel(score)]}`}>
       <span className="pd-fi-dot" style={{ background: foodIndexColor(score), color: foodIndexTextColor(score) }}>{score}</span>
-      <span>
-        <strong>{t.fi.title}</strong>
-        <em style={{ color: foodIndexColor(score) }}>{t.fi.levels[foodIndexLevel(score)]}</em>
-      </span>
+      <em style={{ color: foodIndexColor(score) }}>{t.fi.levels[foodIndexLevel(score)]}</em>
     </a>
   );
 }

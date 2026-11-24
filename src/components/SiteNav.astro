@@ -50,6 +50,9 @@ const T = lang === 'ca'
       <img src="/quefalta-logo-blue.png" alt="" class="qf-logo" width="30" height="30" />
       <span class="qf-word-txt">Qué<span>Falta</span></span>
     </a>
+    <!-- Hueco para que una página meta algo junto al logo (p. ej. el código
+         postal en la ficha de producto, en móvil). Vacío, no ocupa nada. -->
+    <div class="qf-nav-slot" id="qf-nav-slot"></div>
     <div class="qf-nav-right" id="qf-nav-menu">
       <div class="qf-nav-links">
         {LINKS.map((l) => (
@@ -178,6 +181,9 @@ const T = lang === 'ca'
   .qf-word { display: inline-flex; align-items: center; gap: 10px; flex: 0 0 auto; font-family: var(--geo); font-weight: 800; font-size: 21px; letter-spacing: -0.04em; color: var(--ink); }
   .qf-logo { width: 30px; height: 30px; object-fit: contain; display: block; }
   .qf-word-txt span { color: var(--accent); }
+
+  .qf-nav-slot { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; margin-inline: -12px -8px; container: qfslot / inline-size; }
+  .qf-nav-slot:empty { display: none; }
 
   .qf-nav-right { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 24px; min-width: 0; }
   .qf-nav-links { flex: 1; display: flex; align-items: center; justify-content: center; gap: 2px; }

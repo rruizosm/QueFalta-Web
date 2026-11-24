@@ -3,7 +3,7 @@ import { AdCompare } from './AdInFeed.jsx';
 import { STORE_BY_KEY } from '../../data/comparadorZonas.js';
 import { findSimilar, keyWords } from '../../lib/comparadorApi.js';
 import { productLink } from '../../lib/productoApi.js';
-import { Icon, ProductImage, StoreLogo, UNIT_LABEL, fmt, ppuText } from './ui.jsx';
+import { Icon, ProductImage, StoreLogo, fmt, ppuText } from './ui.jsx';
 import { useT } from './i18n.jsx';
 
 // Lateral de la ficha de producto: la comparación que antes salía en el panel
@@ -25,7 +25,7 @@ function NeedZone({ onEditZone }) {
   );
 }
 
-export default function CompareAside({ product, cp, zoneStores, exact = [], onEditZone }) {
+export default function CompareAside({ product, cp, zoneStores, exact = [], onEditZone, onCheaper }) {
   const t = useT();
   const [state, setState] = useState({ status: 'loading', rows: [product], failed: [], keys: [] });
   const [attempt, setAttempt] = useState(0);
@@ -40,6 +40,26 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
     return () => ctrl.abort();
     // El producto cambia de objeto al refrescar su precio: basta con su uid y precio.
   }, [product?.uid, product?.price, cp, zoneStores, attempt, t.lang]);
+
+  // Avisa a la ficha si otra cadena tiene la opción más barata (por €/kg, €/l…),
+  // para el botón «más barato en otro súper» bajo la foto.
+  const exactKey = exact.map((r) => r.uid).join(',');
+  useEffect(() => {
+    if (!onCheaper) return;
+    if (!cp || state.status !== 'done' || product.ppu == null) { onCheaper(null); return; }
+    const all = [...state.rows, ...exact.filter((r) => !state.rows.some((x) => x.store === r.store))];
+    const cheapest = all
+      .filter((r) => r.ppu != null && r.store !== product.store)
+      .sort((a, b) => a.ppu - b.ppu)[0];
+    const saving = cheapest ? product.ppu - cheapest.ppu : 0;
+    if (!cheapest || saving <= 0.005) { onCheaper(null); return; }
+    onCheaper({
+      row: cheapest,
+      saving,
+      pct: Math.round((saving / product.ppu) * 100),
+      same: exact.some((r) => r.uid === cheapest.uid),
+    });
+  }, [state, cp, product?.uid, product?.ppu, exactKey]);
 
   const head = (
     <header className="pd-aside-head">
@@ -62,8 +82,6 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
     : state.rows;
   const comparable = rows.filter((r) => r.ppu != null);
   const best = comparable[0] ?? rows[0];
-  const saving = product.ppu != null && best.ppu != null ? product.ppu - best.ppu : 0;
-  const savingPct = product.ppu ? Math.round((saving / product.ppu) * 100) : 0;
   const max = Math.max(...comparable.map((r) => r.ppu), 0.0001);
   const unitWord = t.units[product.unit] ?? null;
   const missing = done ? zoneStores.filter((s) => !rows.some((r) => r.store === s.key) && !failed.includes(s.key)) : [];
@@ -71,31 +89,29 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
   const shownKeys = keys.length ? keyWords(product.label) : [];
   const title = shownKeys.length ? shownKeys.join(' ') : product.label;
 
-  let verdict;
+  // Solo se avisa mientras carga o si falla; el resultado (más barato, ahorro…)
+  // ya se ve en el propio ranking, sin bloque de veredicto.
+  let verdict = null;
   if (status === 'error') {
     verdict = { cls: 'is-loading', icon: <Icon.search width="20" height="20" />, title: t.cmpFailed, sub: t.checkConnection, retry: true };
   } else if (!done) {
     verdict = { cls: 'is-loading', icon: <span className="cmp-spinner" />, title: t.cmpLoading, sub: t.cmpLooking(zoneStores.length) };
-  } else if (rows.length < 2) {
-    verdict = { cls: 'is-best', icon: <Icon.search width="20" height="20" />, title: t.cmpNoSimilar, sub: t.cmpNotFound };
-  } else if (saving > 0.005) {
-    verdict = { cls: 'is-save', icon: <Icon.trophy width="20" height="20" />, title: t.cmpSave(fmt(saving), UNIT_LABEL[product.unit], savingPct), sub: t.cmpWith(STORE_BY_KEY[best.store].name) };
-  } else {
-    verdict = { cls: 'is-best', icon: <Icon.trophy width="20" height="20" />, title: t.cmpBest, sub: t.cmpNobody(unitWord ?? t.units.ud) };
   }
 
   return (
     <>
       {head}
       <div className="pd-aside-body">
-        <div className={`cmp-verdict ${verdict.cls}`} aria-live="polite">
-          <span className="cmp-verdict-icon">{verdict.icon}</span>
-          <div>
-            <strong>{verdict.title}</strong>
-            <span>{verdict.sub}</span>
+        {verdict && (
+          <div className={`cmp-verdict ${verdict.cls}`} aria-live="polite">
+            <span className="cmp-verdict-icon">{verdict.icon}</span>
+            <div>
+              <strong>{verdict.title}</strong>
+              <span>{verdict.sub}</span>
+            </div>
+            {verdict.retry && <button type="button" className="cmp-chip" onClick={() => setAttempt((n) => n + 1)}>{t.retry}</button>}
           </div>
-          {verdict.retry && <button type="button" className="cmp-chip" onClick={() => setAttempt((n) => n + 1)}>{t.retry}</button>}
-        </div>
+        )}
 
         <h3 className="cmp-sheet-sub">
           {done ? t.cmpCount(rows.length, title) : t.results}
@@ -111,7 +127,7 @@ export default function CompareAside({ product, cp, zoneStores, exact = [], onEd
             const Row = selected ? 'div' : 'a';
             return (
               <Fragment key={r.uid}>
-              <li className={`cmp-rank-row${isBest ? ' is-best' : ''}${selected ? ' is-selected' : ' is-link'}`}>
+              <li id={`cmp-row-${r.uid}`} className={`cmp-rank-row${isBest ? ' is-best' : ''}${selected ? ' is-selected' : ' is-link'}`}>
                 <Row className="cmp-rank-link" {...(selected ? {} : { href: productLink(r.store, r.id, t.lang) })}>
                   <span className="cmp-rank-pos">{i + 1}</span>
                   <div className="cmp-rank-thumb">
