@@ -200,6 +200,32 @@ const jsonLdText = (value: unknown) => JSON.stringify(value)
         } catch (e) {}
       })();
     </script>
+    <!-- Escala de escritorio: en portátiles (ventana de 1440 a 1999 px, con
+         ratón) toda la web se reduce como un zoom del navegador para que el
+         lienzo mida 2000 px y quepan los anuncios laterales (contenido 1320 +
+         300 + 300). Por debajo de 0,72 no se reduce (texto demasiado pequeño)
+         y en táctil nunca. También marca en <html> qué lateral cabe, porque las
+         media queries miden la ventana real y no ven el zoom. -->
+    <script is:inline>
+      (function () {
+        var el = document.documentElement;
+        // 2000 y no 1960: deja sitio a la barra de scroll (~15 px).
+        var CANVAS = 2000, MIN = 0.72;
+        var fine = window.matchMedia && window.matchMedia('(pointer: fine)');
+        function fit() {
+          var w = window.innerWidth;
+          var z = w / CANVAS;
+          if (z >= 1 || z < MIN || (fine && !fine.matches)) z = 1;
+          el.style.zoom = z < 1 ? String(z) : '';
+          el.style.setProperty('--qf-zoom', String(z));
+          var cw = w / z;
+          el.classList.toggle('qf-rail-l', cw >= 1960);
+          el.classList.toggle('qf-rail-r', cw >= 1960);
+        }
+        fit();
+        window.addEventListener('resize', fit);
+      })();
+    </script>
   </head>
   <body>
     {!bare && <SiteNav lang={lang} alternates={alternates} />}
@@ -298,7 +324,7 @@ const jsonLdText = (value: unknown) => JSON.stringify(value)
         text-rendering: optimizeLegibility;
         /* Sticky footer: en páginas cortas el <main> crece hasta llenar la
            ventana y empuja el pie al fondo, en vez de quedarse a media altura. */
-        min-height: 100vh;
+        min-height: calc(100vh / var(--qf-zoom, 1)); /* compensa el zoom de escritorio */
         display: flex;
         flex-direction: column;
       }

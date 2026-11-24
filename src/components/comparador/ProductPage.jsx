@@ -286,8 +286,11 @@ function ProductView({
     if (!el) return undefined;
     const fit = () => {
       // Nunca por encima de su posición pegada (76 px, como `top` en producto.css).
-      const top = Math.max(el.getBoundingClientRect().top, 76);
-      el.style.setProperty('--pd-aside-max', `${Math.max(320, window.innerHeight - top - 16)}px`);
+      // Medidas en píxeles de pantalla → se pasan a px CSS con el zoom de escritorio
+      // (Layout.astro), que reduce la web en portátiles.
+      const z = parseFloat(document.documentElement.style.zoom) || 1;
+      const top = Math.max(el.getBoundingClientRect().top / z, 76);
+      el.style.setProperty('--pd-aside-max', `${Math.max(320, window.innerHeight / z - top - 16)}px`);
     };
     fit();
     window.addEventListener('scroll', fit, { passive: true });

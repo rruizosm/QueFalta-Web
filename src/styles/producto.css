@@ -25,7 +25,7 @@
 .pd-aside-inner {
   position: sticky; top: 76px; display: flex; flex-direction: column;
   /* Lo ajusta ProductPage según dónde empieza el lateral; esto es la reserva. */
-  max-height: var(--pd-aside-max, calc(100vh - 92px));
+  max-height: var(--pd-aside-max, calc(100vh / var(--qf-zoom, 1) - 92px));
   border-radius: 26px; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--cmp-shadow); overflow: hidden;
 }
 .pd-aside-head { padding: 20px 22px 14px; border-bottom: 1px solid var(--border); }

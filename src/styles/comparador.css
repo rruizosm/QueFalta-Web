@@ -598,7 +598,7 @@ html.cmp-locked, html.cmp-locked body { overflow: hidden; }
   display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 32px; align-items: start;
 }
 .cmp-side {
-  position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow-y: auto; overscroll-behavior: contain;
+  position: sticky; top: 76px; max-height: calc(100vh / var(--qf-zoom, 1) - 92px); overflow-y: auto; overscroll-behavior: contain;
   margin-top: 24px; padding: 8px; border-radius: 18px; border: 1px solid var(--border); background: var(--surface);
   scrollbar-width: thin;
 }
