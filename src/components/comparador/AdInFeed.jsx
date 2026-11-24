@@ -111,10 +111,12 @@ export function AdCompare() {
   );
 }
 
-// Banner 320×100 encima de la foto en la ficha de producto (solo móvil, ≤640 px;
-// en pantallas grandes no se pinta). Reutiliza la unidad 320×100 del ranking.
-// En desarrollo (localhost, donde AdSense no sirve) sale un marcador.
-export function AdProduct() {
+// Banner 320×100 arriba de la página, solo en móvil (≤640 px; en pantallas
+// grandes no se pinta): encima de la foto en la ficha de producto (pd-ad) y en
+// el hueco de los banners de bajadas/ofertas del catálogo (cmp-store-ad).
+// Reutiliza la unidad 320×100 del ranking. En desarrollo (localhost, donde
+// AdSense no sirve) sale un marcador.
+export function AdTop({ className = 'pd-ad' }) {
   const insRef = useRef(null);
   const [mobile, setMobile] = useState(false);
   useEffect(() => {
@@ -130,8 +132,8 @@ export function AdProduct() {
     try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
   }, [mobile]);
   return (
-    <aside className="pd-ad" aria-label="Publicidad">
-      {dev ? <span className="pd-ad-ph">Anuncio 320×100</span> : mobile && (
+    <aside className={className} aria-label="Publicidad">
+      {dev ? <span className="cmp-ad-ph">Anuncio 320×100</span> : mobile && (
         <ins
           ref={insRef}
           className="adsbygoogle"

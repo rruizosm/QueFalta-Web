@@ -970,3 +970,132 @@ a.cmp-promo-btn { display: inline-flex; align-items: center; justify-content: ce
 [data-theme="dark"] .kh-media { background: color-mix(in srgb, var(--kh-tint, #fff) 14%, var(--surface)); }
 [data-theme="dark"] .kh-cat { background: rgba(0,0,0,.45); color: #fff; }
 [data-theme="dark"] .kh-banner { background: linear-gradient(135deg, #16336b 0%, #1f4fa8 60%, #3570c9 100%); }
+
+/* ─────────────── Catálogo de cada súper en móvil: compacto ───────────────
+   Texto más pequeño y tarjetas sin huecos. Solo la vista de súper (.cmp-store),
+   la portada del comparador no cambia. Va al final para ganar a las reglas de
+   arriba. */
+@media (max-width: 640px) {
+  /* Cabecera */
+  .cmp-store .cmp-store-head-inner { padding: 8px 16px 12px; gap: 8px; }
+  .cmp-store .cmp-store-title { gap: 10px; }
+  .cmp-store .cmp-store-title .cmp-logo { width: 40px !important; height: 40px !important; border-radius: 11px; }
+  .cmp-store .cmp-store-title .cmp-logo img { width: 100%; height: 100%; }
+  .cmp-store .cmp-store-title h1 { font-size: 19px; letter-spacing: -0.025em; }
+  .cmp-store .cmp-store-title p { margin-top: 3px; font-size: 12px; }
+  .cmp-store .cmp-store-title p button { font-size: 12px; }
+  .cmp-store .cmp-store-title .cmp-store-sub { font-size: 11.5px; }
+
+  /* Banners y categorías */
+  .cmp-store .cmp-store-main { padding-top: 12px; }
+  .cmp-store .cmp-drops.is-mobile { min-height: 0; margin-bottom: 10px; padding: 10px 12px; gap: 10px; border-radius: 14px; }
+  .cmp-store .cmp-drops-arrow { width: 34px; height: 34px; border-radius: 10px; }
+  .cmp-store .cmp-drops-arrow svg { width: 18px; height: 18px; }
+  .cmp-store .cmp-drops-copy { gap: 3px; }
+  .cmp-store .cmp-drops-title { font-size: 15px; }
+  .cmp-store .cmp-drops-sub { font-size: 11.5px; }
+  .cmp-store .cmp-promo { margin-bottom: 14px; padding: 16px 16px 0; border-radius: 18px; }
+  .cmp-store .cmp-promo-ribbon { padding: 5px 14px 5px 12px; font-size: 11px; }
+  .cmp-store .cmp-promo-big { font-size: clamp(36px, 11vw, 46px); }
+  .cmp-store .cmp-promo-small { font-size: 18px; }
+  .cmp-store .cmp-promo-actions { margin-top: 14px; gap: 8px 14px; }
+  .cmp-store .cmp-promo-btn { min-height: 38px; font-size: 13px; border-radius: 12px; }
+  .cmp-store .cmp-promo-link { font-size: 12.5px; }
+  .cmp-store .cmp-promo-art { height: 104px; margin-top: 8px; }
+  .cmp-store .cmp-promo-sticker, .cmp-store .cmp-promo-sticker[class*='is-'] { --s: 64px; padding: 5px; border-radius: 12px; }
+  .cmp-store .cmp-promo-burst { width: 74px; height: 74px; bottom: 16px; }
+  .cmp-store .cmp-promo-burst strong { font-size: 17px; }
+  .cmp-store .cmp-promo-burst em { font-size: 8.5px; }
+
+  /* Título, buscador y orden */
+  .cmp-store .cmp-results-head { gap: 8px; }
+  .cmp-store .cmp-results-head .cmp-eyebrow { font-size: 10.5px; }
+  .cmp-store .cmp-results-head h2 { margin-top: 2px; font-size: 19px; }
+  .cmp-store .cmp-store-count { margin-top: 2px; font-size: 12px; }
+  .cmp-store .cmp-store-tools { gap: 8px; }
+  .cmp-store .cmp-store-tools .cmp-store-search { height: 38px; padding: 0 12px; border-radius: 11px; gap: 8px; }
+  .cmp-store .cmp-store-search svg { width: 16px; height: 16px; }
+  .cmp-store .cmp-sort { font-size: 12px; }
+  .cmp-store .cmp-sort select { padding: 8px 32px 8px 12px; font-size: 13px; border-radius: 10px; }
+
+  /* Tarjetas: todas son del mismo súper, así que sobran su logo y su nombre. */
+  .cmp-store .cmp-store-main .cmp-grid-cards { margin-top: 12px; gap: 8px; }
+  .cmp-store .cmp-card { border-radius: 14px; }
+  .cmp-store .cmp-card-media { aspect-ratio: 1 / 0.78; padding: 8px; }
+  .cmp-store .cmp-card-store, .cmp-store .cmp-card-storename { display: none; }
+  .cmp-store .cmp-card-media .cmp-badge { top: 8px; right: 8px; font-size: 10.5px; }
+  .cmp-store .cmp-card-media .cmp-badge.cmp-badge-offer { top: auto; right: auto; bottom: 8px; left: 8px; font-size: 10.5px; }
+  .cmp-store .cmp-card-body { gap: 2px; padding: 8px 10px 6px; }
+  .cmp-store .cmp-card-name { font-size: 13px; line-height: 1.25; min-height: 2.5em; }
+  .cmp-store .cmp-card-format { font-size: 11.5px; }
+  .cmp-store .cmp-card-price { flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 0 6px; padding-top: 4px; }
+  .cmp-store .cmp-card-price strong { font-size: 17px; }
+  .cmp-store .cmp-card-price span, .cmp-store .cmp-card-price s { font-size: 11px; }
+  .cmp-store .cmp-card-foot { margin: 0 6px 6px; padding: 7px 8px; border-radius: 9px; font-size: 11.5px; }
+  .cmp-store .cmp-card-cmp svg { width: 13px; height: 13px; }
+  .cmp-store .cmp-more { margin-top: 18px; }
+  .cmp-store .cmp-more .cmp-chip { padding: 10px 16px; font-size: 13px; }
+}
+
+/* Código postal en el navbar (móvil y tableta, portal en #qf-nav-slot; ver NavZoneChip.jsx). */
+.cmp-navzone {
+  display: inline-flex; align-items: center; gap: 6px; max-width: 100%; min-width: 0;
+  padding: 4px 4px 4px 9px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface);
+  font: 500 12.5px/1.2 var(--geo); color: var(--ink-soft); cursor: pointer; white-space: nowrap;
+}
+.cmp-navzone svg { flex: 0 0 auto; color: var(--accent); }
+.cmp-navzone-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.cmp-navzone-text strong { color: var(--ink); font-weight: 700; letter-spacing: 0.03em; }
+.cmp-navzone .cmp-zone-chip-edit { flex: 0 0 auto; padding: 4px 9px; font-size: 12px; }
+.cmp-navzone:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Si no cabe entero: solo el código postal (y el botón de cambiar). */
+@container qfslot (max-width: 250px) { .cmp-navzone-pre, .cmp-navzone-region { display: none; } }
+@container qfslot (max-width: 140px) { .cmp-navzone svg { display: none; } .cmp-navzone { padding-left: 8px; } }
+
+/* Anuncio 320×100 de arriba (AdTop): marcador en desarrollo. */
+.cmp-ad-ph {
+  display: flex; align-items: center; justify-content: center; width: 320px; max-width: 100%; height: 100px;
+  font-size: 12px; color: var(--ink-faint); border: 1.5px dashed var(--border); border-radius: 10px;
+}
+/* Catálogo de un súper: en móvil el anuncio ocupa el sitio de los banners de
+   bajadas de precio y ofertas, que se ocultan. */
+.cmp-store-ad { display: none; }
+@media (max-width: 640px) {
+  .cmp-store .cmp-drops.is-mobile, .cmp-store .cmp-promo { display: none; }
+  .cmp-store .cmp-store-ad { display: flex; justify-content: center; min-height: 100px; margin-bottom: 12px; overflow: hidden; }
+}
+
+/* Botón de categorías del catálogo: solo el icono, en la fila de «Ordenar»
+   (a su izquierda). Visible cuando no hay lateral (≤820 px). Un punto de
+   acento avisa de que hay una categoría elegida. */
+.cmp-store-tools .cmp-side-open {
+  position: relative; flex: 0 0 auto; width: 40px; height: 40px; min-height: 0; margin: 0; padding: 0;
+  justify-content: center; border-radius: 11px;
+}
+.cmp-store-tools .cmp-side-open:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+.cmp-store-tools .cmp-side-open:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cmp-store-tools .cmp-side-open.is-filtered::after {
+  content: ''; position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 0 2px var(--surface);
+}
+@media (max-width: 640px) {
+  /* Buscador a todo el ancho; debajo, categorías + «Ordenar» en la misma fila. */
+  .cmp-store .cmp-store-tools .cmp-side-open { width: 36px; height: 36px; border-radius: 10px; }
+  .cmp-store .cmp-store-tools .cmp-sort { flex: 1; width: auto; }
+}
+
+/* Catálogo en móvil, segunda pasada: títulos y controles aún más pequeños, y
+   «Ordenar» pegado a su desplegable (a la derecha de la fila). */
+@media (max-width: 640px) {
+  .cmp-store .cmp-store-title h1 { font-size: 16px; }
+  .cmp-store .cmp-results-head h2 { font-size: 16px; }
+  .cmp-store .cmp-store-count { font-size: 11.5px; }
+  .cmp-store .cmp-store-tools { gap: 6px; }
+  .cmp-store .cmp-store-tools .cmp-store-search { height: 34px; padding: 0 10px; border-radius: 10px; gap: 7px; }
+  .cmp-store .cmp-store-search svg { width: 15px; height: 15px; }
+  .cmp-store .cmp-store-search input { font-size: 14px; }
+  .cmp-store .cmp-store-tools .cmp-side-open { width: 32px; height: 32px; border-radius: 9px; }
+  .cmp-store .cmp-store-tools .cmp-side-open svg { width: 16px; height: 16px; }
+  .cmp-store .cmp-store-tools .cmp-sort { justify-content: flex-end; gap: 6px; font-size: 11.5px; }
+  .cmp-store .cmp-sort select { padding: 6px 28px 6px 10px; font-size: 12px; border-radius: 9px; background-position: right 10px center; }
+}

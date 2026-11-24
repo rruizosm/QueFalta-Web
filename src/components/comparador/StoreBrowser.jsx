@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { STORE_BY_KEY, regionFromPostalCode } from '../../data/comparadorZonas.js';
-import { COCINA_TEXT } from '../../data/cocina.js';
 import { categoryIds, countDrops, countOffers, fetchBannerImages, fetchCategoryTree, fetchStoreProducts, lidlStoreFor, searchStore } from '../../lib/comparadorApi.js';
 import { CATALOG_OFFERS, offersPagePath } from '../../lib/ofertas.js';
 import { dropsPagePath, hasDrops } from '../../lib/bajadas.js';
 import { Icon, ProductCard, SkeletonCard, StoreLogo } from './ui.jsx';
 import { useT } from './i18n.jsx';
-import { withAds, useGridColumns } from './AdInFeed.jsx';
+import { AdTop, withAds, useGridColumns } from './AdInFeed.jsx';
+import NavZoneChip, { useNavSlot } from './NavZoneChip.jsx';
 
 // Vista de un supermercado: navegador de categorías a la izquierda y sus
 // productos a la derecha. La categoría va en la URL (la gestiona Comparador,
@@ -174,6 +174,7 @@ function DropsBanner({ storeKey, count, className = '' }) {
 export default function StoreBrowser({ storeKey, heading, categoryId, offersOnly = false, cp, referenceZone = false, onBack, onCategory, onEditZone }) {
   const t = useT();
   const [gridCols, gridRef] = useGridColumns();
+  const navSlot = useNavSlot();
   const store = STORE_BY_KEY[storeKey];
   const [tree, setTree] = useState([]);
   const [treeStatus, setTreeStatus] = useState('loading');
@@ -327,21 +328,26 @@ export default function StoreBrowser({ storeKey, heading, categoryId, offersOnly
             <StoreLogo store={storeKey} size={64} />
             <div>
               <h1>{heading ?? store.name}</h1>
-              <p>
-                {cp && (referenceZone ? t.refPrices(t.region(regionFromPostalCode(cp))) : t.pricesFor(cp, t.region(regionFromPostalCode(cp))))}
-                {cp && <button type="button" onClick={onEditZone}>{referenceZone ? t.setCp : t.change}</button>}
-              </p>
+              {/* En móvil y tableta la zona va en el navbar (NavZoneChip). */}
+              {cp && (navSlot ? (
+                <NavZoneChip
+                  slot={navSlot}
+                  pre={referenceZone ? null : t.pricesFor(cp, '').split(cp)[0]}
+                  cp={referenceZone ? null : cp}
+                  region={t.region(regionFromPostalCode(cp))}
+                  title={referenceZone ? t.refPrices(t.region(regionFromPostalCode(cp))) : t.pricesFor(cp, t.region(regionFromPostalCode(cp)))}
+                  edit={referenceZone ? t.pdNavChooseZone : t.change}
+                  onEdit={onEditZone}
+                />
+              ) : (
+                <p>
+                  {referenceZone ? t.refPrices(t.region(regionFromPostalCode(cp))) : t.pricesFor(cp, t.region(regionFromPostalCode(cp)))}
+                  <button type="button" onClick={onEditZone}>{referenceZone ? t.setCp : t.change}</button>
+                </p>
+              ))}
               {lidlLabel && <p className="cmp-store-sub">{t.refStore(lidlLabel)}</p>}
             </div>
           </div>
-          <a className="cmp-store-kitchen" href={COCINA_TEXT[t.lang]?.href ?? COCINA_TEXT.es.href}>
-            <span className="cmp-store-kitchen-emoji" aria-hidden="true">🍳</span>
-            <span>
-              <strong>{(COCINA_TEXT[t.lang] ?? COCINA_TEXT.es).eyebrow}</strong>
-              <em>{(COCINA_TEXT[t.lang] ?? COCINA_TEXT.es).title}</em>
-            </span>
-            <Icon.arrow width="17" height="17" />
-          </a>
         </div>
       </header>
 
@@ -354,11 +360,8 @@ export default function StoreBrowser({ storeKey, heading, categoryId, offersOnly
         <section className="cmp-store-main">
           {/* En móvil el lateral no se ve: el banner va encima del botón de categorías. */}
           <DropsBanner storeKey={storeKey} count={dropCount} className="is-mobile" />
-          <button type="button" className="cmp-side-open" onClick={() => setDrawer(true)}>
-            <Icon.list width="18" height="18" />
-            <span>{t.categoriesLabel}</span>
-            <em>{found?.node.name ?? t.allProducts}</em>
-          </button>
+          {/* En móvil, en lugar de los banners de bajadas y ofertas (ocultos por CSS). */}
+          <AdTop className="cmp-store-ad" />
 
           {!searched && (
             <OffersBanner storeKey={storeKey} cp={cp} count={offerCount} active={showOffers} onToggle={toggleOffers} />
@@ -383,6 +386,17 @@ export default function StoreBrowser({ storeKey, heading, categoryId, offersOnly
                 onChange={(e) => { setQuery(e.target.value); if (!e.target.value) setSearched(''); }}
               />
             </form>
+            {/* Categorías (sin lateral, ≤820 px): solo el icono, junto a «Ordenar».
+                La categoría elegida ya se lee en el título de arriba. */}
+            <button
+              type="button"
+              className={`cmp-side-open${found ? ' is-filtered' : ''}`}
+              onClick={() => setDrawer(true)}
+              aria-label={`${t.categoriesLabel}: ${found?.node.name ?? t.allProducts}`}
+              title={t.categoriesLabel}
+            >
+              <Icon.list width="18" height="18" />
+            </button>
             {!searched && (
               <label className="cmp-sort">
                 <span>{t.sort}</span>
