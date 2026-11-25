@@ -38,17 +38,49 @@ const ADSENSE_CLIENT = 'ca-pub-9749911986318862';
     // los pings sin cookies.
     w.gtag('set', 'ads_data_redaction', true);
 
-    // GA4 se configura ya (queda en dataLayer) y gtag.js se descarga tras load.
-    // La CMP de Google actualiza el consentimiento con gtag('consent', 'update', …)
-    // y gtag lo aplica solo, llegue antes o después de cargar.
+    // gtag.js se descarga tras load, pero gtag('config') (que dispara el
+    // page_view) espera a saber el consentimiento. Si no, el page_view sale
+    // como "denegado" aunque el usuario ya hubiera aceptado: la CMP comunica
+    // su consentimiento guardado con gtag('consent', 'update', …) un poco
+    // después, y wait_for_update solo cubre 500 ms.
+    // Se manda el config en cuanto pasa una de estas cosas:
+    //   - llega un 'consent update' a dataLayer (decisión guardada o recién tomada);
+    //   - la CMP muestra el aviso (aún no ha decidido → se mide sin cookies);
+    //   - la CMP dice que el RGPD no aplica (fuera del EEE);
+    //   - pasan 3 s desde load (la CMP no carga: bloqueador, red…).
     if (GA_ID) {
       w.gtag('js', new Date());
-      w.gtag('config', GA_ID);
+      var configured = false;
+      var sendConfig = function () {
+        if (configured) return;
+        configured = true;
+        w.gtag('config', GA_ID);
+      };
+      var hasConsentUpdate = function () {
+        for (var i = 0; i < w.dataLayer.length; i++) {
+          var e = w.dataLayer[i];
+          if (e && e[0] === 'consent' && e[1] === 'update') return true;
+        }
+        return false;
+      };
+      var tcfHooked = false;
+      var poll = setInterval(function () {
+        if (configured) return clearInterval(poll);
+        if (hasConsentUpdate()) return sendConfig();
+        if (!tcfHooked && typeof w.__tcfapi === 'function') {
+          tcfHooked = true;
+          w.__tcfapi('addEventListener', 2, function (tc, ok) {
+            if (!ok || !tc) return;
+            if (tc.gdprApplies === false || tc.eventStatus === 'cmpuishown') sendConfig();
+          });
+        }
+      }, 100);
       var loadGA = function () {
         var s = document.createElement('script');
         s.async = true;
         s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
         document.head.appendChild(s);
+        setTimeout(sendConfig, 3000);
       };
       if (document.readyState === 'complete') loadGA();
       else w.addEventListener('load', loadGA);
@@ -74,8 +106,27 @@ const ADSENSE_CLIENT = 'ca-pub-9749911986318862';
   })();
 </script>
 
-<!-- Google AdSense: anuncios y carga de la CMP de Google.
-     Se carga DIFERIDO (primera interacción o 4 s después de load) para que no
+<!-- CMP de Google (aviso de cookies), etiqueta propia de Privacidad y mensajes.
+     Se carga PRONTO y aparte de AdSense: es quien comunica el consentimiento
+     guardado a Analytics, y si esperase al AdSense diferido el page_view
+     saldría siempre como denegado. El iframe googlefcPresent avisa a
+     adsbygoogle.js de que la CMP ya está en la página (no la carga dos veces). -->
+<script is:inline async src={`https://fundingchoicesmessages.google.com/i/${ADSENSE_CLIENT.replace('ca-', '')}?ers=1`}></script>
+<script is:inline>
+  (function () {
+    function signalGooglefcPresent() {
+      if (window.frames['googlefcPresent']) return;
+      if (!document.body) return setTimeout(signalGooglefcPresent, 0);
+      var f = document.createElement('iframe');
+      f.style.cssText = 'width:0;height:0;border:none;z-index:-1000;left:-1000px;top:-1000px;display:none';
+      f.name = 'googlefcPresent';
+      document.body.appendChild(f);
+    }
+    signalGooglefcPresent();
+  })();
+</script>
+
+<!-- Google AdSense: anuncios. Se carga DIFERIDO (primera interacción o 4 s después de load) para que no
      compita con el render ni cuente en LCP/TBT. Los anuncios que hagan
      adsbygoogle.push() antes quedan en cola y se sirven cuando llega el script. -->
 <script is:inline define:vars={{ ADSENSE_CLIENT }}>
