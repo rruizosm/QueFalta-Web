@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Comparador from '../components/comparador/Comparador.jsx';
+import '../styles/comparador.css';
+
+// Resultados de búsqueda del comparador (/buscar/?q=…). La portada salta aquí
+// al buscar. Con noindex (Google pide no indexar búsquedas internas), pero con
+// los anuncios laterales: es una página de uso, no un puente.
+---
+
+<Layout
+  title="Buscar productos en los supermercados de tu zona | QuéFalta"
+  description="Busca un producto y compara su precio en Mercadona, Carrefour, Lidl, Dia, Aldi, Alcampo y más supermercados de tu código postal."
+  alternates={{ es: '/buscar/', ca: '/ca/cercar/' }}
+  noindex
+  adRails
+>
+  <Comparador client:load mode="search" />
+</Layout>

@@ -2,12 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { REFERENCE_CP, STORES, STORE_BY_KEY, regionFromPostalCode, storesForPostalCode } from '../../data/comparadorZonas.js';
 import { apiConfigured, norm, searchAllStores } from '../../lib/comparadorApi.js';
 import { storeIntent } from '../../lib/storeIntent.js';
-import { catalogPath } from '../../lib/rutas.js';
+import { catalogPath, searchPath } from '../../lib/rutas.js';
 import { offersPagePath } from '../../lib/ofertas.js';
 import { Icon, ProductCard, SkeletonCard } from './ui.jsx';
 import StoreBrowser from './StoreBrowser.jsx';
 import KitchenPicks from './KitchenPicks.jsx';
-import { withAds, useGridColumns } from './AdInFeed.jsx';
+import { withAds, useGridColumns, AdWide } from './AdInFeed.jsx';
 import PostalModal, { readCp, saveCp } from './PostalModal.jsx';
 import { LangProvider, useT } from './i18n.jsx';
 
@@ -22,7 +22,9 @@ import { LangProvider, useT } from './i18n.jsx';
 // Cada súper tiene su página de catálogo (catalogPath): /supermercados/<slug>/ y,
 // en catalán, /ca/supermercats/<slug>/. La portada enlaza ahí y las direcciones
 // antiguas /?super=… (y /ca/comparador/?super=…) saltan a ella.
-// La vista de súper (?super=…&cat=…&ofertas=1) y la búsqueda (?q=…) viven en la URL:
+// La búsqueda tiene su propia página (mode="search": /buscar/?q=… y
+// /ca/cercar/?q=…, ver searchPath). Desde la portada, buscar salta allí, y los
+// enlaces antiguos /?q=… también. En esa página la búsqueda vive en la URL:
 // atrás del navegador (también al volver de una ficha de producto) y los
 // enlaces compartidos funcionan.
 function readRoute() {
@@ -34,7 +36,8 @@ function readRoute() {
 
 const PAGE = 24;
 
-function ComparadorPage() {
+function ComparadorPage({ mode }) {
+  const isSearchPage = mode === 'search';
   const t = useT();
   const [gridCols, gridRef] = useGridColumns();
   const [ready, setReady] = useState(false);
@@ -44,7 +47,8 @@ function ComparadorPage() {
   const [submitted, setSubmitted] = useState('');
   const [searchId, setSearchId] = useState(0);
   const [focused, setFocused] = useState(false);
-  const [sort, setSort] = useState('relevance');
+  // Por defecto, del envase más barato al más caro (decisión del usuario 2026-11-25).
+  const [sort, setSort] = useState('price');
   const [storeFilter, setStoreFilter] = useState(null); // null = todos los de la zona
   const [byStore, setByStore] = useState({}); // súper → productos
   const [pending, setPending] = useState([]); // súper que aún no han respondido
@@ -53,6 +57,7 @@ function ComparadorPage() {
   const [scrollTick, setScrollTick] = useState(0);
   const [route, setRoute] = useState({ store: null, cat: null, offers: false });
   const searchRef = useRef(null);
+  const compareRef = useRef(null);
   const resultsRef = useRef(null);
 
   useEffect(() => {
@@ -62,15 +67,18 @@ function ComparadorPage() {
       window.location.replace(catalogPath(old.store, t.lang, { cat: old.cat, offers: old.offers }));
       return undefined;
     }
+    const initial = new URLSearchParams(window.location.search).get('q');
+    // Enlace antiguo a una búsqueda en la portada (/?q=…) → página de búsqueda.
+    if (!isSearchPage && initial?.trim().length >= 2) {
+      window.location.replace(searchPath(initial, t.lang));
+      return undefined;
+    }
     setCp(readCp());
     setRoute(readRoute());
     setReady(true);
-    // Las páginas /precios/ enlazan aquí con la búsqueda ya hecha (?q=…).
-    const initial = new URLSearchParams(window.location.search).get('q');
     if (initial?.trim().length >= 2) {
       setQuery(initial);
       setSubmitted(initial.trim());
-      if (readCp()) setScrollTick(1);
     }
     const onPop = () => {
       const next = readRoute();
@@ -172,7 +180,7 @@ function ComparadorPage() {
   }, [results]);
 
   // El texto para buscadores (fuera de la isla) solo acompaña a la portada.
-  const showingHome = !storeKey && !submitted;
+  const showingHome = !isSearchPage && !storeKey && !submitted;
   useEffect(() => {
     document.documentElement.classList.toggle('cmp-in-view', !showingHome);
   }, [showingHome]);
@@ -193,21 +201,40 @@ function ComparadorPage() {
   };
 
   const runSearch = (text) => {
-    const t = text.trim();
-    if (t.length < 2) return;
+    const clean = text.trim();
+    if (clean.length < 2) return;
     // Buscar el nombre de un súper lleva a su catálogo, no a productos que lo mencionen.
-    const wanted = storeIntent(t);
+    const wanted = storeIntent(clean);
     if (wanted) { openStore(wanted); return; }
+    // Desde la portada, los resultados se ven en su propia página.
+    if (!isSearchPage) {
+      setFocused(false);
+      window.location.assign(searchPath(clean, t.lang));
+      return;
+    }
     setQuery(text);
-    setSubmitted(t);
+    setSubmitted(clean);
     setSearchId((n) => n + 1);
     setStoreFilter(null);
     setFocused(false);
     searchRef.current?.blur();
     // En la URL, para volver a estos resultados desde una ficha.
-    const url = `${window.location.pathname}?q=${encodeURIComponent(t)}`;
-    if (new URLSearchParams(window.location.search).get('q') !== t) window.history.pushState(null, '', url);
+    const url = `${window.location.pathname}?q=${encodeURIComponent(clean)}`;
+    if (new URLSearchParams(window.location.search).get('q') !== clean) window.history.pushState(null, '', url);
     if (cp) setScrollTick((n) => n + 1);
+  };
+
+  // «Comparar» es un ENLACE de verdad a /buscar/?q=… (no un botón que pinta en
+  // la misma página): los anuncios de viñeta de AdSense solo salen al pulsar un
+  // enlace a otra página del sitio, y es Google quien decide si sale y cuándo.
+  // Enter en la caja hace click en este enlace.
+  const compareHref = query.trim().length >= 2 ? searchPath(query, t.lang) : undefined;
+  const onCompareClick = (e) => {
+    const clean = query.trim();
+    if (clean.length < 2) { e.preventDefault(); return; }
+    const wanted = storeIntent(clean);
+    if (wanted) { e.preventDefault(); openStore(wanted); return; }
+    setFocused(false);
   };
 
   // Tras pintar los resultados, baja hasta ellos (no antes: el alto cambia).
@@ -258,13 +285,14 @@ function ComparadorPage() {
       ) : (
       <>
       {/* ───────── Hero + buscador ───────── */}
-      <section className="cmp-hero">
+      <section className={`cmp-hero${isSearchPage ? ' cmp-hero-compact' : ''}`}>
         <div className="cmp-hero-bg" aria-hidden="true">
           <span className="cmp-orb cmp-orb-1" />
           <span className="cmp-orb cmp-orb-2" />
           <span className="cmp-grid" />
         </div>
         <div className="cmp-hero-inner">
+          {!isSearchPage && (
           <button type="button" className={`cmp-zone-chip${cp ? '' : ' is-empty'}`} onClick={() => setEditingCp(true)}>
             <Icon.pin width="15" height="15" />
             {cp ? (
@@ -280,15 +308,23 @@ function ComparadorPage() {
               t.chooseZone
             )}
           </button>
+          )}
 
-          <h1 className="cmp-kicker">{t.kicker}</h1>
-          <p className="cmp-title">
-            {t.titleA}<br />
-            <span>{t.titleB}</span>{t.titleC}
-          </p>
-          <p className="cmp-lead">{t.lead}</p>
+          {isSearchPage ? (
+            // Solo el buscador a la vista; el H1 queda para lectores de pantalla.
+            <h1 className="cmp-sr-only">{t.searchKicker}</h1>
+          ) : (
+            <>
+              <h1 className="cmp-kicker">{t.kicker}</h1>
+              <p className="cmp-title">
+                {t.titleA}<br />
+                <span>{t.titleB}</span>{t.titleC}
+              </p>
+              <p className="cmp-lead">{t.lead}</p>
+            </>
+          )}
 
-          <form className={`cmp-search${focused ? ' is-focused' : ''}`} role="search" onSubmit={(e) => { e.preventDefault(); runSearch(query); }}>
+          <form className={`cmp-search${focused ? ' is-focused' : ''}`} role="search" onSubmit={(e) => { e.preventDefault(); compareRef.current?.click(); }}>
             <Icon.search width="22" height="22" className="cmp-search-icon" />
             <input
               ref={searchRef}
@@ -303,10 +339,16 @@ function ComparadorPage() {
               onFocus={() => setFocused(true)}
               onBlur={() => setTimeout(() => setFocused(false), 120)}
             />
-            <button type="submit" className="cmp-btn cmp-btn-primary cmp-search-btn" disabled={query.trim().length < 2}>
+            <a
+              ref={compareRef}
+              href={compareHref}
+              className="cmp-btn cmp-btn-primary cmp-search-btn"
+              aria-disabled={!compareHref}
+              onClick={onCompareClick}
+            >
               <span>{t.compare}</span>
               <Icon.arrow width="18" height="18" />
-            </button>
+            </a>
             {focused && (intent || suggestions.length > 0) && (
               <ul className="cmp-suggest" role="listbox">
                 {intent && (
@@ -330,6 +372,8 @@ function ComparadorPage() {
             )}
           </form>
 
+          {!isSearchPage && (
+          <>
           <div className="cmp-popular">
             <span>{t.popular}</span>
             {t.popularItems.map((p) => (
@@ -351,11 +395,16 @@ function ComparadorPage() {
               ))}
             </div>
           </div>
+          </>
+          )}
         </div>
       </section>
 
       {/* ───────── Resultados o portada ───────── */}
       <div ref={resultsRef} className="cmp-body">
+        {/* Página de búsqueda: franja de anuncio entre el buscador y los resultados,
+            la misma unidad que la cabecera del catálogo de cada súper. */}
+        {isSearchPage && <AdWide className="cmp-ad-wide cmp-ad-search" always />}
         {submitted && cp && !apiConfigured ? (
           <div className="cmp-empty cmp-results">
             <h3>{t.unavailableTitle}</h3>
@@ -451,6 +500,15 @@ function ComparadorPage() {
               <p className="cmp-note cmp-note-center">{t.couldNot(failed.map((k) => STORE_BY_KEY[k].name).join(', '))}</p>
             )}
           </section>
+        ) : isSearchPage ? (
+          <div className="cmp-empty cmp-results">
+            <span className="cmp-empty-icon"><Icon.search width="28" height="28" /></span>
+            <h3>{t.searchEmptyTitle}</h3>
+            <p>{t.searchEmptyText}</p>
+            <div className="cmp-popular cmp-popular-center">
+              {t.popularItems.map((p) => <button type="button" key={p} className="cmp-chip" onClick={() => runSearch(p)}>{p}</button>)}
+            </div>
+          </div>
         ) : (
           <>
             <KitchenPicks lang={t.lang} limit={4} />
@@ -506,6 +564,6 @@ function ComparadorPage() {
   );
 }
 
-export default function Comparador({ lang = 'es' }) {
-  return <LangProvider lang={lang}><ComparadorPage /></LangProvider>;
+export default function Comparador({ lang = 'es', mode = 'home' }) {
+  return <LangProvider lang={lang}><ComparadorPage mode={mode} /></LangProvider>;
 }

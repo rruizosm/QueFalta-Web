@@ -18,3 +18,14 @@ export function catalogPath(store, lang = 'es', { cat = null, offers = false } =
   const base = lang === 'ca' ? `/ca/supermercats/${catalogSlug(store)}/` : `/supermercados/${catalogSlug(store)}/`;
   return `${base}${search ? `?${search}` : ''}`;
 }
+
+// Resultados de búsqueda (decisión del usuario, 2026-11-25): no se pintan en la
+// portada sino en su propia página, /buscar/?q=… (en catalán /ca/cercar/?q=…).
+// Va con noindex: Google pide no indexar resultados de búsquedas internas.
+
+/** Página de resultados de búsqueda (sin `q`, la página vacía del buscador). */
+export function searchPath(q = '', lang = 'es') {
+  const base = lang === 'ca' ? '/ca/cercar/' : '/buscar/';
+  const text = q.trim();
+  return text ? `${base}?q=${encodeURIComponent(text)}` : base;
+}

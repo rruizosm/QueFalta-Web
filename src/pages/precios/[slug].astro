@@ -105,7 +105,7 @@ const schemas = [
       <div><span>Más caro</span><strong>{euro(p.worst.ppu)}/{p.unit}</strong><em>{worst.name}</em></div>
     </div>
 
-    <a class="pr-cta" href={`/?q=${encodeURIComponent(p.query)}`}>
+    <a class="pr-cta" href={`/buscar/?q=${encodeURIComponent(p.query)}`}>
       <strong>Compara con los precios de tu zona</strong>
       <span>Introduce tu código postal y mira qué tienes cerca →</span>
     </a>

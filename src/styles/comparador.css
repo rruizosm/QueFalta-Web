@@ -1187,3 +1187,22 @@ button.cmp-drops { width: 100%; font: inherit; text-align: left; cursor: pointer
 @media (max-width: 640px) {
   .cmp-store-head-inner { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Página de búsqueda (/buscar/, /ca/cercar/): cabecera compacta con zona,
+   título y buscador; los resultados quedan a la vista sin bajar. */
+.cmp-hero.cmp-hero-compact { padding: 28px 24px 32px; }
+.cmp-hero-compact .cmp-kicker { margin-top: 14px; }
+.cmp-hero-compact .cmp-search { margin-top: 18px; }
+.cmp-hero-compact .cmp-search { margin-top: 0; }
+.cmp-ad-search { padding-top: 24px; }
+.cmp-ad-search + .cmp-results, .cmp-ad-search + .cmp-empty { padding-top: 24px; }
+
+/* «Comparar» es un enlace (viñetas de AdSense): sin subrayado y apagado sin texto. */
+a.cmp-btn { text-decoration: none; }
+a.cmp-btn[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+
+.cmp-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+a.cmp-btn[aria-disabled="true"]:hover, a.cmp-btn[aria-disabled="true"]:active { transform: none; filter: none; }

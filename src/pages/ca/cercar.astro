@@ -1,0 +1,18 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Comparador from '../../components/comparador/Comparador.jsx';
+import '../../styles/comparador.css';
+
+// Resultats de cerca del comparador (/ca/cercar/?q=…), equivalent de /buscar/.
+---
+
+<Layout
+  title="Cercar productes als supermercats de la teva zona | QuéFalta"
+  description="Cerca un producte i compara'n el preu a Mercadona, Carrefour, Lidl, Dia, Aldi, Consum i més supermercats del teu codi postal."
+  lang="ca"
+  alternates={{ es: '/buscar/', ca: '/ca/cercar/' }}
+  noindex
+  adRails
+>
+  <Comparador client:load lang="ca" mode="search" />
+</Layout>

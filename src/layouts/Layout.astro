@@ -31,6 +31,9 @@ interface Props {
       cuya URL lleva un dato privado (p. ej. /join/<id de grupo>): esos scripts
       envían la URL completa a terceros. */
   thirdParty?: boolean;
+  /** Fuerza los anuncios laterales aunque la página vaya con noindex (p. ej.
+      la página de resultados de búsqueda, que no se indexa pero sí se usa). */
+  adRails?: boolean;
 }
 const {
   title = 'QuéFalta — La compra compartida, sin líos',
@@ -46,6 +49,7 @@ const {
   lang = 'es',
   alternates,
   thirdParty = true,
+  adRails,
 } = Astro.props;
 // Todas las páginas usan URLs de directorio. Los ficheros conservan su ruta.
 const pageUrl = (path: string) => {
@@ -63,7 +67,7 @@ const canonical = pageUrl(Astro.url.pathname);
 const path = Astro.url.pathname;
 const isHome = path === '/' || path === '/ca/comparador/';
 const adsExcluded = /^\/(ca\/)?(404|join|eliminar-cuenta|privacidad|condiciones|cookies|inicio|producto|producte)(\/|$)/.test(path);
-const showAdRails = thirdParty && !bare && !noindex && !adsExcluded;
+const showAdRails = thirdParty && !bare && !adsExcluded && (adRails ?? !noindex);
 const ogImage = new URL(image, Astro.site).href;
 // Tipo por la extensión: las fichas usan la foto (JPG) de la cadena.
 const ogImageType = /\.png(\?|$)/i.test(ogImage) ? 'image/png'

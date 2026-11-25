@@ -74,6 +74,10 @@ const schemas = [
     if (/^#(top|como-funciona|funciones|descargar)$/.test(location.hash)) {
       location.replace('/como-funciona/' + (location.hash === '#top' ? '' : location.hash));
     }
+    // Las búsquedas tienen su propia página: los enlaces antiguos /?q=… saltan allí.
+    if (/[?&]q=/.test(location.search) && !/[?&]super=/.test(location.search)) {
+      location.replace('/buscar/' + location.search);
+    }
     // Evita un parpadeo del texto de portada al abrir un súper o una búsqueda.
     if (/[?&](super|q)=/.test(location.search)) document.documentElement.classList.add('cmp-in-view');
   </script>
