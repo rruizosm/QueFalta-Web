@@ -1160,7 +1160,7 @@ button.cmp-drops { width: 100%; font: inherit; text-align: left; cursor: pointer
 }
 
 /* Franja de anuncio entre el navbar y las migas del catálogo de cada súper
-   (AdWide always): todo el ancho del contenido × 250 px a cualquier ancho.
+   (AdWide always): todo el ancho del contenido × 250 px (100 px en móvil).
    Sobre el gris de la cabecera del súper. */
 .cmp-ad-band { background: var(--paper-2); padding: 0 24px; }
 .cmp-ad-wide { display: flex; max-width: 1272px; min-height: 250px; margin: 0 auto; padding-top: 14px; overflow: hidden; }
@@ -1169,6 +1169,8 @@ button.cmp-drops { width: 100%; font: inherit; text-align: left; cursor: pointer
 @media (max-width: 640px) {
   .cmp-ad-band { padding: 0 16px; }
   .cmp-ad-wide { padding-top: 10px; }
+  /* compactMobile (catálogo de cada súper): 100 px en móvil. */
+  .cmp-ad-wide.is-compact { min-height: 100px; }
 }
 
 /* Cabecera del súper: título + (en tableta) bajadas y ofertas a su derecha.

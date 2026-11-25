@@ -2,7 +2,6 @@
 import CookieConsent from '../components/CookieConsent.astro';
 import AppStoreHelp from '../components/AppStoreHelp.astro';
 import SiteNav from '../components/SiteNav.astro';
-import AdRails from '../components/AdRails.astro';
 
 interface Props {
   title?: string;
@@ -31,9 +30,6 @@ interface Props {
       cuya URL lleva un dato privado (p. ej. /join/<id de grupo>): esos scripts
       envían la URL completa a terceros. */
   thirdParty?: boolean;
-  /** Fuerza los anuncios laterales aunque la página vaya con noindex (p. ej.
-      la página de resultados de búsqueda, que no se indexa pero sí se usa). */
-  adRails?: boolean;
 }
 const {
   title = 'QuéFalta — La compra compartida, sin líos',
@@ -49,7 +45,6 @@ const {
   lang = 'es',
   alternates,
   thirdParty = true,
-  adRails,
 } = Astro.props;
 // Todas las páginas usan URLs de directorio. Los ficheros conservan su ruta.
 const pageUrl = (path: string) => {
@@ -61,13 +56,6 @@ const pageUrl = (path: string) => {
 };
 const canonical = pageUrl(Astro.url.pathname);
 
-// Anuncios laterales: no en páginas legales/de gestión, sin contenido propio
-// (404, fichas que se rellenan en el navegador) ni noindex. En la portada
-// empiezan al salir de la sección de bienvenida.
-const path = Astro.url.pathname;
-const isHome = path === '/' || path === '/ca/comparador/';
-const adsExcluded = /^\/(ca\/)?(404|join|eliminar-cuenta|privacidad|condiciones|cookies|inicio|producto|producte)(\/|$)/.test(path);
-const showAdRails = thirdParty && !bare && !adsExcluded && (adRails ?? !noindex);
 const ogImage = new URL(image, Astro.site).href;
 // Tipo por la extensión: las fichas usan la foto (JPG) de la cadena.
 const ogImageType = /\.png(\?|$)/i.test(ogImage) ? 'image/png'
@@ -206,10 +194,10 @@ const jsonLdText = (value: unknown) => JSON.stringify(value)
     </script>
     <!-- Escala de escritorio: en portátiles (ventana de 1440 a 1999 px, con
          ratón) toda la web se reduce como un zoom del navegador para que el
-         lienzo mida 2000 px y quepan los anuncios laterales (contenido 1320 +
-         300 + 300). Por debajo de 0,72 no se reduce (texto demasiado pequeño)
-         y en táctil nunca. También marca en <html> qué lateral cabe, porque las
-         media queries miden la ventana real y no ven el zoom. -->
+         lienzo mida 2000 px y queden márgenes para los anuncios laterales
+         AUTOMÁTICOS de AdSense (contenido 1320 + ~340 por lado; los laterales
+         manuales se quitaron el 2026-11-25). Por debajo de 0,72 no se reduce
+         (texto demasiado pequeño) y en táctil nunca. -->
     <script is:inline>
       (function () {
         var el = document.documentElement;
@@ -222,9 +210,6 @@ const jsonLdText = (value: unknown) => JSON.stringify(value)
           if (z >= 1 || z < MIN || (fine && !fine.matches)) z = 1;
           el.style.zoom = z < 1 ? String(z) : '';
           el.style.setProperty('--qf-zoom', String(z));
-          var cw = w / z;
-          el.classList.toggle('qf-rail-l', cw >= 1960);
-          el.classList.toggle('qf-rail-r', cw >= 1960);
         }
         fit();
         window.addEventListener('resize', fit);
@@ -267,7 +252,6 @@ const jsonLdText = (value: unknown) => JSON.stringify(value)
     )}
 
     <AppStoreHelp lang={lang} />
-    {showAdRails && <AdRails after={isHome ? '.cmp-hero' : undefined} />}
 
     <style is:global>
       :root {

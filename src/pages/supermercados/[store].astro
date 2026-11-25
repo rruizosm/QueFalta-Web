@@ -103,8 +103,8 @@ const fmt = (iso) => {
   alternates={{ es: `/supermercados/${store.slug}/`, ca: `/ca/supermercats/${store.slug}/` }}
   jsonld={[faqSchema, breadcrumbSchema]}
 >
-  <!-- Franja de anuncio: todo el ancho × 250 a cualquier ancho, siempre aquí. -->
-  <div class="cmp-ad-band"><AdWide client:load className="cmp-ad-wide" always /></div>
+  <!-- Franja de anuncio: todo el ancho × 250 (100 en móvil), siempre aquí. -->
+  <div class="cmp-ad-band"><AdWide client:load className="cmp-ad-wide" always compactMobile /></div>
   <nav class="st-breadcrumbs st-breadcrumbs-top" aria-label="Ruta de navegación">
     <ol>
       {breadcrumbs.map((crumb, i) => (

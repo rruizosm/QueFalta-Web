@@ -201,30 +201,39 @@ export function AdTop({ className = 'pd-ad' }) {
 //   cualquier ancho, también en móvil, siempre en el mismo sitio.
 // En localhost (AdSense no sirve) sale un marcador.
 const AD_WIDE_SLOT = '2748054353'; // «Franja superior supermercado» (adaptable)
-export function AdWide({ className = 'pd-ad-wide', always = false }) {
+export function AdWide({ className = 'pd-ad-wide', always = false, compactMobile = false }) {
   const insRef = useRef(null);
   const [on, setOn] = useState(false);
+  // compactMobile: en móvil (≤640 px) la franja baja a 100 px de alto, para que
+  // el contenido se vea antes (catálogo de cada súper, prueba 2026-11-25).
+  const [small, setSmall] = useState(false);
   useEffect(() => {
-    if (always) { setOn(true); return undefined; }
+    if (always) {
+      if (compactMobile) setSmall(window.matchMedia('(max-width: 640px)').matches);
+      setOn(true);
+      return undefined;
+    }
     const mq = window.matchMedia('(min-width: 641px)');
     const sync = () => setOn(mq.matches);
     sync();
     mq.addEventListener('change', sync);
     return () => mq.removeEventListener('change', sync);
-  }, [always]);
+  }, [always, compactMobile]);
   const dev = import.meta.env.DEV;
   useEffect(() => {
     if (dev || !on || !insRef.current) return;
     try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
   }, [on]);
+  // El alto se fija al pedir el anuncio: no cambia si luego se gira o redimensiona.
+  const h = small ? 100 : 250;
   return (
-    <aside className={className} aria-label="Publicidad">
-      {dev && on && <span className="cmp-ad-ph">Anuncio · todo el ancho × 250</span>}
+    <aside className={`${className}${small ? ' is-compact' : ''}`} aria-label="Publicidad">
+      {dev && on && <span className="cmp-ad-ph" style={{ height: `${h}px` }}>Anuncio · todo el ancho × {h}</span>}
       {!dev && on && (
         <ins
           ref={insRef}
           className="adsbygoogle"
-          style={{ display: 'block', width: '100%', height: '250px' }}
+          style={{ display: 'block', width: '100%', height: `${h}px` }}
           data-ad-client={AD_CLIENT}
           data-ad-slot={AD_WIDE_SLOT}
         />
