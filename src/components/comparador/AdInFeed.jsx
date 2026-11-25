@@ -13,9 +13,9 @@ const AD_CLIENT = 'ca-pub-9749911986318862';
 // Cada cuántas filas de productos va un anuncio. Como el número de columnas
 // cambia con el ancho (2 en móvil, más en pantallas grandes), se mide en la
 // cuadrícula con useGridColumns y los productos por anuncio = filas × columnas.
-// 1 = una franja tras cada fila (decisión del usuario 2026-11-25). Con la carga
-// diferida de abajo solo se piden las que el usuario llega a ver.
-export const AD_FEED_ROWS = 1;
+// 3 = una franja cada 3 filas (decisión del usuario 2026-11-25, antes 1). Con la
+// carga diferida de abajo solo se piden las que el usuario llega a ver.
+export const AD_FEED_ROWS = 3;
 
 // Carga diferida: el <ins> no se pinta ni se pide hasta que su hueco está a
 // AD_NEAR de entrar en pantalla. AdSense cuenta la impresión al servir el
