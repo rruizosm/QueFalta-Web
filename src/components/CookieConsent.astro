@@ -5,9 +5,12 @@
 // El aviso en sí (textos, botones, idiomas) se configura en AdSense: aquí solo
 // se carga el script y se conecta Google Analytics al consentimiento.
 //
-// Google Analytics usa el modo de consentimiento en modo BÁSICO: gtag.js NO se
-// descarga hasta que la CMP comunica analytics_storage = 'granted'. Sin
-// consentimiento no se envía nada a Google Analytics.
+// Google Analytics usa el modo de consentimiento AVANZADO: gtag.js se carga
+// siempre (tras el evento load, para no competir con el render) con todo
+// denegado. Sin consentimiento NO escribe ni lee cookies: solo manda pings
+// sin identificadores que Google usa para modelizar las visitas de quien
+// rechaza. Cuando la CMP comunica analytics_storage = 'granted', gtag pasa a
+// medir con cookies (_ga, _ga_*) sin recargar nada.
 //
 // Va dentro del <head> (lo incluye Layout.astro) para que los valores por
 // defecto del modo de consentimiento queden fijados antes que cualquier
@@ -31,30 +34,25 @@ const ADSENSE_CLIENT = 'ca-pub-9749911986318862';
       wait_for_update: 500,
     });
 
-    // Carga GA4 la primera vez que llega analytics_storage = 'granted'.
-    var gaLoaded = false;
-    function loadGA() {
-      if (gaLoaded || !GA_ID) return;
-      gaLoaded = true;
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
-      document.head.appendChild(s);
+    // Con anuncios denegados, quita también los identificadores de anuncios de
+    // los pings sin cookies.
+    w.gtag('set', 'ads_data_redaction', true);
+
+    // GA4 se configura ya (queda en dataLayer) y gtag.js se descarga tras load.
+    // La CMP de Google actualiza el consentimiento con gtag('consent', 'update', …)
+    // y gtag lo aplica solo, llegue antes o después de cargar.
+    if (GA_ID) {
       w.gtag('js', new Date());
       w.gtag('config', GA_ID);
+      var loadGA = function () {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+        document.head.appendChild(s);
+      };
+      if (document.readyState === 'complete') loadGA();
+      else w.addEventListener('load', loadGA);
     }
-    function check(entry) {
-      if (entry && entry[0] === 'consent' && entry[2] && entry[2].analytics_storage === 'granted') {
-        loadGA();
-      }
-    }
-    // La CMP de Google comunica el consentimiento con gtag('consent', 'update', …),
-    // es decir, empujando a dataLayer: lo vigilamos ahí.
-    var push = w.dataLayer.push;
-    w.dataLayer.push = function () {
-      for (var i = 0; i < arguments.length; i++) check(arguments[i]);
-      return push.apply(w.dataLayer, arguments);
-    };
 
     // Borra la cookie del banner propio anterior (ya no se usa).
     document.cookie = 'qf_consent=; Max-Age=0; Path=/';
@@ -76,10 +74,30 @@ const ADSENSE_CLIENT = 'ca-pub-9749911986318862';
   })();
 </script>
 
-<!-- Google AdSense: verificación del sitio, anuncios y carga de la CMP de Google. -->
-<script
-  is:inline
-  async
-  src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-  crossorigin="anonymous"
-></script>
+<!-- Google AdSense: anuncios y carga de la CMP de Google.
+     Se carga DIFERIDO (primera interacción o 4 s después de load) para que no
+     compita con el render ni cuente en LCP/TBT. Los anuncios que hagan
+     adsbygoogle.push() antes quedan en cola y se sirven cuando llega el script. -->
+<script is:inline define:vars={{ ADSENSE_CLIENT }}>
+  (function () {
+    var started = false;
+    function start() {
+      if (started) return;
+      started = true;
+      ['scroll', 'pointerdown', 'keydown', 'touchstart', 'mousemove'].forEach(function (ev) {
+        window.removeEventListener(ev, start);
+      });
+      var s = document.createElement('script');
+      s.async = true;
+      s.crossOrigin = 'anonymous';
+      s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_CLIENT;
+      document.head.appendChild(s);
+    }
+    ['scroll', 'pointerdown', 'keydown', 'touchstart', 'mousemove'].forEach(function (ev) {
+      window.addEventListener(ev, start, { passive: true, once: true });
+    });
+    function later() { setTimeout(start, 4000); }
+    if (document.readyState === 'complete') later();
+    else window.addEventListener('load', later);
+  })();
+</script>
