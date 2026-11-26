@@ -142,24 +142,79 @@ export function loadProductPages() {
 // catálogo entero, y se compara por precio por kilo, litro o unidad. La ficha
 // lo dice claro: son productos parecidos, no el mismo (ver SimilarProducts).
 
-/** Marcas propias por cadena. Para añadir una cadena basta con su entrada. */
+// Marcas propias por cadena: [nombre que se muestra, patrón]. Para añadir una
+// cadena basta con su entrada. En las cadenas de BRAND_COLUMN el patrón se
+// prueba contra la columna `brand` normalizada (minúsculas, sin acentos ni ®);
+// en el resto (Mercadona, Carrefour), contra el nombre del producto.
+// Medido en BD el 26-11-2026: solo marcas EXCLUSIVAS de la cadena (IFA, Alteza
+// o Selex se venden en varias y darían fichas casi iguales).
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const exact = (...names) => names.map((n) => [n, new RegExp(`^${escapeRe(plainBrand(n))}$`)]);
+const EROSKI_BRANDS = [['Eroski', /^eroski\b/], ['Eroski Basic', /^e\.? ?basic\b/], ['Seleqtia', /^seleqtia\b/], ['Belle', /^belle$/]];
 export const OWN_BRANDS = {
   mercadona: [['Hacendado', /\bhacendado\b/i], ['Deliplus', /\bdeliplus\b/i], ['Bosque Verde', /\bbosque verde\b/i], ['Compy', /\bcompy\b/i]],
+  carrefour: [['Carrefour', /\bcarrefour\b/i]],
+  esclat: [['Bonpreu', /^bonpreu\b/]],
+  lidl: exact(
+    'Realvalle', 'Milbona', 'Chef Select', 'Cien', 'W5', 'Kania', 'Ocean Sea', 'Deluxe', 'La Cestera', 'Freshona',
+    'Sondey', 'Alesto', 'Roncero', 'Baresa', 'Snack Day', 'Nixe', 'Bellarom', 'Freeway', 'Lord Nelson', 'Fin Carré',
+    'Dentalux', 'Combino', 'Formil', 'Lupilu', 'Solevita', 'Crownfield', 'Dulano', 'Maribel', 'Tastino', 'Campo Largo',
+    'Belbake', 'Gelatelli', 'Mister Choc', 'Vemondo', 'Sweet Corner', 'Floralys', 'Pikok', 'Favorina', 'Italiamo', 'Vitasia',
+  ),
+  dia: [['Dia', /^(gran )?dia\b|\bde dia$/]],
+  aldi: exact(
+    'Milsani', 'Lacura', 'La Tabla', 'Esselt', 'Choceur', 'El Horno', 'Cucina', 'Golden Seafood', 'Biscotto', 'All Seasons',
+    'Seasons Best', 'Sun Snacks', 'Sal de Plata', 'Power Force', 'Moser Roth', 'Romeo', 'La Cocina', 'Flete', 'La Villa',
+    'Barissimo', 'Tandil', 'Golden Bridge', 'Daylicious', 'El Cultivador', "Rio d'Oro", 'Cachet', 'Le Gusto', 'Sweet Land',
+    'GutBio', 'Asia Green Garden', 'Dentitex', 'Westminster', 'Myvay', 'Mucci', 'River', "Trader Joe's",
+  ),
+  alcampo: [['Alcampo', /\balcampo\b|^auchan\b/]],
+  consum: [['Consum', /^consum\b/]],
+  eroski: EROSKI_BRANDS,
+  caprabo: EROSKI_BRANDS,
+  condis: [['Condis', /^condis\b/]],
+  bm: [['BM', /^bm\b/]],
+  ametller: [['Ametller Origen', /^ametller origen\b/]],
+  froiz: [['Froiz', /^froiz\b/]],
+  sorli: [['Sorli', /^sorli\b/]],
+  plusfresc: [['Plusfresc', /^plusfresc\b/]],
+  ahorramas: [['Alipende', /^alipende\b/]],
+  eljamon: [['El Jamón', /^el jamon$/]],
 };
+// Cadenas cuya marca se lee de la columna `brand` (Mercadona y Carrefour no la tienen).
+const BRAND_COLUMN = new Set(['esclat', 'lidl', 'dia', 'aldi', 'alcampo', 'consum', 'eroski', 'caprabo', 'condis', 'bm', 'ametller', 'froiz', 'sorli', 'plusfresc', 'ahorramas', 'eljamon']);
 export const MIN_SIMILAR_STORES = 3;
 const MAX_SIMILAR = 8;
 // Precio por unidad fuera de ×3 o ÷3 del producto: emparejado dudoso (otro
 // formato, un aparato frente a su recambio, un dato mal guardado…).
 const PPU_RATIO = 3;
 
-const ownBrandOf = (store, name) => OWN_BRANDS[store]?.find(([, re]) => re.test(name))?.[0] ?? null;
+function plainBrand(s) {
+  return (s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[®™]/g, '').replace(/\s+/g, ' ').trim();
+}
+const ownBrandOf = (store, name, brand) => {
+  const text = BRAND_COLUMN.has(store) ? plainBrand(brand) : name;
+  return text ? OWN_BRANDS[store]?.find(([, re]) => re.test(text))?.[0] ?? null : null;
+};
+
+/** Marcas propias que de verdad tienen fichas, de más a menos («Milbona, Realvalle y 12 más»). */
+export function ownBrandSummary(pages, max = 4) {
+  const count = new Map();
+  for (const p of pages) if (p.ownBrand) count.set(p.ownBrand, (count.get(p.ownBrand) ?? 0) + 1);
+  const names = [...count].sort((a, b) => b[1] - a[1]).map(([n]) => n);
+  if (names.length <= max) return names.length > 1 ? `${names.slice(0, -1).join(', ')} y ${names.at(-1)}` : (names[0] ?? '');
+  return `${names.slice(0, max).join(', ')} y ${names.length - max} más`;
+}
 
 // Más estricto que el comparador del navegador (2 palabras clave), porque esto
 // se publica para Google: 3 palabras clave, sin las submarcas de la cadena, y
 // estas variantes deben coincidir en los dos sentidos (salchichas de cerdo ≠ de
 // pollo, queso gouda ≠ fundido).
 const STRICT_KEYS = 3;
-const SUB_BRANDS = new Set(['fussion', 'hacendado', 'deliplus', 'compy', 'bosque', 'verde']);
+// Palabras de las marcas propias de cada cadena: no describen el producto.
+const SUB_BRANDS = new Map(Object.entries(OWN_BRANDS).map(([store, list]) => [
+  store, new Set([...list.flatMap(([n]) => plainBrand(n).split(/[^a-z0-9ñ]+/)), ...(store === 'mercadona' ? ['fussion'] : [])].filter(Boolean)),
+]));
 const STRICT_VARIANTS = [
   'cerdo', 'pollo', 'pavo', 'ternera', 'vacuno', 'cordero', 'conejo', 'iberico', 'serrano', 'york',
   'atun', 'salmon', 'merluza', 'bacalao', 'gamba', 'gambas', 'langostino', 'langostinos',
@@ -170,7 +225,10 @@ const strictVariants = (name) => {
   const t = new Set(nameTokens(name));
   return STRICT_VARIANTS.filter((v) => t.has(v)).join(',');
 };
-const strictKeys = (name) => keyWords(name, STRICT_KEYS + SUB_BRANDS.size).filter((k) => !SUB_BRANDS.has(k)).slice(0, STRICT_KEYS);
+const strictKeys = (name, store) => {
+  const sub = SUB_BRANDS.get(store) ?? new Set();
+  return keyWords(name, STRICT_KEYS + sub.size).filter((k) => !sub.has(k)).slice(0, STRICT_KEYS);
+};
 
 // Índice por las 4 primeras letras de cada palabra: isSimilar acepta palabras
 // que EMPIEZAN por la clave («galleta» → «galletas»).
@@ -182,7 +240,7 @@ const words = (name) => [...new Set((name ?? '').toLowerCase().normalize('NFD').
 /** Alternativas parecidas de `p` en otras cadenas: la más barata por kg/l/ud de cada una. */
 function similarOf(p, index) {
   if (p.ppu == null || !p.unit) return [];
-  const keys = strictKeys(p.name);
+  const keys = strictKeys(p.name, p.store);
   if (!keys.length) return [];
   const sourceVariants = variantsOf(p.name);
   const sourceStrict = strictVariants(p.name);
@@ -204,8 +262,12 @@ async function loadOwnBrand() {
   // 1. Catálogo entero en ligero de todas las cadenas (precio de referencia).
   const catalogs = new Map();
   await pool(STORES.map(({ key }) => async () => {
-    const rows = await withRetries(() => restAll(`${tableOf(key)}?select=${columnsFor(key, 'es')}&published=eq.true&order=id.asc`));
-    catalogs.set(key, rows.map((r) => toProduct(key, r, REFERENCE_CP[key], 'es')).filter(valid));
+    const brandCol = OWN_BRANDS[key] && BRAND_COLUMN.has(key) ? ',brand' : '';
+    const rows = await withRetries(() => restAll(`${tableOf(key)}?select=${columnsFor(key, 'es')}${brandCol}&published=eq.true&order=id.asc`));
+    catalogs.set(key, rows.map((r) => {
+      const p = toProduct(key, r, REFERENCE_CP[key], 'es');
+      return p && brandCol ? { ...p, rawBrand: r.brand } : p;
+    }).filter(valid));
   }), CONCURRENCY);
 
   const index = new Map();
@@ -224,7 +286,7 @@ async function loadOwnBrand() {
   const chosen = [];
   for (const store of Object.keys(OWN_BRANDS)) {
     for (const p of catalogs.get(store) ?? []) {
-      const brand = ownBrandOf(store, p.name);
+      const brand = ownBrandOf(store, p.name, p.rawBrand);
       if (!brand) continue;
       const similar = similarOf(p, index);
       if (similar.length >= MIN_SIMILAR_STORES) chosen.push({ p, brand, similar });
@@ -246,6 +308,7 @@ async function loadOwnBrand() {
       kind: 'own',
       store: p.store,
       id: p.id,
+      ownBrand: brand,
       detail: { ...detail, brand: detail.brand || brand },
       same: [],
       similarStores: similar.length,

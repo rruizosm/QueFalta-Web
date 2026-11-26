@@ -61,3 +61,21 @@ export function loadFolleto() {
   cached ??= load();
   return cached;
 }
+
+/**
+ * Fechas del folleto en corto para un <title>: «17–30 nov» o «28 dic–10 ene»
+ * (en catalán «17–30 nov.» sin el «de»). null si no se pudieron leer.
+ */
+export function folletoRange(validity, lang = 'es') {
+  // Folleto ya caducado al compilar (el visor aún no ha cambiado de edición):
+  // mejor sin fechas que con unas viejas. La web se recompila tras el sync de
+  // Bonpreu (martes), el mismo día que empieza cada folleto.
+  if (!validity || validity.to < new Date().toISOString().slice(0, 10)) return null;
+  const locale = lang === 'ca' ? 'ca-ES' : 'es-ES';
+  const date = (iso) => new Date(`${iso}T12:00:00Z`);
+  const mon = (iso) => date(iso).toLocaleDateString(locale, { month: 'short', timeZone: 'UTC' }).replace(/^(de |d')/, '').replace('.', '');
+  const day = (iso) => date(iso).getUTCDate();
+  return validity.from.slice(0, 7) === validity.to.slice(0, 7)
+    ? `${day(validity.from)}–${day(validity.to)} ${mon(validity.to)}`
+    : `${day(validity.from)} ${mon(validity.from)}–${day(validity.to)} ${mon(validity.to)}`;
+}

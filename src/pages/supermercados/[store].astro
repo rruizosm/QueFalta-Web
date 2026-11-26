@@ -3,10 +3,11 @@ import Layout from '../../layouts/Layout.astro';
 import StoreCatalog from '../../components/comparador/StoreCatalog.jsx';
 import { AdWide } from '../../components/comparador/AdInFeed.jsx';
 import { STORES, UPDATED } from '../../data/supermercados.js';
-import { OWN_BRANDS, loadOwnBrandPages, loadProductPages, linkItem } from '../../lib/productoSeo.js';
+import { OWN_BRANDS, loadOwnBrandPages, loadProductPages, linkItem, ownBrandSummary } from '../../lib/productoSeo.js';
 import { productPath } from '../../lib/productoApi.js';
 import { euro } from '../../lib/preciosFormato.js';
 import { CATALOG_OFFERS } from '../../lib/ofertas.js';
+import { folletoRange, loadFolleto } from '../../lib/folleto.js';
 import '../../styles/productos.css';
 import '../../styles/comparador.css';
 
@@ -39,11 +40,16 @@ const comparedTotal = productPages.filter((p) => p.store === storeKey || p.same.
 const ownPages = import.meta.env.DEV || !OWN_BRANDS[storeKey]
   ? []
   : (await loadOwnBrandPages()).filter((p) => p.store === storeKey);
-const ownBrandNames = (OWN_BRANDS[storeKey] ?? []).map(([name]) => name);
+const ownBrandNames = ownBrandSummary(ownPages);
 const ownPicks = [...ownPages]
   .sort((a, b) => b.similarStores - a.similarStores || a.detail.label.localeCompare(b.detail.label, 'es'))
   .slice(0, 12);
 const hasOffers = !!CATALOG_OFFERS[storeKey];
+// Bonpreu: la consulta más vista es «catálogo/folleto Bonpreu Esclat»; con las
+// fechas del folleto vigente el resultado se ve actual. «Folleto» queda para
+// /ofertas/, que es donde está el banner con el enlace al visor oficial.
+const bonpreuRange = storeKey === 'esclat' ? folletoRange((await loadFolleto()).validity, 'es') : null;
+const pageTitle = bonpreuRange ? `Catálogo Bonpreu Esclat con precios y ofertas (${bonpreuRange}) | QuéFalta` : store.title;
 const catalogHeading = store.catalogHeading ?? `Catálogo${hasOffers ? ' y ofertas' : ''} de ${store.name}`;
 // Pregunta «¿dónde veo el catálogo?» (la que hace quien llega desde Google),
 // salvo que la cadena ya tenga la suya en supermercados.js.
@@ -98,7 +104,7 @@ const fmt = (iso) => {
 ---
 
 <Layout
-  title={store.title}
+  title={pageTitle}
   description={store.description}
   alternates={{ es: `/supermercados/${store.slug}/`, ca: `/ca/supermercats/${store.slug}/` }}
   jsonld={[faqSchema, breadcrumbSchema]}
@@ -198,7 +204,7 @@ const fmt = (iso) => {
       <section class="st-block">
         <h2 class="st-h2">Marca blanca de {store.name}</h2>
         <p class="st-copy">
-          {ownPages.length.toLocaleString('es-ES')} productos {ownBrandNames.join(', ')} comparados por precio por kilo o
+          {ownPages.length.toLocaleString('es-ES')} productos {ownBrandNames} comparados por precio por kilo o
           litro con productos parecidos de otras cadenas. Estos son algunos:
         </p>
         <ul class="pdir-picks">

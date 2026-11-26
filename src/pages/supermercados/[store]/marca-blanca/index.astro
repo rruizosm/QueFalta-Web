@@ -1,7 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import { STORE_BY_KEY } from '../../../../data/comparadorZonas.js';
-import { OWN_BRANDS, loadOwnBrandPages } from '../../../../lib/productoSeo.js';
+import { loadOwnBrandPages, ownBrandSummary } from '../../../../lib/productoSeo.js';
 import { productPath } from '../../../../lib/productoApi.js';
 import { euro, fechaLarga } from '../../../../lib/preciosFormato.js';
 import '../../../../styles/precios.css';
@@ -29,8 +29,7 @@ export async function getStaticPaths() {
 const { storeKey, pages } = Astro.props;
 const storeName = STORE_BY_KEY[storeKey].name;
 const slug = storeKey === 'esclat' ? 'bonpreu' : storeKey;
-const brands = OWN_BRANDS[storeKey].map(([name]) => name);
-const brandList = brands.length > 1 ? `${brands.slice(0, -1).join(', ')} y ${brands.at(-1)}` : brands[0];
+const brandList = ownBrandSummary(pages);
 const updated = new Date().toISOString().slice(0, 10);
 const total = pages.length;
 const cheapest = pages.filter((p) => p.cheaperStores === 0).length;

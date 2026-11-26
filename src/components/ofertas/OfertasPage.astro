@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import OffersBrowser from './OffersBrowser.jsx';
 import { REFERENCE_CP, STORE_BY_KEY } from '../../data/comparadorZonas.js';
 import { loadOfertas } from '../../lib/ofertasSeo.js';
-import { loadFolleto } from '../../lib/folleto.js';
+import { folletoRange, loadFolleto } from '../../lib/folleto.js';
 import { fetchBannerImages } from '../../lib/comparadorApi.js';
 import { KIND_ORDER, offersPagePath, offersSlug } from '../../lib/ofertas.js';
 import { catalogPath } from '../../lib/rutas.js';
@@ -74,12 +74,19 @@ const dataUrl = `${offersPagePath(store, 'es')}datos.json`;
 // Con muy pocas ofertas la página no aporta: existe (el botón del comparador
 // enlaza aquí) pero no se indexa.
 const thin = data.total < 10;
+// Fechas del folleto en corto para el <title> («17–30 nov»): quien busca
+// «folleto/último catálogo Bonpreu» quiere saber si es el vigente.
+const range = folletoRange(folleto?.validity, lang);
+// Nombre como se busca: «Bonpreu Esclat» (sin la «i» del nombre oficial).
+const searchName = hasFolleto ? 'Bonpreu Esclat' : name;
 
 const T = ca ? {
-  title: hasFolleto
-    ? `Ofertes i fullet de ${name} d'aquesta setmana (${month}) | QuéFalta`
-    : `Ofertes de ${name} d'aquesta setmana (${month}) | QuéFalta`,
-  description: `${n(data.total)} ofertes de ${name} per seccions i tipus d'oferta: preus rebaixats, 2a unitat, 3x2 i lots.${validity ? ` Fullet vigent: ${validity.toLowerCase()}.` : ''} Sense codi postal.`,
+  title: hasFolleto && range
+    ? `Fullet ${searchName} (${range}): ${n(data.total)} ofertes | QuéFalta`
+    : hasFolleto
+      ? `Ofertes i fullet de ${name} d'aquesta setmana (${month}) | QuéFalta`
+      : `Ofertes ${name.match(/^[aeiouàèéíòóú]/i) ? "d'" : 'de '}${name} d'aquesta setmana: ${n(data.total)} rebaixes | QuéFalta`,
+  description: `${validity && hasFolleto ? `Fullet de ${name} ${validity.toLowerCase()} i ${n(data.total)} ofertes` : `${n(data.total)} ofertes de ${name}`} per seccions i tipus d'oferta: preus rebaixats, 2a unitat, 3x2 i lots. Sense codi postal.`,
   crumbs: ['Inici', 'Supermercats', name, 'Ofertes'],
   h1: `Ofertes de ${name}`,
   lead: `<strong>${n(data.total)} productes en oferta</strong> a la botiga en línia${zoneCity ? ` (preus de referència de ${zoneCity})` : ''} · actualitzat el ${updatedLong}`,
@@ -105,10 +112,12 @@ const T = ca ? {
   ],
   disclaimer: `Preus i promocions de la botiga en línia de ${name}, orientatius. QuéFalta és una app independent, no afiliada a ${name}.`,
 } : {
-  title: hasFolleto
-    ? `Ofertas y folleto de ${name} de esta semana (${month}) | QuéFalta`
-    : `Ofertas de ${name} esta semana (${month}) | QuéFalta`,
-  description: `${n(data.total)} ofertas de ${name} por secciones y tipo de oferta: precios rebajados, 2ª unidad, 3x2 y lotes.${validity ? ` Folleto vigente: ${validity.toLowerCase()}.` : ''} Sin código postal.`,
+  title: hasFolleto && range
+    ? `Folleto ${searchName} (${range}): ${n(data.total)} ofertas | QuéFalta`
+    : hasFolleto
+      ? `Ofertas y folleto de ${name} de esta semana (${month}) | QuéFalta`
+      : `Ofertas de ${name} esta semana: ${n(data.total)} productos rebajados | QuéFalta`,
+  description: `${validity && hasFolleto ? `Folleto de ${name} ${validity.toLowerCase()} y ${n(data.total)} ofertas` : `${n(data.total)} ofertas de ${name}`} por secciones y tipo de oferta: precios rebajados, 2ª unidad, 3x2 y lotes. Sin código postal.`,
   crumbs: ['Inicio', 'Supermercados', name, 'Ofertas'],
   h1: `Ofertas de ${name}`,
   lead: `<strong>${n(data.total)} productos en oferta</strong> en su tienda online${zoneCity ? ` (precios de referencia de ${zoneCity})` : ''} · actualizado el ${updatedLong}`,

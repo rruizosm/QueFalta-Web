@@ -26,8 +26,20 @@ export async function getStaticPaths() {
   // Nombre para el <title>: con la marca si el nombre no la lleva («Cerveza 33 cl»
   // de BM → «Mahou Maestra Cerveza 33 cl»). Si aun así dos fichas coinciden, se
   // añade el formato para que cada <title> sea único (guía de Google).
+  // Marca propia: la marca va DETRÁS y escrita bien («Chorizo extra picante
+  // Bonpreu», como se busca), no en mayúsculas delante («BONPREU Chorizo…»).
   const named = pages.map((page) => {
     const label = page.detail.label.replace(/[.\s]+$/, '');
+    if (page.kind === 'own') {
+      const brand = page.ownBrand;
+      // Marca en mayúsculas al principio del nombre («BONPREU Aceite…», «MILSANI® Queso…»): se pasa al final.
+      const head = label.slice(0, brand.length);
+      const rest = head.toLowerCase() === brand.toLowerCase() && head === head.toUpperCase()
+        ? label.slice(brand.length).replace(/^[®™]?\s+/, '')
+        : null;
+      if (rest) return `${rest} ${brand}`;
+      return label.toLowerCase().includes(brand.toLowerCase()) ? label : `${label} ${brand}`;
+    }
     const brand = page.detail.brand?.trim();
     return brand && !label.toLowerCase().includes(brand.toLowerCase()) ? `${brand} ${label}` : label;
   });

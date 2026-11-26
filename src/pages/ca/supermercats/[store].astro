@@ -8,6 +8,7 @@ import { STORES } from '../../../data/supermercados.js';
 import { CATALAN_PRODUCTS } from '../../../lib/comparadorApi.js';
 import { CATALOG_OFFERS, offersPagePath } from '../../../lib/ofertas.js';
 import { dropsPagePath, hasDrops } from '../../../lib/bajadas.js';
+import { folletoRange, loadFolleto } from '../../../lib/folleto.js';
 import '../../../styles/comparador.css';
 import '../../../styles/supermercats.css';
 
@@ -36,7 +37,10 @@ const list = (items: string[]) => (items.length > 1 ? `${items.slice(0, -1).join
 const zones = regions ? list(regions.map((r: string) => REGION_NAMES_CA[r] ?? r)) : null;
 
 const heading = `Catàleg${hasOffers ? ' i ofertes' : ''} ${de(name)}`;
-const title = `Catàleg${hasOffers ? ' i ofertes' : ''} ${de(name)} amb preus | QuéFalta`;
+const bonpreuRange = storeKey === 'esclat' ? folletoRange((await loadFolleto()).validity, 'ca') : null;
+const title = bonpreuRange
+  ? `Catàleg Bonpreu Esclat amb preus i ofertes (${bonpreuRange}) | QuéFalta`
+  : `Catàleg${hasOffers ? ' i ofertes' : ''} ${de(name)} amb preus | QuéFalta`;
 const description = `Consulta el catàleg ${de(name)} per seccions i amb preus${hasOffers ? ', les ofertes de la setmana' : ''}${drops ? ' i els productes que han baixat de preu' : ''}. Sense registrar-te ni posar el codi postal.`;
 
 const intro = [
