@@ -126,9 +126,12 @@ const ADSENSE_CLIENT = 'ca-pub-9749911986318862';
   })();
 </script>
 
-<!-- Google AdSense: anuncios. Se carga DIFERIDO (primera interacción o 4 s después de load) para que no
-     compita con el render ni cuente en LCP/TBT. Los anuncios que hagan
-     adsbygoogle.push() antes quedan en cola y se sirven cuando llega el script. -->
+<!-- Google AdSense: anuncios. Se carga en cuanto un hueco cercano a la pantalla
+     pide su anuncio (window.qfLoadAds, lo llama pushAd en AdInFeed.jsx): si no,
+     el de arriba de la ficha salía en blanco ~5 s. En las páginas sin ningún
+     anuncio a la vista sigue DIFERIDO (primera interacción o 4 s después de
+     load) para no competir con el render. Los adsbygoogle.push() anteriores a
+     la descarga quedan en cola y se sirven cuando llega el script. -->
 <script is:inline define:vars={{ ADSENSE_CLIENT }}>
   (function () {
     var started = false;
@@ -144,6 +147,7 @@ const ADSENSE_CLIENT = 'ca-pub-9749911986318862';
       s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + ADSENSE_CLIENT;
       document.head.appendChild(s);
     }
+    window.qfLoadAds = start;
     ['scroll', 'pointerdown', 'keydown', 'touchstart', 'mousemove'].forEach(function (ev) {
       window.addEventListener(ev, start, { passive: true, once: true });
     });

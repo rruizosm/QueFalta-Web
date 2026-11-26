@@ -42,8 +42,13 @@ export function useNearViewport(ref, enabled = true) {
   return near;
 }
 
+// Pide el anuncio y, si AdSense aún no se ha descargado, lo descarga ya
+// (ver CookieConsent.astro).
 function pushAd() {
-  try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+  try {
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+    window.qfLoadAds?.();
+  } catch (e) {}
 }
 
 // Cuenta las columnas reales de la cuadrícula. Devuelve [columnas, gridRef]:
@@ -174,7 +179,7 @@ export function AdTop({ className = 'pd-ad' }) {
   const dev = import.meta.env.DEV;
   useEffect(() => {
     if (dev || !mobile || !insRef.current) return;
-    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+    pushAd();
   }, [mobile]);
   return (
     <aside className={className} aria-label="Publicidad">
@@ -222,7 +227,7 @@ export function AdWide({ className = 'pd-ad-wide', always = false, compactMobile
   const dev = import.meta.env.DEV;
   useEffect(() => {
     if (dev || !on || !insRef.current) return;
-    try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+    pushAd();
   }, [on]);
   // El alto se fija al pedir el anuncio: no cambia si luego se gira o redimensiona.
   const h = small ? 100 : 250;
