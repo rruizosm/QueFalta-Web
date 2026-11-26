@@ -515,13 +515,12 @@ function ComparadorPage({ mode }) {
 
             <section className="cmp-section">
               <div className="cmp-section-head">
-                <span className="cmp-eyebrow">{t.exploreEyebrow}</span>
                 <h2>{t.exploreTitle}</h2>
               </div>
               <div className="cmp-cats">
-                {t.categories.map((c) => (
-                  <button type="button" key={c.label} className="cmp-cat" onClick={() => runSearch(c.query)}>
-                    <span className="cmp-cat-emoji" aria-hidden="true">{c.emoji}</span>
+                {t.categories.map((c, i) => (
+                  <button type="button" key={c.label} className="cmp-cat qf-rv qf-spot" style={{ '--i': i % 4 }} onClick={() => runSearch(c.query)}>
+                    <span className="cmp-cat-emoji" aria-hidden="true"><span>{c.emoji}</span></span>
                     <span className="cmp-cat-label">{c.label}</span>
                     <Icon.arrow width="16" height="16" className="cmp-cat-go" />
                   </button>
@@ -531,15 +530,16 @@ function ComparadorPage({ mode }) {
 
             <section className="cmp-section">
               <div className="cmp-section-head">
-                <span className="cmp-eyebrow">{t.howEyebrow}</span>
                 <h2>{t.howTitle}</h2>
               </div>
               <ol className="cmp-steps">
                 {t.steps.map(([head, text], i) => (
-                  <li key={head}>
+                  <li key={head} className="qf-rv" style={{ '--i': i }}>
                     <span className="cmp-step-n">{i + 1}</span>
-                    <h3>{head}</h3>
-                    <p>{text}</p>
+                    <div className="cmp-step-card">
+                      <h3>{head}</h3>
+                      <p>{text}</p>
+                    </div>
                   </li>
                 ))}
               </ol>

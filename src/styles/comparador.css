@@ -165,31 +165,149 @@ html.cmp-locked, html.cmp-locked body { overflow: hidden; }
   font-size: clamp(24px, 3vw, 32px);
 }
 
+/* ─────────────── Movimiento de la portada ───────────────
+   Entradas ligadas al scroll (CSS puro, sin JS): cada pieza aparece al entrar
+   en pantalla y las hermanas se escalonan con --i. Sin soporte o con
+   «reducir movimiento», todo está visible desde el principio.
+   Las tarjetas animadas NO se mueven a sí mismas al pasar el ratón: lo hace
+   su contenido (regla: el elemento bajo el puntero se queda quieto). */
+:root { --qf-out: cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes qf-rv-in {
+  from { opacity: 0; transform: translateY(26px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .qf-rv {
+      animation: qf-rv-in linear both;
+      animation-timeline: view();
+      animation-range: entry calc(var(--i, 0) * 7%) entry calc(75% + var(--i, 0) * 7%);
+    }
+  }
+}
+
+/* Luz que sigue al ratón (las coordenadas --mx/--my las pone Layout.astro). */
+.qf-spot { position: relative; isolation: isolate; }
+.qf-spot::after {
+  content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--accent) 13%, transparent), transparent 65%);
+  opacity: 0; transition: opacity 0.35s var(--ease);
+}
+.qf-spot:hover::after { opacity: 1; }
+
+/* ─────────────── Categorías ─────────────── */
 .cmp-cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .cmp-cat {
-  position: relative; display: flex; align-items: center; gap: 14px; cursor: pointer; text-align: left;
-  padding: 18px; border-radius: 18px; border: 1px solid var(--border); background: var(--surface);
-  box-shadow: var(--cmp-shadow); transition: transform 0.2s var(--ease), border-color 0.2s;
+  display: flex; align-items: center; gap: 14px; cursor: pointer; text-align: left;
+  padding: 16px 18px 16px 16px; border-radius: 18px; border: 1px solid var(--border); background: var(--surface);
+  box-shadow: var(--cmp-shadow);
+  transition: border-color 0.25s var(--ease), box-shadow 0.3s var(--ease);
 }
-.cmp-cat:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
+.cmp-cat:hover {
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
+  box-shadow: 0 1px 2px rgba(17, 17, 20, 0.05), 0 14px 30px -18px color-mix(in srgb, var(--accent) 55%, transparent);
+}
 .cmp-cat-emoji {
-  width: 46px; height: 46px; flex: 0 0 auto; border-radius: 14px; font-size: 24px;
-  display: inline-flex; align-items: center; justify-content: center; background: var(--paper-2);
+  width: 48px; height: 48px; flex: 0 0 auto; border-radius: 14px; font-size: 25px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--paper-2);
+  transition: background 0.3s var(--ease);
+}
+.cmp-cat-emoji > span { display: block; line-height: 1; }
+.cmp-cat:hover .cmp-cat-emoji { background: color-mix(in srgb, var(--accent) 12%, var(--paper-2)); }
+.cmp-cat:hover .cmp-cat-emoji > span { animation: qf-hop 0.55s var(--qf-out); }
+@keyframes qf-hop {
+  0% { transform: none; }
+  35% { transform: translateY(-6px) rotate(-8deg) scale(1.1); }
+  65% { transform: translateY(1px) rotate(3deg) scale(0.98); }
+  100% { transform: none; }
 }
 .cmp-cat-label { flex: 1; font: 700 15px/1.25 var(--geo); color: var(--ink); }
-.cmp-cat-go { color: var(--ink-faint); transition: transform 0.2s var(--ease), color 0.2s; }
-.cmp-cat:hover .cmp-cat-go { color: var(--accent); transform: translateX(3px); }
+.cmp-cat-go { color: var(--ink-faint); transition: transform 0.3s var(--qf-out), color 0.2s; }
+.cmp-cat:hover .cmp-cat-go { color: var(--accent); transform: translateX(4px); }
+.cmp-cat:active .cmp-cat-emoji > span { transform: scale(0.92); }
 
-.cmp-steps { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.cmp-steps li {
-  padding: 26px; border-radius: var(--cmp-radius); background: var(--paper-2); border: 1px solid var(--border);
+/* ─────────────── Cómo funciona: 1 ── 2 ── 3 ───────────────
+   La línea se dibuja con el scroll y va encendiendo los números en orden: el
+   recorrido buscar → comparar → llevar a la lista. Todo cuelga de una línea
+   de tiempo con nombre (--qf-steps) que sigue a la lista entera. */
+.cmp-steps {
+  --dot: 44px; --gap: 18px;
+  position: relative; list-style: none;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap);
+  view-timeline: --qf-steps block;
 }
+.cmp-steps::before, .cmp-steps::after {
+  content: ''; position: absolute; z-index: 0; height: 2px; border-radius: 2px;
+  top: calc(var(--dot) / 2 - 1px);
+  left: calc(var(--dot) / 2);
+  right: calc((100% - 2 * var(--gap)) / 3 - var(--dot) / 2);
+}
+.cmp-steps::before { background: var(--border); }
+.cmp-steps::after {
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 60%, #5ec2ff));
+  transform-origin: left center;
+}
+.cmp-steps li { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 18px; }
 .cmp-step-n {
-  display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center;
-  border-radius: 11px; background: var(--accent); color: #fff; font-weight: 800; font-size: 15px;
+  display: inline-flex; width: var(--dot); height: var(--dot); align-items: center; justify-content: center;
+  border-radius: 50%; font-weight: 800; font-size: 16px; font-variant-numeric: tabular-nums;
+  background: var(--accent); color: #fff;
+  box-shadow: 0 0 0 6px var(--paper), 0 8px 18px -8px color-mix(in srgb, var(--accent) 80%, transparent);
 }
-.cmp-steps h3 { margin-top: 16px; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+.cmp-step-card {
+  flex: 1; padding: 22px 24px 24px; border-radius: var(--cmp-radius);
+  background: var(--paper-2); border: 1px solid var(--border);
+}
+.cmp-steps h3 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
 .cmp-steps p { margin-top: 6px; color: var(--ink-soft); font-size: 14.5px; line-height: 1.55; }
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .cmp-steps::after {
+      animation: qf-line linear both;
+      animation-timeline: --qf-steps;
+      animation-range: entry 60% cover 40%;
+    }
+    .cmp-steps li .cmp-step-n {
+      animation: linear both;
+      animation-timeline: --qf-steps;
+      animation-range: entry 60% cover 40%;
+    }
+    .cmp-steps li:nth-child(1) .cmp-step-n { animation-name: qf-dot-1; }
+    .cmp-steps li:nth-child(2) .cmp-step-n { animation-name: qf-dot-2; }
+    .cmp-steps li:nth-child(3) .cmp-step-n { animation-name: qf-dot-3; }
+  }
+}
+@keyframes qf-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* Número apagado (contorno) → encendido (acento) cuando la línea le llega. */
+@keyframes qf-dot-1 {
+  0% { background: var(--surface); color: var(--ink-faint); transform: scale(0.85); }
+  6%, 100% { background: var(--accent); color: #fff; transform: none; }
+}
+@keyframes qf-dot-2 {
+  0%, 44% { background: var(--surface); color: var(--ink-faint); transform: scale(0.85); }
+  52%, 100% { background: var(--accent); color: #fff; transform: none; }
+}
+@keyframes qf-dot-3 {
+  0%, 90% { background: var(--surface); color: var(--ink-faint); transform: scale(0.85); }
+  98%, 100% { background: var(--accent); color: #fff; transform: none; }
+}
+
+@media (max-width: 720px) {
+  /* En vertical: un tramo de línea por paso, del número al siguiente. */
+  .cmp-steps { grid-template-columns: 1fr; --gap: 14px; }
+  .cmp-steps::before, .cmp-steps::after { display: none; }
+  .cmp-steps li { flex-direction: row; align-items: flex-start; gap: 14px; }
+  .cmp-steps li:not(:last-child)::before {
+    content: ''; position: absolute; z-index: -1; width: 2px; border-radius: 2px;
+    left: calc(var(--dot) / 2 - 1px); top: var(--dot); bottom: calc(-1 * var(--gap));
+    background: color-mix(in srgb, var(--accent) 35%, var(--border));
+  }
+  .cmp-step-n { flex: 0 0 auto; }
+  .cmp-step-card { padding: 16px 18px 18px; }
+}
 
 /* ─────────────── Resultados ─────────────── */
 .cmp-results { padding-top: 44px; animation: cmp-fade 0.3s var(--ease); }
@@ -914,8 +1032,54 @@ a.cmp-promo-btn { display: inline-flex; align-items: center; justify-content: ce
   padding: 11px 18px; border-radius: 12px; background: #fff; color: #1f4fa8; font: 700 14px/1 var(--geo);
   transition: transform .2s var(--ease);
 }
-.kh-banner-cta:hover { transform: translateY(-2px); }
+.kh-banner-cta {
+  box-shadow: 0 1px 2px rgba(10, 30, 70, 0.2), 0 10px 22px -12px rgba(10, 30, 70, 0.55);
+  transition: transform .3s var(--qf-out), box-shadow .3s var(--ease);
+}
+.kh-banner-cta svg { transition: transform .3s var(--qf-out); }
+.kh-banner-cta:hover { transform: translateY(-2px); box-shadow: 0 1px 2px rgba(10, 30, 70, 0.2), 0 16px 28px -14px rgba(10, 30, 70, 0.7); }
+.kh-banner-cta:hover svg { transform: translateX(4px); }
+.kh-banner-cta:active { transform: translateY(0) scale(0.97); }
 .kh-art { position: relative; z-index: 1; width: 100%; height: 100%; align-self: end; display: block; }
+
+/* Banner vivo: luz que barre el azul, parallax de la ilustración (el fondo se
+   desplaza más que la encimera) y dos detalles en bucle, el sol y el vapor,
+   que solo corren con el banner en pantalla (.is-live). */
+.kh-banner::before {
+  content: ''; position: absolute; inset: -40% -10%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255,255,255,.16), transparent);
+  width: 46%; left: -20%;
+}
+.kh-sun-glow, .kh-steam path { transform-box: fill-box; transform-origin: center; }
+.kh-steam path { opacity: .8; }
+.kh-art.is-live .kh-sun-glow { animation: kh-sun 4.5s ease-in-out infinite; }
+.kh-art.is-live .kh-steam path { animation: kh-steam 2.8s ease-out infinite; }
+.kh-art.is-live .kh-steam path:nth-child(2) { animation-delay: -0.9s; }
+.kh-art.is-live .kh-steam path:nth-child(3) { animation-delay: -1.8s; }
+@keyframes kh-sun { 0%, 100% { transform: scale(0.9); opacity: .25; } 50% { transform: scale(1.18); opacity: .5; } }
+@keyframes kh-steam {
+  0% { transform: translateY(6px) scaleY(0.7); opacity: 0; }
+  30% { opacity: .85; }
+  100% { transform: translateY(-14px) scaleY(1.15); opacity: 0; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .kh-banner::before {
+      animation: kh-sweep linear both; animation-timeline: view(); animation-range: cover 10% cover 90%;
+    }
+    .kh-l-back, .kh-l-front {
+      animation: linear both; animation-timeline: view(); animation-range: cover;
+    }
+    .kh-l-back { animation-name: kh-par-back; }
+    .kh-l-front { animation-name: kh-par-front; }
+  }
+}
+@keyframes kh-sweep { from { transform: translateX(0); } to { transform: translateX(260%); } }
+@keyframes kh-par-back { from { transform: translateY(-14px); } to { transform: translateY(14px); } }
+@keyframes kh-par-front { from { transform: translateY(4px); } to { transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) {
+  .kh-art.is-live .kh-sun-glow, .kh-art.is-live .kh-steam path { animation: none; }
+}
 
 .kh-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
 .kh-chip {
@@ -932,13 +1096,31 @@ a.cmp-promo-btn { display: inline-flex; align-items: center; justify-content: ce
 .kh-card {
   display: flex; flex-direction: column; overflow: hidden; text-decoration: none; color: var(--ink);
   border-radius: 20px; border: 1px solid var(--border); background: var(--surface); box-shadow: var(--cmp-shadow);
-  transition: transform .25s var(--ease), box-shadow .25s, border-color .25s;
+  transition: box-shadow .35s var(--ease), border-color .3s var(--ease);
 }
-.kh-card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); box-shadow: 0 18px 40px -24px rgba(20, 40, 80, .45); }
-.kh-media { background: var(--kh-tint, var(--paper-2)); position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 4 / 3; }
+.kh-card:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); box-shadow: 0 1px 2px rgba(17,17,20,.05), 0 22px 44px -26px rgba(20, 40, 80, .5); }
+.kh-media {
+  background: var(--kh-tint, var(--paper-2)); position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center; aspect-ratio: 4 / 3;
+  perspective: 600px;
+}
+/* Reflejo que cruza la imagen al pasar el ratón. */
+.kh-media::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%);
+  transform: translateX(-110%);
+}
+.kh-card:hover .kh-media::after { transform: translateX(110%); transition: transform .8s var(--qf-out); }
 .kh-media img { width: 70%; height: 80%; object-fit: contain; }
-.kh-emoji { font-size: 54px; filter: drop-shadow(0 8px 10px rgba(0,0,0,.12)); transition: transform .3s var(--ease); }
-.kh-card:hover .kh-emoji { transform: scale(1.08) rotate(-4deg); }
+.kh-obj {
+  filter: drop-shadow(0 8px 10px rgba(0,0,0,.12));
+  transition: transform .5s var(--qf-out), filter .5s var(--ease);
+}
+.kh-emoji { font-size: 54px; }
+.kh-card:hover .kh-obj {
+  transform: translateY(-6px) rotateX(8deg) rotateY(-10deg) scale(1.06);
+  filter: drop-shadow(0 16px 14px rgba(0,0,0,.16));
+}
 .kh-cat {
   position: absolute; top: 12px; left: 12px; padding: 4px 9px; border-radius: 999px;
   background: rgba(255,255,255,.85); font: 700 11px/1 var(--geo); color: #33415c; letter-spacing: .02em;
@@ -947,11 +1129,18 @@ a.cmp-promo-btn { display: inline-flex; align-items: center; justify-content: ce
 .kh-name { font: 700 15.5px/1.25 var(--geo); letter-spacing: -0.01em; }
 .kh-desc { font-size: 13px; line-height: 1.45; color: var(--ink-soft); flex: 1; }
 .kh-cta { margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; font: 700 13px/1 var(--geo); color: var(--accent); }
-.kh-card:hover .kh-cta svg { transform: translateX(3px); }
-.kh-cta svg { transition: transform .2s var(--ease); }
+.kh-card:hover .kh-cta svg { transform: translateX(4px); }
+.kh-cta svg { transition: transform .3s var(--qf-out); }
 
-.kh-more { margin-top: 20px; text-align: center; }
-.kh-more a { display: inline-flex; align-items: center; gap: 6px; font: 700 14.5px/1 var(--geo); color: var(--accent); text-decoration: none; }
+.kh-more { margin-top: 22px; text-align: center; }
+.kh-more a {
+  display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 999px;
+  font: 700 14.5px/1 var(--geo); color: var(--accent); text-decoration: none;
+  background: var(--accent-light); transition: background .25s var(--ease);
+}
+.kh-more a svg { transition: transform .3s var(--qf-out); }
+.kh-more a:hover { background: color-mix(in srgb, var(--accent) 16%, transparent); }
+.kh-more a:hover svg { transform: translateX(4px); }
 .kh-disclosure { margin-top: 14px; font-size: 12px; color: var(--ink-faint); text-align: center; }
 
 @media (max-width: 900px) {

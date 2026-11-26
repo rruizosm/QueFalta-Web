@@ -253,6 +253,29 @@ const jsonLdText = (value: unknown) => JSON.stringify(value)
 
     <AppStoreHelp lang={lang} />
 
+    <script>
+      // Luz que sigue al ratón en las tarjetas marcadas con .qf-spot (también en
+      // las que pinta React después): un solo listener delegado y como mucho un
+      // cálculo por fotograma. Solo con ratón.
+      if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        let raf = 0;
+        let last: PointerEvent | null = null;
+        document.addEventListener('pointermove', (e) => {
+          last = e;
+          if (raf) return;
+          raf = requestAnimationFrame(() => {
+            raf = 0;
+            const ev = last;
+            const el = ev && ev.target instanceof Element ? ev.target.closest<HTMLElement>('.qf-spot') : null;
+            if (!ev || !el) return;
+            const r = el.getBoundingClientRect();
+            el.style.setProperty('--mx', `${((ev.clientX - r.left) / r.width) * 100}%`);
+            el.style.setProperty('--my', `${((ev.clientY - r.top) / r.height) * 100}%`);
+          });
+        }, { passive: true });
+      }
+    </script>
+
     <style is:global>
       :root {
         --accent: #2f6cb5;
@@ -289,11 +312,10 @@ const jsonLdText = (value: unknown) => JSON.stringify(value)
       /* Navbar en modo oscuro (global: aplica en TODAS las páginas, no solo la
          home). El fondo y el CTA del navbar usan colores fijos, así que aquí se
          adaptan; el enlace activo se mantiene en el color de acento. */
-      [data-theme="dark"] nav.qf-nav { background: rgba(13, 13, 18, 0.72); }
+      [data-theme="dark"] nav.qf-nav { background: rgba(13, 13, 18, 0.84); }
       [data-theme="dark"] nav.qf-nav .qf-word,
       [data-theme="dark"] nav.qf-nav .qf-word-txt span,
       [data-theme="dark"] nav.qf-nav .qf-nav-link { color: #fff; }
-      [data-theme="dark"] nav.qf-nav .qf-nav-cta { background: var(--accent); color: #fff; }
       [data-theme="dark"] nav.qf-nav .qf-nav-link.is-active { color: var(--accent); }
 
       * { box-sizing: border-box; margin: 0; padding: 0; }

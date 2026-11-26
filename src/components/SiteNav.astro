@@ -33,15 +33,16 @@ const HOME = lang === 'ca' ? '/ca/comparador/' : '/';
 // Selector de idioma: lleva a ESTA página en el otro idioma. Si no está
 // traducida, el idioma queda desactivado en vez de llevar a otra página.
 const LANGS = [
-  { code: 'es', label: 'ES', name: 'Español', missing: 'Esta página aún no está en castellano' },
-  { code: 'ca', label: 'CA', name: 'Català', missing: 'Aquesta pàgina encara no està en català' },
+  { code: 'es', label: 'ES', name: 'Español', missing: 'Aún no está en castellano' },
+  { code: 'ca', label: 'CA', name: 'Català', missing: 'Encara no està en català' },
 ].map((l) => ({
   ...l,
   href: alternates?.[l.code] ?? (l.code === lang ? Astro.url.pathname : null),
 }));
+const CURRENT = LANGS.find((l) => l.code === lang) ?? LANGS[0];
 const T = lang === 'ca'
-  ? { nav: 'Navegació principal', home: 'QuéFalta, inici', menu: 'Obrir menú' }
-  : { nav: 'Navegación principal', home: 'QuéFalta, inicio', menu: 'Abrir menú' };
+  ? { nav: 'Navegació principal', home: 'QuéFalta, inici', menu: 'Obrir menú', lang: 'Idioma', langBtn: 'Canviar idioma. Actual: Català' }
+  : { nav: 'Navegación principal', home: 'QuéFalta, inicio', menu: 'Abrir menú', lang: 'Idioma', langBtn: 'Cambiar idioma. Actual: Español' };
 ---
 
 <nav class="qf-nav" id="qf-nav" aria-label={T.nav}>
@@ -54,26 +55,47 @@ const T = lang === 'ca'
          postal en la ficha de producto, en móvil). Vacío, no ocupa nada. -->
     <div class="qf-nav-slot" id="qf-nav-slot"></div>
     <div class="qf-nav-right" id="qf-nav-menu">
-      <div class="qf-nav-links">
+      <div class="qf-nav-links" id="qf-nav-links">
+        <span class="qf-nav-glide" aria-hidden="true"></span>
         {LINKS.map((l) => (
           <a href={l.href} class="qf-nav-link">{l.label}</a>
         ))}
       </div>
       <div class="qf-nav-actions">
-        <div class="qf-lang" role="group" aria-label="Idioma">
-          {LANGS.map((l) => l.href ? (
-            <a
-              href={l.href} hreflang={l.code} lang={l.code} title={l.name}
-              class={`qf-lang-opt${l.code === lang ? ' is-on' : ''}`}
-              aria-current={l.code === lang ? 'true' : undefined}
-            >{l.label}</a>
-          ) : (
-            <span class="qf-lang-opt is-off" lang={l.code} title={l.missing} aria-disabled="true">{l.label}</span>
-          ))}
+        <div class="qf-lang" id="qf-lang">
+          <button
+            type="button" class="qf-lang-btn" id="qf-lang-btn"
+            aria-haspopup="true" aria-expanded="false" aria-controls="qf-lang-menu"
+            aria-label={T.langBtn}
+          >
+            <svg class="qf-lang-globe" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" /></svg>
+            <span class="qf-lang-code">{CURRENT.label}</span>
+            <svg class="qf-lang-chev" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9.5l6 6 6-6" /></svg>
+          </button>
+          <div class="qf-lang-menu" id="qf-lang-menu" role="group" aria-label={T.lang}>
+            {LANGS.map((l) => l.href ? (
+              <a
+                href={l.href} hreflang={l.code} lang={l.code}
+                class={`qf-lang-opt${l.code === lang ? ' is-on' : ''}`}
+                aria-current={l.code === lang ? 'true' : undefined}
+              >
+                <span class="qf-lang-tag">{l.label}</span>
+                <span class="qf-lang-name">{l.name}</span>
+                <svg class="qf-lang-check" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+              </a>
+            ) : (
+              <span class="qf-lang-opt is-off" lang={l.code} aria-disabled="true">
+                <span class="qf-lang-tag">{l.label}</span>
+                <span class="qf-lang-name">{l.name}<small>{l.missing}</small></span>
+              </span>
+            ))}
+          </div>
         </div>
         <a href={CTA.href} class="qf-nav-cta">
-          {CTA.label}
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14" /></svg>
+          <span>{CTA.label}</span>
+          <span class="qf-cta-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path class="qf-cta-arrow" d="M12 4v11M7 10.5l5 5 5-5" /><path d="M5 20h14" /></svg>
+          </span>
         </a>
       </div>
     </div>
@@ -87,12 +109,19 @@ const T = lang === 'ca'
 </nav>
 
 <script>
-  // Añade un borde inferior al hacer scroll, igual que en la landing.
   const nav = document.getElementById('qf-nav');
   if (nav) {
-    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+    // Borde y sombra al bajar. Solo se toca el DOM cuando cambia el estado:
+    // nada de trabajo en cada evento de scroll.
+    let scrolled = null;
+    const onScroll = () => {
+      const s = window.scrollY > 8;
+      if (s !== scrolled) { scrolled = s; nav.classList.toggle('scrolled', s); }
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
+
+    const desktop = window.matchMedia('(min-width: 1121px)');
 
     // Menú móvil (hamburguesa): abre/cierra el panel desplegable.
     const toggle = document.getElementById('qf-nav-toggle');
@@ -107,14 +136,73 @@ const T = lang === 'ca'
       });
       // Cerrar al pulsar un enlace o al ensanchar a escritorio.
       nav.querySelectorAll('.qf-nav-right a').forEach((a) => a.addEventListener('click', closeMenu));
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
-      window.addEventListener('resize', () => { if (window.innerWidth > 1120) closeMenu(); });
+      desktop.addEventListener('change', (e) => { if (e.matches) closeMenu(); });
     }
+
+    // Selector de idioma: botón + menú desplegable (en escritorio). En el menú
+    // móvil las opciones se ven siempre, sin botón.
+    const lang = document.getElementById('qf-lang');
+    const langBtn = document.getElementById('qf-lang-btn');
+    const setLang = (open) => {
+      if (!lang || !langBtn) return;
+      lang.classList.toggle('open', open);
+      langBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    if (lang && langBtn) {
+      langBtn.addEventListener('click', () => {
+        const open = !lang.classList.contains('open');
+        setLang(open);
+        if (open) lang.querySelector('a.qf-lang-opt:not(.is-on), a.qf-lang-opt')?.focus({ preventScroll: true });
+      });
+      document.addEventListener('pointerdown', (e) => {
+        if (lang.classList.contains('open') && !lang.contains(e.target)) setLang(false);
+      });
+      lang.addEventListener('focusout', (e) => {
+        if (!lang.contains(e.relatedTarget)) setLang(false);
+      });
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (lang?.classList.contains('open')) { setLang(false); langBtn?.focus(); }
+      else closeMenu();
+    });
 
     // Al cambiar de idioma se conserva la vista del comparador (?super=…&cat=…).
     nav.querySelectorAll('a.qf-lang-opt').forEach((a) => {
       a.addEventListener('click', () => { a.search = location.search; });
     });
+
+    // Hover deslizante: una sola pastilla que viaja de enlace en enlace en vez
+    // de encenderse y apagarse en cada uno. Solo transform/width de un elemento
+    // pequeño y aislado.
+    const linksBox = document.getElementById('qf-nav-links');
+    const glide = linksBox?.querySelector('.qf-nav-glide');
+    if (linksBox && glide) {
+      let visible = false;
+      const moveTo = (a) => {
+        if (!desktop.matches) return;
+        if (!visible) {
+          // Primera entrada: aparece en su sitio, sin venir volando desde 0.
+          glide.classList.add('no-anim');
+          glide.style.transform = `translateX(${a.offsetLeft}px)`;
+          glide.style.width = `${a.offsetWidth}px`;
+          void glide.offsetWidth;
+          glide.classList.remove('no-anim');
+          visible = true;
+          linksBox.classList.add('gliding');
+        } else {
+          glide.style.transform = `translateX(${a.offsetLeft}px)`;
+          glide.style.width = `${a.offsetWidth}px`;
+        }
+      };
+      linksBox.querySelectorAll('.qf-nav-link').forEach((a) => {
+        a.addEventListener('pointerenter', () => moveTo(a));
+        a.addEventListener('focus', () => { if (a.matches(':focus-visible')) moveTo(a); });
+      });
+      const hide = () => { visible = false; linksBox.classList.remove('gliding'); };
+      linksBox.addEventListener('pointerleave', hide);
+      linksBox.addEventListener('focusout', (e) => { if (!linksBox.contains(e.relatedTarget)) hide(); });
+    }
 
     // Marca en color de acento el enlace de la sección/página activa.
     const links = Array.from(nav.querySelectorAll('.qf-nav-link'));
@@ -160,21 +248,32 @@ const T = lang === 'ca'
 
 <style>
   /* Cabecera "de producto": logo a la izquierda, enlaces centrados y acciones
-     (idioma + descarga) a la derecha. Translúcida, con borde y sombra suave al
-     hacer scroll. */
+     (idioma + descarga) a la derecha.
+
+     Rendimiento del scroll: el fondo translúcido usa un desenfoque corto y sin
+     saturate() (cada filtro extra es otra pasada sobre todo el ancho de la
+     barra, en cada fotograma). El borde y la sombra del estado "scrolled" viven
+     en un ::after que solo cambia de opacidad: no se repinta la sombra. */
   .qf-nav {
+    --qf-out: cubic-bezier(0.16, 1, 0.3, 1);
     position: sticky; top: 0; z-index: 60;
-    background: color-mix(in srgb, var(--paper) 80%, transparent);
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+    background: color-mix(in srgb, var(--paper) 86%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
-  .qf-nav.scrolled {
-    border-bottom-color: var(--border);
+  .qf-nav::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    border-bottom: 1px solid var(--border);
     box-shadow: 0 8px 24px -20px rgba(17, 17, 20, 0.4);
+    opacity: 0; transition: opacity 0.3s var(--ease);
   }
+  .qf-nav.scrolled::after { opacity: 1; }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .qf-nav { background: var(--paper); }
+  }
+
   .qf-nav-inner {
+    position: relative; z-index: 1;
     max-width: 1200px; margin: 0 auto; padding: 0 40px; height: 64px;
     display: flex; align-items: center; justify-content: space-between; gap: 24px;
   }
@@ -186,13 +285,31 @@ const T = lang === 'ca'
   .qf-nav-slot:empty { display: none; }
 
   .qf-nav-right { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 24px; min-width: 0; }
-  .qf-nav-links { flex: 1; display: flex; align-items: center; justify-content: center; gap: 2px; }
-  .qf-nav-link {
-    position: relative; padding: 8px 13px; border-radius: 10px;
-    font-size: 14.5px; font-weight: 500; color: var(--ink-soft);
-    transition: color 0.15s var(--ease), background 0.15s var(--ease);
+
+  /* ---------- Enlaces + hover deslizante ---------- */
+  .qf-nav-links {
+    position: relative; flex: 1;
+    display: flex; align-items: center; justify-content: center; gap: 2px;
   }
-  .qf-nav-link:hover { color: var(--ink); background: var(--paper-2); }
+  .qf-nav-glide {
+    position: absolute; left: 0; top: 50%; height: 36px; margin-top: -18px; width: 0;
+    border-radius: 10px; background: var(--paper-2);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 70%, transparent);
+    opacity: 0; pointer-events: none;
+    transition:
+      transform 0.38s var(--qf-out),
+      width 0.38s var(--qf-out),
+      opacity 0.2s var(--ease);
+  }
+  .qf-nav-glide.no-anim { transition: opacity 0.2s var(--ease); }
+  .qf-nav-links.gliding .qf-nav-glide { opacity: 1; }
+
+  .qf-nav-link {
+    position: relative; z-index: 1; padding: 8px 13px; border-radius: 10px;
+    font-size: 14.5px; font-weight: 500; color: var(--ink-soft);
+    transition: color 0.2s var(--ease);
+  }
+  .qf-nav-link:hover { color: var(--ink); }
   /* Sección o página activa: texto en acento + raya inferior. Vive aquí (y no
      solo en landing.css) para que también funcione en las subpáginas como
      Novedades o Apoyar, que no cargan landing.css. */
@@ -200,36 +317,110 @@ const T = lang === 'ca'
   .qf-nav-link.is-active::after {
     content: ''; position: absolute; left: 13px; right: 13px; bottom: 1px;
     height: 2px; border-radius: 2px; background: var(--accent);
+    transform-origin: center; transition: transform 0.3s var(--qf-out);
   }
+  .qf-nav-link.is-active:hover::after { transform: scaleX(0.4); }
 
-  .qf-nav-actions { display: flex; align-items: center; gap: 14px; flex: 0 0 auto; }
-  .qf-lang {
-    display: inline-flex; padding: 3px; border-radius: 10px;
-    background: var(--paper-2); border: 1px solid var(--border);
+  .qf-nav-actions { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+
+  /* ---------- Idioma: botón + menú ---------- */
+  .qf-lang { position: relative; }
+  .qf-lang-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 40px; padding: 0 10px 0 11px; border-radius: 10px;
+    border: 1px solid transparent; background: none; cursor: pointer;
+    font: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: var(--ink-soft);
+    -webkit-appearance: none; appearance: none;
+    transition: color 0.2s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .qf-lang-btn:hover, .qf-lang.open .qf-lang-btn {
+    color: var(--ink); background: var(--paper-2);
+    border-color: color-mix(in srgb, var(--border) 70%, transparent);
+  }
+  .qf-lang-globe { transition: transform 0.6s var(--qf-out); }
+  .qf-lang-btn:hover .qf-lang-globe { transform: rotate(-24deg); }
+  .qf-lang-chev { opacity: 0.6; transition: transform 0.3s var(--qf-out); }
+  .qf-lang.open .qf-lang-chev { transform: rotate(180deg); }
+
+  .qf-lang-menu {
+    position: absolute; top: calc(100% + 8px); right: 0; min-width: 216px;
+    display: flex; flex-direction: column; gap: 2px; padding: 6px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: 0 16px 36px -14px rgba(17, 17, 20, 0.28), 0 2px 6px -2px rgba(17, 17, 20, 0.08);
+    transform-origin: top right;
+    opacity: 0; visibility: hidden; transform: translateY(-4px) scale(0.97);
+    transition: opacity 0.16s var(--ease), transform 0.22s var(--qf-out), visibility 0s linear 0.22s;
+  }
+  .qf-lang.open .qf-lang-menu {
+    opacity: 1; visibility: visible; transform: none;
+    transition: opacity 0.16s var(--ease), transform 0.28s var(--qf-out), visibility 0s;
   }
   .qf-lang-opt {
-    padding: 4px 9px; border-radius: 7px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em;
-    color: var(--ink-faint); transition: color 0.15s var(--ease), background 0.15s var(--ease);
+    display: flex; align-items: center; gap: 11px;
+    padding: 9px 10px; border-radius: 9px;
+    font-size: 14px; font-weight: 500; color: var(--ink);
+    transition: background 0.15s var(--ease);
   }
-  .qf-lang-opt:hover { color: var(--ink); }
-  .qf-lang-opt.is-off, .qf-lang-opt.is-off:hover { color: var(--ink-faint); opacity: 0.55; cursor: not-allowed; }
-  .qf-lang-opt.is-on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(17, 17, 20, 0.12); }
+  a.qf-lang-opt:hover, a.qf-lang-opt:focus-visible { background: var(--paper-2); }
+  .qf-lang-tag {
+    flex: 0 0 auto; display: inline-grid; place-items: center;
+    width: 30px; height: 24px; border-radius: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.05em;
+    color: var(--ink-soft); background: var(--paper-2);
+  }
+  .qf-lang-name { flex: 1; display: flex; flex-direction: column; line-height: 1.25; }
+  .qf-lang-name small { font-size: 12px; font-weight: 400; color: var(--ink-soft); }
+  .qf-lang-check { flex: 0 0 auto; color: var(--accent); opacity: 0; }
+  .qf-lang-opt.is-on { font-weight: 600; }
+  .qf-lang-opt.is-on .qf-lang-tag { color: var(--accent); background: var(--accent-soft); }
+  .qf-lang-opt.is-on .qf-lang-check { opacity: 1; }
+  .qf-lang-opt.is-off { cursor: not-allowed; color: var(--ink-faint); }
+  .qf-lang-opt.is-off .qf-lang-tag { color: var(--ink-faint); }
 
+  /* ---------- CTA de descarga ---------- */
   .qf-nav-cta {
-    display: inline-flex; align-items: center; gap: 8px;
+    display: inline-flex; align-items: center; gap: 9px;
+    height: 40px; padding: 0 8px 0 16px; border-radius: 12px;
     font-size: 14px; font-weight: 600; color: #fff; background: var(--accent);
-    padding: 10px 18px; border-radius: 12px;
-    box-shadow: 0 1px 2px rgba(17, 17, 20, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-    transition: filter 0.18s var(--ease), transform 0.18s var(--ease), box-shadow 0.18s var(--ease);
+    box-shadow: 0 1px 2px rgba(17, 17, 20, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transition:
+      background 0.2s var(--ease),
+      transform 0.25s var(--qf-out),
+      box-shadow 0.25s var(--ease);
+  }
+  .qf-cta-ico {
+    display: inline-grid; place-items: center;
+    width: 26px; height: 26px; border-radius: 8px;
+    background: rgba(255, 255, 255, 0.16);
+    overflow: hidden;
+    transition: background 0.2s var(--ease);
   }
   .qf-nav-cta:hover {
-    filter: brightness(1.08); transform: translateY(-1px);
-    box-shadow: 0 10px 22px -10px color-mix(in srgb, var(--accent) 75%, transparent);
+    background: color-mix(in srgb, var(--accent) 88%, #000);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px -10px color-mix(in srgb, var(--accent) 80%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
-  .qf-nav a:focus-visible, .qf-nav-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .qf-nav-cta:hover .qf-cta-ico { background: rgba(255, 255, 255, 0.24); }
+  /* La flecha "descarga": cae, sale por abajo y vuelve a entrar por arriba. */
+  .qf-nav-cta:hover .qf-cta-arrow { animation: qf-cta-drop 0.6s var(--qf-out); }
+  .qf-nav-cta:active { transform: translateY(0) scale(0.97); transition-duration: 0.08s; }
+  @keyframes qf-cta-drop {
+    0% { transform: translateY(0); opacity: 1; }
+    40% { transform: translateY(9px); opacity: 0; }
+    41% { transform: translateY(-9px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  .qf-nav a:focus-visible, .qf-nav button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   /* Botón hamburguesa: oculto en escritorio, visible en móvil. */
   .qf-nav-toggle { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .qf-nav-glide, .qf-lang-menu, .qf-lang-globe, .qf-lang-chev, .qf-nav-cta { transition: none; }
+    .qf-nav-cta:hover .qf-cta-arrow { animation: none; }
+    .qf-nav-cta:hover { transform: none; }
+  }
 
   /* Con 6 enlaces + idioma + CTA la fila va justa por debajo de ~1120px: el
      menú móvil entra antes que el resto de breakpoints (980) del sitio. */
@@ -261,15 +452,27 @@ const T = lang === 'ca'
       box-shadow: 0 18px 30px -16px rgba(17, 17, 20, 0.22);
     }
     .qf-nav.open .qf-nav-right { display: flex; }
+    .qf-nav-glide { display: none; }
     .qf-nav-links { flex-direction: column; align-items: stretch; gap: 0; }
     .qf-nav-link {
       display: block; font-size: 16px; color: var(--ink); border-radius: 0;
       padding: 14px 4px; border-bottom: 1px solid var(--border);
     }
-    .qf-nav-link:hover { background: none; }
     .qf-nav-link.is-active::after { display: none; }
-    .qf-nav-actions { margin-top: 18px; gap: 12px; }
-    .qf-nav-cta { flex: 1; justify-content: center; padding: 13px 18px; font-size: 15px; }
-    .qf-lang-opt { padding: 9px 12px; font-size: 13px; }
+
+    /* Acciones: idioma como dos opciones a la vista + CTA ancho. */
+    .qf-nav-actions { margin-top: 18px; flex-direction: column; align-items: stretch; gap: 12px; }
+    .qf-lang-btn { display: none; }
+    .qf-lang-menu {
+      position: static; min-width: 0; flex-direction: row; gap: 4px; padding: 4px;
+      background: var(--paper-2); box-shadow: none; border-radius: 12px;
+      opacity: 1; visibility: visible; transform: none; transition: none;
+    }
+    .qf-lang-opt { flex: 1; justify-content: center; padding: 10px 8px; }
+    .qf-lang-opt .qf-lang-tag, .qf-lang-check, .qf-lang-name small { display: none; }
+    .qf-lang-name { flex: 0 1 auto; }
+    .qf-lang-opt.is-on { background: var(--surface); box-shadow: 0 1px 3px rgba(17, 17, 20, 0.12); }
+    a.qf-lang-opt:not(.is-on):hover { background: none; color: var(--ink); }
+    .qf-nav-cta { justify-content: center; height: 48px; padding: 0 12px 0 18px; font-size: 15px; }
   }
 </style>

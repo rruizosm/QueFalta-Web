@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CATEGORIAS, COCINA, COCINA_TEXT, amazonUrl } from '../../data/cocina.js';
 import { Icon } from './ui.jsx';
 
@@ -6,13 +6,25 @@ import { Icon } from './ui.jsx';
 // `limit` productos y un enlace a la página completa; en /cocina/ se ven todos,
 // con filtro por categoría.
 
-// Ilustración de cocina del banner (vectorial, sin fotos de terceros).
+// Ilustración de cocina del banner (vectorial, sin fotos de terceros). Va en
+// dos capas para el parallax (fondo y encimera) y tiene dos detalles vivos, el
+// sol y el vapor de la olla, que solo se animan con el banner en pantalla.
 function KitchenArt() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !('IntersectionObserver' in window)) return undefined;
+    const io = new IntersectionObserver(([e]) => el.classList.toggle('is-live', e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   return (
-    <svg className="kh-art" viewBox="0 0 520 300" aria-hidden="true" preserveAspectRatio="xMidYMax slice">
+    <svg ref={ref} className="kh-art" viewBox="0 0 520 300" aria-hidden="true" preserveAspectRatio="xMidYMax slice">
+      <g className="kh-l-back">
       {/* ventana */}
       <rect x="40" y="38" width="130" height="110" rx="10" fill="#fff" opacity=".9" />
       <rect x="48" y="46" width="114" height="94" rx="6" fill="#cfe6ff" />
+      <circle className="kh-sun-glow" cx="132" cy="74" r="22" fill="#ffe08a" opacity=".35" />
       <circle cx="132" cy="74" r="14" fill="#ffe08a" />
       <path d="M48 128 q30 -26 58 -6 t56 -10 v28 h-114z" fill="#b7dca8" />
       <rect x="103" y="46" width="4" height="94" fill="#fff" />
@@ -39,6 +51,8 @@ function KitchenArt() {
       <rect x="278" y="122" width="18" height="10" fill="#9cc98a" />
       <path d="M318 138 q-6 -22 6 -30 q12 8 6 30z" fill="#7bbf6a" />
       <rect x="312" y="128" width="24" height="10" rx="3" fill="#e0805a" />
+      </g>
+      <g className="kh-l-front">
       {/* encimera */}
       <rect x="0" y="206" width="520" height="14" fill="#f3e3cf" />
       <rect x="0" y="220" width="520" height="80" fill="#fff" opacity=".96" />
@@ -59,7 +73,11 @@ function KitchenArt() {
       <rect x="170" y="172" width="64" height="34" rx="8" fill="#33415c" />
       <rect x="164" y="166" width="76" height="8" rx="4" fill="#4a5a78" />
       <rect x="196" y="158" width="12" height="8" rx="3" fill="#4a5a78" />
-      <path d="M186 150 q4 -8 0 -16 M202 146 q4 -8 0 -16 M218 150 q4 -8 0 -16" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" opacity=".8" />
+      <g className="kh-steam" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round">
+        <path d="M186 150 q4 -8 0 -16" />
+        <path d="M202 146 q4 -8 0 -16" />
+        <path d="M218 150 q4 -8 0 -16" />
+      </g>
       {/* tabla y báscula */}
       <rect x="268" y="196" width="80" height="10" rx="5" fill="#d8a776" />
       <rect x="370" y="186" width="56" height="20" rx="6" fill="#fff" stroke="#c9d6e4" />
@@ -68,6 +86,7 @@ function KitchenArt() {
       <rect x="448" y="160" width="40" height="46" rx="10" fill="#fff" stroke="#c9d6e4" />
       <rect x="448" y="176" width="40" height="22" fill="#f6c27a" opacity=".8" />
       <rect x="452" y="152" width="32" height="10" rx="4" fill="#c99a6b" />
+      </g>
     </svg>
   );
 }
@@ -111,15 +130,15 @@ export default function KitchenPicks({ lang = 'es', limit, heading = 'h2' }) {
       )}
 
       <div className="kh-grid">
-        {items.map((it) => {
+        {items.map((it, i) => {
           const [name, desc] = it[lang] ?? it.es;
           const c = CATEGORIAS[it.cat];
           return (
-            <a key={it.asin} className="kh-card" href={amazonUrl(it)} target="_blank" rel="sponsored nofollow noopener">
+            <a key={it.asin} className="kh-card qf-rv qf-spot" style={{ '--i': i % 4 }} href={amazonUrl(it)} target="_blank" rel="sponsored nofollow noopener">
               <span className="kh-media" style={{ '--kh-tint': c?.tint }}>
                 {it.img
-                  ? <img src={it.img} alt="" width="120" height="120" loading="lazy" />
-                  : <span className="kh-emoji" aria-hidden="true">{it.emoji}</span>}
+                  ? <img className="kh-obj" src={it.img} alt="" width="120" height="120" loading="lazy" />
+                  : <span className="kh-emoji kh-obj" aria-hidden="true">{it.emoji}</span>}
                 {c && <span className="kh-cat">{c[lang] ?? c.es}</span>}
               </span>
               <span className="kh-body">

@@ -32,8 +32,7 @@
 /* Ajustes puntuales en modo oscuro para elementos que no dependen solo de los
    tokens (la franja oscura y el navbar global). */
 [data-theme="dark"] .qf-band { background: #08080c; }
-[data-theme="dark"] nav.qf-nav { background: rgba(13, 13, 18, 0.72); }
-[data-theme="dark"] nav.qf-nav .qf-nav-cta { background: var(--accent); color: #fff; }
+[data-theme="dark"] nav.qf-nav { background: rgba(13, 13, 18, 0.84); }
 /* Texto del navbar totalmente blanco en oscuro (los enlaces eran gris tenue). */
 [data-theme="dark"] nav.qf-nav .qf-word,
 [data-theme="dark"] nav.qf-nav .qf-word-txt span,

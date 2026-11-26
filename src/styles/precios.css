@@ -86,15 +86,136 @@ html.cmp-in-view .cmp-seo { display: none; }
 .cmp-seo section:first-child { margin-top: 0; }
 .cmp-seo h2 { font-size: clamp(24px, 3vw, 32px); font-weight: 800; letter-spacing: -0.035em; line-height: 1.1; }
 .cmp-seo-text { margin-top: 12px; max-width: 760px; font-size: 16px; line-height: 1.65; color: var(--ink-soft); }
-.cmp-seo-more { display: inline-block; margin-top: 14px; font-size: 14.5px; font-weight: 700; color: var(--accent); }
-.cmp-seo-more + .cmp-seo-more { margin-left: 20px; }
-.cmp-seo-stores { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
-.cmp-seo-stores a {
-  display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 8px; border-radius: 999px;
-  border: 1px solid var(--border); background: var(--surface); font-size: 14px; font-weight: 600;
+.cmp-seo section { margin-top: 72px; }
+/* Mismo ancho útil que el cuerpo del comparador (.cmp-body: 1160 − 2×24). */
+.cmp-seo.container { max-width: 1160px; }
+
+/* Enlaces «Ver…»: flecha que avanza al pasar el ratón. */
+.cmp-seo-actions { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 20px; }
+.cmp-seo-more {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 14.5px; font-weight: 700; color: var(--accent);
+  text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px;
+  transition: text-decoration-color .25s var(--ease);
 }
-.cmp-seo-stores a:hover { color: var(--accent); }
-.cmp-seo-stores img { width: 24px; height: 24px; object-fit: contain; border-radius: 6px; background: #fff; }
+.cmp-seo-more svg { flex: 0 0 auto; transition: transform .3s var(--qf-out, ease); }
+.cmp-seo-more:hover { text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.cmp-seo-more:hover svg { transform: translateX(4px); }
+
+/* ---------- Precios de productos básicos ---------- */
+.cmp-price-chips {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 10px; margin-top: 22px;
+}
+.cmp-price-chip {
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 10px;
+  padding: 14px 14px 14px 16px; border-radius: 14px;
+  border: 1px solid var(--border); background: var(--surface);
+  transition: border-color .25s var(--ease), box-shadow .3s var(--ease);
+}
+.cmp-price-name { font-size: 14.5px; font-weight: 700; color: var(--ink); line-height: 1.25; }
+.cmp-price-val {
+  flex: 0 0 auto; padding: 5px 9px; border-radius: 8px; white-space: nowrap;
+  font-size: 12.5px; font-weight: 500; color: var(--ink-soft); background: var(--paper-2);
+  transition: background .25s var(--ease), color .25s var(--ease);
+}
+.cmp-price-val b { font-weight: 800; color: #1a8a4a; font-variant-numeric: tabular-nums; }
+.cmp-price-chip:hover { border-color: color-mix(in srgb, #1f9d55 40%, var(--border)); box-shadow: 0 12px 26px -20px rgba(20, 90, 50, .55); }
+.cmp-price-chip:hover .cmp-price-val { background: color-mix(in srgb, #1f9d55 13%, transparent); color: var(--ink); }
+[data-theme="dark"] .cmp-price-val b { color: #3ccf7c; }
+
+/* ---------- Supermercados: cinta de logos ---------- */
+.cmp-seo-chains-head { max-width: 760px; }
+.cmp-marquee { margin-top: 22px; }
+.cmp-seo-stores { display: flex; flex-wrap: wrap; gap: 10px; }
+.cmp-seo-stores a {
+  display: inline-flex; align-items: center; gap: 9px; flex: 0 0 auto;
+  padding: 8px 16px 8px 8px; border-radius: 999px;
+  border: 1px solid var(--border); background: var(--surface); font-size: 14px; font-weight: 600;
+  transition: border-color .25s var(--ease), color .2s var(--ease), box-shadow .3s var(--ease);
+}
+.cmp-seo-stores img {
+  width: 28px; height: 28px; object-fit: contain; border-radius: 8px; background: #fff;
+  transition: transform .4s var(--qf-out, ease);
+}
+.cmp-seo-stores a:hover {
+  color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  box-shadow: 0 10px 22px -16px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.cmp-seo-stores a:hover img { transform: rotate(-8deg) scale(1.12); }
+
+/* Con JS: dos filas iguales seguidas que se desplazan en bucle. Se para al
+   pasar el ratón y fuera de pantalla; con el teclado dentro, vuelve a rejilla
+   para que el enlace enfocado siempre se vea. */
+.cmp-marquee.is-running {
+  overflow: hidden; padding: 14px 0; margin-top: 8px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+.cmp-marquee.is-running .cmp-marquee-track {
+  display: flex; width: max-content;
+  animation: cmp-marquee 70s linear infinite;
+}
+.cmp-marquee.is-running .cmp-seo-stores { flex-wrap: nowrap; padding-right: 10px; }
+.cmp-marquee.is-running:hover .cmp-marquee-track,
+.cmp-marquee.is-off .cmp-marquee-track { animation-play-state: paused; }
+.cmp-marquee.is-running:focus-within { overflow: visible; -webkit-mask-image: none; mask-image: none; }
+.cmp-marquee.is-running:focus-within .cmp-marquee-track { animation: none; width: auto; }
+.cmp-marquee.is-running:focus-within .cmp-seo-stores { flex-wrap: wrap; }
+.cmp-marquee.is-running:focus-within .cmp-seo-stores[aria-hidden] { display: none; }
+@keyframes cmp-marquee { to { transform: translateX(-50%); } }
+
+/* ---------- Preguntas frecuentes: acordeón ---------- */
+.cmp-seo-faq { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr); gap: 28px 56px; align-items: start; }
+.cmp-seo-faq h2 { position: sticky; top: 96px; }
+.cmp-faqs { display: flex; flex-direction: column; border-top: 1px solid var(--border); }
+.cmp-faq { border-bottom: 1px solid var(--border); interpolate-size: allow-keywords; }
+.cmp-faq summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding: 20px 4px; cursor: pointer; list-style: none;
+}
+.cmp-faq summary::-webkit-details-marker { display: none; }
+.cmp-faq summary h3 {
+  font-size: 17px; font-weight: 700; letter-spacing: -0.015em; line-height: 1.35;
+  transition: color .2s var(--ease);
+}
+.cmp-faq summary:hover h3, .cmp-faq[open] summary h3 { color: var(--accent); }
+.cmp-faq summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+/* Icono +/−: dos barras; la vertical gira y desaparece al abrir. */
+.cmp-faq-ico {
+  position: relative; flex: 0 0 auto; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--paper-2); transition: background .3s var(--ease), transform .4s var(--qf-out, ease);
+}
+.cmp-faq-ico::before, .cmp-faq-ico::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 12px; height: 2px; margin: -1px 0 0 -6px;
+  border-radius: 2px; background: var(--ink-soft);
+  transition: transform .4s var(--qf-out, ease), background .3s var(--ease);
+}
+.cmp-faq-ico::after { transform: rotate(90deg); }
+.cmp-faq summary:hover .cmp-faq-ico { background: color-mix(in srgb, var(--accent) 12%, var(--paper-2)); }
+.cmp-faq[open] .cmp-faq-ico { background: var(--accent); transform: rotate(180deg); }
+.cmp-faq[open] .cmp-faq-ico::before, .cmp-faq[open] .cmp-faq-ico::after { background: #fff; }
+.cmp-faq[open] .cmp-faq-ico::after { transform: rotate(0deg); }
+.cmp-faq-a p { padding: 0 52px 22px 4px; font-size: 15px; line-height: 1.65; color: var(--ink-soft); max-width: 70ch; }
+/* Apertura con altura animada donde el navegador lo permite (Chrome/Edge). */
+.cmp-faq::details-content {
+  block-size: 0; overflow: clip; opacity: 0;
+  transition: block-size .4s var(--qf-out, ease), opacity .3s var(--ease), content-visibility .4s allow-discrete;
+}
+.cmp-faq[open]::details-content { block-size: auto; opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cmp-faq::details-content { transition: none; }
+}
+@media (max-width: 860px) {
+  .cmp-seo-faq { grid-template-columns: 1fr; }
+  .cmp-seo-faq h2 { position: static; }
+  .cmp-faq summary h3 { font-size: 16px; }
+  .cmp-faq-a p { padding-right: 8px; }
+}
+@media (max-width: 480px) {
+  .cmp-price-chips { grid-template-columns: 1fr; }
+}
 
 @media (max-width: 640px) {
   .pr-stats { grid-template-columns: 1fr; }
