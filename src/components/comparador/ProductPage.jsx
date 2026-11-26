@@ -190,21 +190,23 @@ function ProductView({
 
   // Página base: el producto sale de la URL.
   useEffect(() => {
-    if (!storeProp) {
-      const fromQuery = parseProductQuery(window.location.search);
-      const parsed = parseProductPath(window.location.pathname) ?? fromQuery;
+    const start = (parsed) => {
       if (parsed) setRoute(parsed);
-      else setStatus('missing');
-      // Desde la página base (?p=…): si la ficha está generada, a su dirección limpia.
-      if (fromQuery) {
-        const pretty = productPath(fromQuery.store, fromQuery.id, t.lang);
-        fetch(pretty, { method: 'HEAD', redirect: 'manual' })
-          .then((res) => { if (res.status === 200) window.location.replace(pretty); })
-          .catch(() => {});
-      }
-    }
-    setCp(readCp());
-    setReady(true);
+      else if (!storeProp) setStatus('missing');
+      setCp(readCp());
+      setReady(true);
+    };
+    if (storeProp) { start(null); return; }
+    const fromQuery = parseProductQuery(window.location.search);
+    const parsed = parseProductPath(window.location.pathname) ?? fromQuery;
+    if (!fromQuery) { start(parsed); return; }
+    // Desde la página base (?p=…): si la ficha está generada, a su dirección
+    // limpia. Hasta saberlo no se pinta la ficha ni se piden anuncios: si no,
+    // el anuncio de arriba salía, se iba con el salto y volvía a salir.
+    const pretty = productPath(fromQuery.store, fromQuery.id, t.lang);
+    fetch(pretty, { method: 'HEAD', redirect: 'manual' })
+      .then((res) => { if (res.status === 200) window.location.replace(pretty); else start(parsed); })
+      .catch(() => start(parsed));
   }, [storeProp]);
 
   const store = route?.store ?? null;
@@ -341,7 +343,7 @@ function ProductView({
 
   return (
     <div className="cmp pd">
-      <AdWide />
+      {ready && <AdWide />}
 
       {/* Ficha · lateral · resto de la ficha: en móvil la comparación va tras el precio. */}
       <div className="pd-layout">

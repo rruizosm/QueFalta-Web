@@ -343,3 +343,8 @@
   .pd-aside-head { padding: 14px 16px 4px; }
   .pd-aside-body { padding: 8px 16px 14px; }
 }
+
+/* Anuncios del ranking «Comparar precios»: Google no siempre tiene anuncio
+   para cada hueco (suele llenar solo el primero): sin anuncio, fuera el hueco
+   en blanco. */
+.pd .cmp-ad-compare:has(ins[data-ad-status="unfilled"]) { display: none; }
