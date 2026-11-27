@@ -3,10 +3,5 @@
 # Resumen del sitio para agentes LLM: https://quefalta.es/llms.txt
 User-agent: *
 Allow: /
-# Fichas que se pintan en el navegador (noindex, ~235.000 posibles): los
-# botones de la web enlazan aquí y Google gastaba rastreos en ellas en vez de
-# en las fichas indexables (/producto/<súper>/<id>/), que no se bloquean.
-Disallow: /producto/?p=
-Disallow: /ca/producte/?p=
 
 Sitemap: https://quefalta.es/sitemap-index.xml
